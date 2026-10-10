@@ -684,6 +684,24 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:grabbing;}
 .font-pick button b{font-size:17px;color:var(--gold2);} .font-pick button small{font-size:13px;color:var(--tx2);}
 .font-pick button.on{border-color:var(--teal2);background:rgba(36,96,111,.25);}
 
+/* Мастер создания персонажа */
+.cw-steps{display:flex;flex-wrap:wrap;}
+.cw-steps button{flex:1 1 auto;padding:6px 10px;font-size:13px;}
+.cw-ab{width:100%;border-collapse:collapse;}
+.cw-ab th{font-family:var(--f-label);font-size:12px;color:var(--tx3);text-align:left;padding:4px;}
+.cw-ab td{padding:5px 4px;border-top:1px solid var(--line);vertical-align:middle;}
+.cw-ab .stepper button{min-width:34px;height:32px;} .cw-ab .stepper b{min-width:40px;font-size:18px;}
+.cw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:4px 12px;margin-top:6px;}
+.cw-sum{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}
+.cw-sum span{display:flex;flex-direction:column;align-items:center;padding:6px 2px;border:1px solid var(--line2);border-radius:6px;background:rgba(0,0,0,.25);}
+.cw-sum small{font-family:var(--f-label);font-size:11px;color:var(--tx3);} .cw-sum b{font-family:var(--f-title);font-size:20px;color:var(--gold2);} .cw-sum i{font-style:normal;font-size:12px;color:var(--tx2);}
+@media (max-width:520px){ .cw-sum{grid-template-columns:repeat(3,1fr);} .cw-steps button{font-size:12px;padding:5px 6px;} }
+
+/* Встроенный ttg.club */
+.ttg-view .mbody{padding:0;}
+.ttg-frame{display:block;width:100%;height:72vh;border:0;background:#0d0d0d;}
+@media (max-width:639px){ .ttg-frame{height:calc(100vh - 170px);} }
+
 /* ── inv.css ── */
 /* ═══════════════════════════════════════════════════════
    ИНВЕНТАРЬ, ПРЕДМЕТЫ, КАРТОЧКА ЛУТА, ТОРГОВЛЯ
@@ -1162,7 +1180,7 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:grabbing;}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '9.2.2';
+const APP_VERSION = '9.4.0';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -3304,14 +3322,21 @@ SEC.pins = (pc, slot) => {
 };
 SEC.attacks = pc => `<section class="sec" id="s-attacks"><div class="sec-h t-orange">🗡 Атаки<span class="sp"></span><button class="btn xs ghost" data-act="pcRules">❓ Правила</button></div><div class="sec-b">
     ${tagStrip(pc, 'attack')}${tagStrip(pc, 'damage')}
-    ${pc.attacks.length ? pc.attacks.map((a, i) => `<div class="atk ${pc.ui['atk' + i] ? 'open' : ''}">
-      <div class="atk-main"><b class="grow ellip">${esc(a.name || '—')}</b>
-        <button class="atk-roll" data-act="pcRollAtk" data-i="${i}" title="Бросок атаки">${esc(a.atkBonus || '+0')}</button>
-        <button class="atk-roll dmg" data-act="pcRollDmg" data-i="${i}" title="Бросок урона">${esc(a.damage || '—')}</button>
+    ${pcAllAttacks(pc).map(a => { const key = a._g ? 'g="' + esc(a._g) : 'i="' + a._i, uk = a._g ? 'atkg' + a._g : 'atk' + a._i;
+      return `<div class="atk ${a._g ? 'gear' : ''} ${pc.ui[uk] ? 'open' : ''}">
+      <div class="atk-main"><b class="grow ellip">${a._g ? '<span title="Из надетого снаряжения — считается само">🎒</span> ' : ''}${esc(a.name || '—')}</b>
+        <button class="atk-roll" data-act="pcRollAtk" data-${key}" title="Бросок атаки">${esc(a.atkBonus || '+0')}</button>
+        <button class="atk-roll dmg" data-act="pcRollDmg" data-${key}" title="Бросок урона">${esc(a.damage || '—')}</button>
         <span class="atk-type">${esc(a.type || '')}${a.range ? ' · ' + esc(a.range) : ''}</span>
-        ${a.description ? `<button class="atk-x" data-act="pcAtkOpen" data-i="${i}">📖</button>` : ''}</div>
-      ${a.description ? `<div class="atk-desc">${nl2br(a.description)}</div>` : ''}</div>`).join('') : '<div class="empty small">Нет атак — добавь в редакторе</div>'}
+        ${a.description ? `<button class="atk-x" data-act="pcAtkOpen" data-${key}">📖</button>` : ''}</div>
+      ${a.description ? `<div class="atk-desc">${nl2br(a.description)}</div>` : ''}</div>`; }).join('') || '<div class="empty small">Нет атак — надень оружие (🎒 → «Надето») или добавь атаку в редакторе</div>'}
   </div></section>`;
+/** Ручные атаки + атаки надетого оружия (считаются на лету; ручная с тем же названием важнее) */
+function pcAllAttacks(pc) {
+  const own = pc.attacks.map((a, i) => ({ ...a, _i: i })), names = new Set(pc.attacks.map(a => String(a.name).toLowerCase()));
+  return [...own, ...(typeof gearAttacks === 'function' ? gearAttacks(pc) : []).filter(a => !names.has(a.name.toLowerCase()))];
+}
+const atkOf = (pc, el) => el.dataset.g ? pcAllAttacks(pc).find(a => a._g === el.dataset.g) : pc.attacks[int(el.dataset.i)];
 SEC.spells = pc => {
   if (!pc.hasSpells) return '';
   const m = pcSpellMod(pc), pb = pcPB(pc);
@@ -3468,7 +3493,7 @@ ACT.pcEndRound = () => pcDo(pc => {
   toast('✓ Ход завершён · действия сброшены' + (gone.length ? ' · истекло: ' + gone.join(', ') : ''));
 }, 'combat', 'conds');
 ACT.pcRules = () => openModal({ title: '⚔ Правила боя — шпаргалка', body: COMBAT_RULES_HTML });
-ACT.pcAtkOpen = el => pcDo(pc => { const k = 'atk' + el.dataset.i; pc.ui[k] = !pc.ui[k]; }, 'attacks');
+ACT.pcAtkOpen = el => pcDo(pc => { const k = el.dataset.g ? 'atkg' + el.dataset.g : 'atk' + el.dataset.i; pc.ui[k] = !pc.ui[k]; }, 'attacks');
 const atkTargets = a => ['Оружием', ...(/\d/.test(a.range || '') && !/ближ|рукоп/i.test(a.range || '') ? ['Дальние атаки'] : [])];
 function tagBonusAny(pc, cat, targets) { // объединение по нескольким целям без двойного счёта
   const seen = new Set(), r = { bonus: 0, adv: false, dis: false, dice: [] };
@@ -3476,9 +3501,9 @@ function tagBonusAny(pc, cat, targets) { // объединение по неск
     if (t.effect === 'ADV') r.adv = true; else if (t.effect === 'DIS') r.dis = true; else if (/d/.test(t.effect)) r.dice.push(t.effect.replace('+', '')); else r.bonus += int(t.effect); });
   return r;
 }
-ACT.pcRollAtk = el => { const pc = activePC(), a = pc.attacks[int(el.dataset.i)]; rollToast(a.name || 'Атака', int(String(a.atkBonus).replace(/\s/g, '')), tagBonusAny(pc, 'attack', atkTargets(a))); };
+ACT.pcRollAtk = el => { const pc = activePC(), a = atkOf(pc, el); if (!a) return; rollToast(a.name || 'Атака', int(String(a.atkBonus).replace(/\s/g, '')), tagBonusAny(pc, 'attack', atkTargets(a))); };
 ACT.pcRollDmg = el => {
-  const pc = activePC(), a = pc.attacks[int(el.dataset.i)], tb = tagBonusAny(pc, 'damage', ['Оружием']);
+  const pc = activePC(), a = atkOf(pc, el), tb = tagBonusAny(pc, 'damage', ['Оружием']); if (!a) return;
   const r = rollFormula([a.damage, ...tb.dice].join('+') + (tb.bonus ? sgn(tb.bonus) : '')); if (!r) return toast('Формула урона не распознана');
   toast(`💥 ${a.name || 'Урон'}: ${r.total}  (${r.parts.map(p => p.d + '[' + p.rolls.join(',') + ']').join(' ')}${r.mod ? ' ' + sgn(r.mod) : ''})${tb.dice.length || tb.bonus ? ' · с вещами' : ''}`, '', 4500);
 };
@@ -3584,7 +3609,11 @@ VIEWS.sheet = {
       { icon: '📝', label: 'Редактор', act: 'go', v: 'creator' },
       { icon: '🎒', label: 'Инвентарь', act: 'go', v: 'inv', phoneHide: true },
       { icon: '📤', label: 'Поделиться', act: 'pcShare' },
-      { menu: [{ icon: '🔄', label: 'Сменить персонажа', fn: () => go('saves') }, { icon: '✨', label: 'Новый персонаж', fn: () => ACT.pcNew() },
+      { menu: [{ icon: '⬆', label: `Повысить уровень (${pc.level} → ${Math.min(20, pc.level + 1)})`, fn: () => ACT.levelUp() },
+        pc.hasSpells && { icon: '📚', label: 'Заклинания класса (ttg.club)', fn: () => ACT.classSpells() },
+        { icon: '🛡', label: 'КБ по надетому', fn: () => { pcGearSync(pc); savePC(pc); sheetRefresh(); toast(`🛡 КБ ${pc.ac}`, 'ok'); } },
+        { sep: 1 },
+        { icon: '🔄', label: 'Сменить персонажа', fn: () => go('saves') }, { icon: '🧙', label: 'Новый персонаж (мастер)', fn: () => ACT.newViaWizard() }, { icon: '✨', label: 'Новый пустой лист', fn: () => ACT.pcNew() },
         { icon: '📄', label: 'Скачать файл (JSON)', fn: () => download(`${fileSafe(pc.name)}.dnd9.json`, JSON.stringify({ v: 9, k: 'pc', d: pc }, null, 1)) }] },
     ];
   },
@@ -3616,7 +3645,7 @@ CCSEC.basic = pc => `<section class="sec fold" id="cc-basic">${ccSecHead('basic'
     <div class="fld"><label>Класс</label><input data-bind="cls" value="${esc(pc.cls)}" placeholder="Воин, Маг, Плут…"></div>
     <div class="fld"><label>Подкласс</label><input data-bind="subclass" value="${esc(pc.subclass)}" placeholder="Чемпион…"></div>
     <div class="fld"><label>Уровень</label><input type="number" min="1" max="20" data-bind="level" value="${pc.level}" data-ch="ccRe" data-sec="derived"></div>
-    <div class="fld"><label>Бонус мастерства (авто)</label><div class="ro" data-der="pb">${sgn(pcPB(pc))}</div></div>
+    <div class="fld"><label>Бонус мастерства (авто)</label><div class="row"><div class="ro grow" data-der="pb">${sgn(pcPB(pc))}</div><button class="btn sm gold" data-act="levelUp" title="Повысить уровень">⬆</button></div></div>
     <div class="fld"><label>Раса</label><input data-bind="race" value="${esc(pc.race)}" placeholder="Человек, Эльф…"></div>
     <div class="fld"><label>Предыстория</label><input data-bind="background" value="${esc(pc.background)}" placeholder="Солдат…"></div>
     <div class="fld"><label>Мировоззрение</label><select data-bind="alignment">${ALIGNMENTS.map(a => `<option ${a === pc.alignment ? 'selected' : ''}>${a}</option>`).join('')}</select></div>
@@ -3631,7 +3660,7 @@ CCSEC.def = pc => `<section class="sec fold" id="cc-def">${ccSecHead('def', '�
     <div class="fld"><label>Класс брони</label><input type="number" min="1" data-bind="ac" value="${pc.ac}"></div>
     <div class="fld"><label>Инициатива (от ЛОВ)</label><div class="ro" data-der="init">${sgn(pcMod(pc, 'dex'))}</div></div>
     <div class="fld"><label>Скорость (футы)</label><input type="number" min="0" step="5" data-bind="speed" value="${pc.speed}"></div>
-  </div></div></section>`;
+  </div><button class="btn sm mt" data-act="gearSync" title="КБ из надетых доспехов и щита">🛡 КБ по надетому</button><span class="muted tiny"> Атаки надетого оружия появляются на листе сами (🎒).</span></div></section>`;
 CCSEC.saves = pc => `<section class="sec fold" id="cc-saves">${ccSecHead('saves', '🛡 Спасброски')}<div class="sec-b fold-b"><div class="cc-prof">
   ${STATS.map(s => `<div class="cc-pr"><button class="pdot ${pc.saveProfs.includes(s) ? 'prof' : ''}" data-act="ccSaveP" data-s="${s}" title="Владение"></button><b data-der="save-${s}">${sgn(pcSave(pc, s))}</b><span class="grow">${STAT_NAMES[s]}</span></div>`).join('')}
   </div></div></section>`;
@@ -3669,7 +3698,7 @@ CCSEC.spellcards = pc => !pc.hasSpells ? '' : `<section class="sec fold" id="cc-
     <div class="fld mt"><label>Компоненты</label><input data-bind="spells.${i}.components" value="${esc(s.components)}" placeholder="В, С, М (щепотка серы)"></div>
     <div class="fld mt"><label>Описание</label><textarea class="auto" data-bind="spells.${i}.description">${esc(s.description)}</textarea></div>
     <div class="row mt"><label class="chk"><input type="checkbox" data-bind="spells.${i}.concentration" ${s.concentration ? 'checked' : ''}> Концентрация</label><label class="chk"><input type="checkbox" data-bind="spells.${i}.ritual" ${s.ritual ? 'checked' : ''}> Ритуал</label></div></div>`).join('')}
-  <div class="btns"><button class="btn" data-act="ccAdd" data-arr="spells">+ Добавить заклинание</button><button class="btn gold" data-act="ttgSpell">🔎 Найти на ttg.club</button></div></div></section>`;
+  <div class="btns"><button class="btn" data-act="ccAdd" data-arr="spells">+ Добавить заклинание</button><button class="btn gold" data-act="classSpells">📚 Список класса</button><button class="btn" data-act="ttgSpell">🔎 Найти на ttg.club</button></div></div></section>`;
 CCSEC.res = pc => `<section class="sec fold ${pc.resources.length ? '' : 'closed'}" id="cc-res">${ccSecHead('res', '🔋 Классовые ресурсы', 'resources')}<div class="sec-b fold-b">
   <p class="muted tiny mb">Очки чародейства, ци, бардовское вдохновение, ярость и т.п. — кружочки на листе.</p>
   ${pc.resources.map((r, i) => `<div class="ed-item"><button class="btn xs danger ed-del" data-act="ccDel" data-arr="resources" data-i="${i}">✕</button><div class="g2">
@@ -3697,7 +3726,7 @@ CCSEC.bio = pc => `<section class="sec fold" id="cc-bio">${ccSecHead('bio', '�
 function creatorHTML(pc) {
   const anchors = [['cc-basic', 'Основное'], ['cc-stats', 'Хар-ки'], ['cc-saves', 'Владения'], ['cc-attacks', 'Атаки'], ['cc-spells', 'Магия'], ['cc-cards', 'Черты'], ['cc-bio', 'Био']];
   return `<div class="page creator" data-model="cc">
-    <div class="note mb">📝 Все правки сразу сохраняются в персонажа «<b>${esc(pc.name)}</b>». Закончил — жми <b>«К листу»</b>.</div>
+    <div class="note mb row wrap"><span class="grow">📝 Все правки сразу сохраняются в персонажа «<b>${esc(pc.name)}</b>». Закончил — жми <b>«К листу»</b>.</span><button class="btn gold sm" data-act="charWizard">🧙 Мастер создания</button></div>
     <nav class="anchors">${anchors.map(([id, l]) => `<button data-act="anchor" data-to="${id}">${l}</button>`).join('')}</nav>
     <div class="sheet-cols">
       <div class="sheet-col"><div data-cc="basic">${CCSEC.basic(pc)}</div><div data-cc="stats">${CCSEC.stats(pc)}</div><div data-cc="def">${CCSEC.def(pc)}</div><div data-cc="saves">${CCSEC.saves(pc)}</div><div data-cc="skills">${CCSEC.skills(pc)}</div></div>
@@ -3759,11 +3788,11 @@ VIEWS.creator = {
   title: 'Редактор персонажа', icon: '📝', parent: 'sheet',
   render(el) {
     const pc = activePC();
-    if (!pc) { el.innerHTML = `<div class="page narrow"><div class="empty-hero frame"><div class="big">📝</div><p class="dim">Нет персонажа для редактирования.</p><button class="hexbtn pri mt" data-act="pcNew">✨ Создать персонажа</button></div></div>`; return; }
+    if (!pc) { el.innerHTML = `<div class="page narrow"><div class="empty-hero frame"><div class="big">📝</div><p class="dim">Нет персонажа для редактирования.</p><button class="hexbtn pri mt" data-act="charWizard">🧙 Мастер создания</button><button class="hexbtn mt" data-act="pcNew">✨ Пустой лист</button></div></div>`; return; }
     _ccOldMax = pc.hp.max;
     el.innerHTML = creatorHTML(pc); autosizeAll(el);
   },
-  actions() { return activePC() ? [{ icon: '✓', label: 'К листу', act: 'go', v: 'sheet', pri: true }] : []; },
+  actions() { return activePC() ? [{ icon: '🧙', label: 'Мастер создания', act: 'charWizard' }, { icon: '✓', label: 'К листу', act: 'go', v: 'sheet', pri: true }] : [{ icon: '🧙', label: 'Мастер создания', act: 'charWizard', pri: true }]; },
   leave() { savePC(); },
 };
 
@@ -5347,7 +5376,7 @@ const TTG_DEFAULT_PROXY = 'https://ttg-proxy.pavlukda.workers.dev'; // свой 
 const TTG_SITE = 'https://5e14.ttg.club';
 /** Открыть ссылку: в Telegram — встроенным браузером Telegram, иначе новой вкладкой */
 function openExternal(url) { if (TGX.on && TGX.v('6.1')) TGX.wa.openLink(url); else window.open(url, '_blank', 'noopener'); }
-ACT.ttgSite = () => openExternal(TTG_SITE);
+ACT.ttgSite = () => ttgView('/'); // встроенное окно (charwiz.js); «↗ В браузере» — там же
 /** «50 зм.», «2 см», «1.0 зм» → монеты {gp: 50}; диапазоны и формулы — null */
 function ttgPrice(it) {
   const v = (it.blocks || []).find(b => b.type === 'properties')?.rows?.find(r => r.key === 'Цена')?.val || '';
@@ -5372,8 +5401,13 @@ const TTG = {
     const key = path + JSON.stringify(body || '');
     if (TTG.cache.has(key)) return TTG.cache.get(key);
     if (!TTG.base()) throw new Error('не настроен прокси');
-    const r = await fetch(TTG.base() + path, { method: 'POST', headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined });
-    if (!r.ok) throw new Error(r.status === 404 ? 'не найдено' : 'ответ ' + r.status);
+    let r;
+    for (let a = 0; a < 3; a++) { // ttg.club ограничивает частоту запросов — при 429/5xx ждём и повторяем
+      r = await fetch(TTG.base() + path, { method: 'POST', headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined });
+      if (r.ok || (r.status !== 429 && r.status < 500)) break;
+      await new Promise(res => setTimeout(res, 700 * (a + 1)));
+    }
+    if (!r.ok) throw new Error(r.status === 404 ? 'не найдено' : r.status === 429 ? 'слишком много запросов, подожди минуту' : 'ответ ' + r.status);
     const d = await r.json(); TTG.cache.set(key, d); return d;
   },
   /** Поиск; сначала точное совпадение, потом «начинается с», потом остальное */
@@ -5391,7 +5425,7 @@ const TTG = {
     if (!h) return '';
     const s = String(h).replace(/<dice-roller\b([^>]*?)\/>/gi, (_, a) => (a.match(/formula="([^"]*)"/) || [])[1] || '')
       .replace(/<dice-roller\b[^>]*>([\s\S]*?)<\/dice-roller>/gi, '$1')
-      .replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|div|h\d|tr|ul|ol)>/gi, '\n\n').replace(/<li[^>]*>/gi, '• ').replace(/<\/li>/gi, '\n').replace(/<\/t[dh]>/gi, '  ');
+      .replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|div|h\d|tr|ul|ol|summary|details)>/gi, '\n\n').replace(/<li[^>]*>/gi, '• ').replace(/<\/li>/gi, '\n').replace(/<\/t[dh]>/gi, '  ');
     const t = new DOMParser().parseFromString(s, 'text/html').body.textContent || '';
     return t.replace(/ /g, ' ').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
   },
@@ -5538,7 +5572,7 @@ const TTG = {
       if (!st.q) { res.innerHTML = '<div class="muted small pad">Начни вводить название…</div>'; return; }
       const rows = st.rows.filter(x => !off.checked || official(x));
       res.innerHTML = rows.map(x => `<div class="pick-row"><span class="grow" style="min-width:0"><b>${esc(x.name?.rus || '')}</b> <small class="muted">${esc(x.name?.eng || '')}</small><br><small class="muted">${esc(meta(st.kind, x))} · <span class="${official(x) ? 'gold' : ''}">${esc(x.source?.shortName || '')}</span></small></span>
-        <span class="badge" data-cnt="${esc(x.url)}" hidden>0</span><button class="btn sm pri" data-ttg="${esc(x.url)}">＋</button></div>`).join('')
+        <span class="badge" data-cnt="${esc(x.url)}" hidden>0</span><button class="btn sm ghost" data-ttgv="${esc(x.url)}" title="Посмотреть на ttg.club">ℹ</button><button class="btn sm pri" data-ttg="${esc(x.url)}">＋</button></div>`).join('')
         || `<div class="muted small pad">Ничего не нашлось${off.checked && st.rows.length ? ' среди официальных — сними галочку «только офиц.»' : ''}</div>`;
     };
     const run = debounce(async () => {
@@ -5558,7 +5592,7 @@ const TTG = {
     };
     qi.addEventListener('input', run); off.addEventListener('change', () => { SETTINGS.ttgAll = !off.checked; saveSettings(); draw(); });
     $('#ttg-k', m)?.addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; st.kind = b.dataset.k; $$('#ttg-k button', m).forEach(x => x.classList.toggle('on', x === b)); run(); });
-    res.addEventListener('click', e => { const b = e.target.closest('[data-ttg]'); if (b) pick(b.dataset.ttg); });
+    res.addEventListener('click', e => { const v = e.target.closest('[data-ttgv]'); if (v) return ttgView(v.dataset.ttgv); const b = e.target.closest('[data-ttg]'); if (b) pick(b.dataset.ttg); });
     $('#ttg-parse', m).addEventListener('click', () => { const v = $('#ttg-paste', m).value.trim(); if (!v) return; onPick(TTG.parse(st.kind, v), st.kind); $('#ttg-paste', m).value = ''; });
     draw(); setTimeout(() => qi.focus(), 60);
   },
@@ -5586,6 +5620,652 @@ ACT.ttgProxyTest = async () => {
   ACT.ttgProxySave(); if (!TTG.base()) return;
   try { const r = await TTG.search('spell', 'огненный шар'); toast(r.length ? `✓ Работает: нашёлся «${r[0].name.rus}»` : '✓ Прокси отвечает', 'ok', 4000); }
   catch (e) { toast('⚠ Прокси не отвечает: ' + (e.message === 'Failed to fetch' ? 'нет связи / неверный адрес / не тот сайт в ALLOW' : e.message), 'err', 6000); }
+};
+
+// ── charwiz.js ──
+/* ═══════════════════════════════════════════════════════
+   МАСТЕР СОЗДАНИЯ ПЕРСОНАЖА: класс/подкласс, раса/подраса, предыстория, черта,
+   закупка очков / стандартный набор / 4к6, навыки, языки, особенности → готовый лист.
+   Данные — с ttg.club через прокси; чего нет или сайт недоступен — из встроенного справочника PHB.
+═══════════════════════════════════════════════════════ */
+
+/* ── Встроенный справочник (механика PHB/TCE — без текстов) ── */
+const LANGS = [['Общий', /общ/], ['Дварфский', /дварф/], ['Эльфийский', /эльф/], ['Великаний', /велика/], ['Гномий', /гном/], ['Гоблинский', /гоблин/],
+  ['Полуросликов', /полурослик/], ['Орочий', /орочь|орк/], ['Бездны', /бездн/], ['Глубинная речь', /глубинн/], ['Драконий', /дракон/], ['Инфернальный', /инферн/],
+  ['Небесный', /небесн/], ['Первичный', /первичн/], ['Подземный', /подземн/], ['Сильван', /сильван/], ['Воровской жаргон', /воровск/], ['Друидический', /друидическ/]];
+const SK = n => SKILLS.findIndex(s => s.label.toLowerCase() === String(n).trim().toLowerCase().replace('восприятие', 'внимательность'));
+const ALL_SK = SKILLS.map((_, i) => i);
+const CW_CLASSES = {
+  bard: { name: 'Бард', hd: 8, saves: ['dex', 'cha'], n: 3, skills: ALL_SK, caster: 'FULL', ab: 'cha', arch: 3 },
+  barbarian: { name: 'Варвар', hd: 12, saves: ['str', 'con'], n: 2, skills: ['Уход за животными', 'Атлетика', 'Запугивание', 'Природа', 'Внимательность', 'Выживание'], arch: 3 },
+  fighter: { name: 'Воин', hd: 10, saves: ['str', 'con'], n: 2, skills: ['Акробатика', 'Уход за животными', 'Атлетика', 'История', 'Проницательность', 'Запугивание', 'Внимательность', 'Выживание'], arch: 3 },
+  wizard: { name: 'Волшебник', hd: 6, saves: ['int', 'wis'], n: 2, skills: ['Магия', 'История', 'Проницательность', 'Анализ', 'Медицина', 'Религия'], caster: 'FULL', ab: 'int', arch: 2, prep: 'full' },
+  druid: { name: 'Друид', hd: 8, saves: ['int', 'wis'], n: 2, skills: ['Магия', 'Уход за животными', 'Проницательность', 'Медицина', 'Природа', 'Внимательность', 'Религия', 'Выживание'], caster: 'FULL', ab: 'wis', arch: 2, prep: 'full' },
+  cleric: { name: 'Жрец', hd: 8, saves: ['wis', 'cha'], n: 2, skills: ['История', 'Проницательность', 'Медицина', 'Убеждение', 'Религия'], caster: 'FULL', ab: 'wis', arch: 1, prep: 'full' },
+  artificer: { name: 'Изобретатель', hd: 8, saves: ['con', 'int'], n: 2, skills: ['Магия', 'История', 'Анализ', 'Медицина', 'Природа', 'Внимательность', 'Ловкость рук'], caster: 'HALF_UP', ab: 'int', arch: 3, prep: 'half' },
+  warlock: { name: 'Колдун', hd: 8, saves: ['wis', 'cha'], n: 2, skills: ['Магия', 'Обман', 'История', 'Запугивание', 'Анализ', 'Природа', 'Религия'], caster: 'PACT', ab: 'cha', arch: 1 },
+  monk: { name: 'Монах', hd: 8, saves: ['str', 'dex'], n: 2, skills: ['Акробатика', 'Атлетика', 'История', 'Проницательность', 'Религия', 'Скрытность'], arch: 3 },
+  paladin: { name: 'Паладин', hd: 10, saves: ['wis', 'cha'], n: 2, skills: ['Атлетика', 'Проницательность', 'Запугивание', 'Медицина', 'Убеждение', 'Религия'], caster: 'HALF', ab: 'cha', arch: 3, prep: 'half' },
+  rogue: { name: 'Плут', hd: 8, saves: ['dex', 'int'], n: 4, skills: ['Акробатика', 'Атлетика', 'Обман', 'Проницательность', 'Запугивание', 'Анализ', 'Внимательность', 'Выступление', 'Убеждение', 'Ловкость рук', 'Скрытность'], arch: 3 },
+  ranger: { name: 'Следопыт', hd: 10, saves: ['str', 'dex'], n: 3, skills: ['Уход за животными', 'Атлетика', 'Проницательность', 'Анализ', 'Природа', 'Внимательность', 'Скрытность', 'Выживание'], caster: 'HALF', ab: 'wis', arch: 3 },
+  sorcerer: { name: 'Чародей', hd: 6, saves: ['con', 'cha'], n: 2, skills: ['Магия', 'Обман', 'Проницательность', 'Запугивание', 'Убеждение', 'Религия'], caster: 'FULL', ab: 'cha', arch: 1 },
+};
+const CW_RACES = {
+  dwarf: { name: 'Дварф', speed: 25, bonus: { con: 2 }, langs: ['Общий', 'Дварфский'], dark: 60, subs: [{ name: 'Горный', bonus: { str: 2 } }, { name: 'Холмовой', bonus: { wis: 1 }, hpLvl: 1 }] },
+  elf: { name: 'Эльф', speed: 30, bonus: { dex: 2 }, langs: ['Общий', 'Эльфийский'], dark: 60, skills: ['Внимательность'], subs: [{ name: 'Высший', bonus: { int: 1 }, langExtra: 1 }, { name: 'Лесной', bonus: { wis: 1 }, speed: 35 }, { name: 'Тёмный (дроу)', bonus: { cha: 1 } }] },
+  halfling: { name: 'Полурослик', speed: 25, bonus: { dex: 2 }, langs: ['Общий', 'Полуросликов'], subs: [{ name: 'Легконогий', bonus: { cha: 1 } }, { name: 'Коренастый', bonus: { con: 1 } }] },
+  human: { name: 'Человек', speed: 30, bonus: { str: 1, dex: 1, con: 1, int: 1, wis: 1, cha: 1 }, langs: ['Общий'], langExtra: 1 },
+  dragonborn: { name: 'Драконорождённый', speed: 30, bonus: { str: 2, cha: 1 }, langs: ['Общий', 'Драконий'] },
+  gnome: { name: 'Гном', speed: 25, bonus: { int: 2 }, langs: ['Общий', 'Гномий'], dark: 60, subs: [{ name: 'Лесной', bonus: { dex: 1 } }, { name: 'Скальный', bonus: { con: 1 } }] },
+  half_elf: { name: 'Полуэльф', speed: 30, bonus: { cha: 2 }, free: 2, langs: ['Общий', 'Эльфийский'], langExtra: 1, skillExtra: 2, dark: 60 },
+  half_orc: { name: 'Полуорк', speed: 30, bonus: { str: 2, con: 1 }, langs: ['Общий', 'Орочий'], skills: ['Запугивание'], dark: 60 },
+  tiefling: { name: 'Тифлинг', speed: 30, bonus: { int: 1, cha: 2 }, langs: ['Общий', 'Инфернальный'], dark: 60 },
+};
+const CW_BGS = {
+  entertainer: { name: 'Артист', skills: ['Акробатика', 'Выступление'], gold: 15 }, urchin: { name: 'Беспризорник', skills: ['Ловкость рук', 'Скрытность'], gold: 10 },
+  noble: { name: 'Благородный', skills: ['История', 'Убеждение'], langExtra: 1, gold: 25 }, guild_artisan: { name: 'Гильдейский ремесленник', skills: ['Проницательность', 'Убеждение'], langExtra: 1, gold: 15 },
+  sailor: { name: 'Моряк', skills: ['Атлетика', 'Внимательность'], gold: 10 }, sage: { name: 'Мудрец', skills: ['Магия', 'История'], langExtra: 2, gold: 10 },
+  folk_hero: { name: 'Народный герой', skills: ['Уход за животными', 'Выживание'], gold: 10 }, hermit: { name: 'Отшельник', skills: ['Медицина', 'Религия'], langExtra: 1, gold: 5 },
+  criminal: { name: 'Преступник', skills: ['Обман', 'Скрытность'], gold: 15 }, acolyte: { name: 'Прислужник', skills: ['Проницательность', 'Религия'], langExtra: 2, gold: 15 },
+  soldier: { name: 'Солдат', skills: ['Атлетика', 'Запугивание'], gold: 10 }, outlander: { name: 'Чужеземец', skills: ['Атлетика', 'Выживание'], langExtra: 1, gold: 10 },
+  charlatan: { name: 'Шарлатан', skills: ['Обман', 'Ловкость рук'], gold: 15 },
+};
+const SLOTS_FULL = [[2], [3], [4, 2], [4, 3], [4, 3, 2], [4, 3, 3], [4, 3, 3, 1], [4, 3, 3, 2], [4, 3, 3, 3, 1], [4, 3, 3, 3, 2], [4, 3, 3, 3, 2, 1], [4, 3, 3, 3, 2, 1],
+  [4, 3, 3, 3, 2, 1, 1], [4, 3, 3, 3, 2, 1, 1], [4, 3, 3, 3, 2, 1, 1, 1], [4, 3, 3, 3, 2, 1, 1, 1], [4, 3, 3, 3, 2, 1, 1, 1, 1], [4, 3, 3, 3, 3, 1, 1, 1, 1], [4, 3, 3, 3, 3, 2, 1, 1, 1], [4, 3, 3, 3, 3, 2, 2, 1, 1]];
+/** Ячейки по типу заклинателя и уровню → { slots: {1: n…}, warlockLv: [] } */
+function cwSlots(caster, lvl) {
+  const full = l => l >= 1 ? Object.fromEntries(SLOTS_FULL[Math.min(l, 20) - 1].map((n, i) => [i + 1, n])) : {};
+  if (caster === 'FULL') return { slots: full(lvl), warlockLv: [] };
+  if (caster === 'HALF') return { slots: lvl >= 2 ? full(Math.ceil(lvl / 2)) : {}, warlockLv: [] };
+  if (caster === 'HALF_UP') return { slots: full(Math.ceil(lvl / 2)), warlockLv: [] };
+  if (caster === 'THIRD') return { slots: lvl >= 3 ? full(Math.ceil(lvl / 3)) : {}, warlockLv: [] };
+  if (caster === 'PACT') { const n = lvl >= 17 ? 4 : lvl >= 11 ? 3 : lvl >= 2 ? 2 : 1, sl = Math.min(5, Math.ceil(lvl / 2)); return { slots: { [sl]: n }, warlockLv: [sl] }; }
+  return { slots: {}, warlockLv: [] };
+}
+/** Классовые ресурсы по уровню (то, что не выразить ячейками) */
+function cwResources(slug, lvl, mods) {
+  const r = [], add = (name, type, max, rest) => { if (max > 0) r.push({ name, type, max, rest }); };
+  if (slug === 'barbarian') add('Ярость', 'rage', lvl >= 17 ? 6 : lvl >= 12 ? 5 : lvl >= 6 ? 4 : lvl >= 3 ? 3 : 2, 'long');
+  if (slug === 'monk' && lvl >= 2) add('Очки ци', 'ki', lvl, 'short');
+  if (slug === 'sorcerer' && lvl >= 2) add('Очки чародейства', 'sorcery', lvl, 'long');
+  if (slug === 'bard') add('Бардовское вдохновение', 'bardic', Math.max(1, mods.cha), lvl >= 5 ? 'short' : 'long');
+  if (slug === 'cleric' && lvl >= 2) add('Проводник божественности', 'channel_div', lvl >= 18 ? 3 : lvl >= 6 ? 2 : 1, 'short');
+  if (slug === 'paladin') { add('Руки исцелителя (HP)', 'lay_on_hands', 5 * lvl, 'long'); if (lvl >= 3) add('Проводник божественности', 'channel_div', 1, 'short'); }
+  if (slug === 'fighter') { add('Второе дыхание', 'custom', 1, 'short'); if (lvl >= 2) add('Всплеск действий', 'custom', lvl >= 17 ? 2 : 1, 'short'); }
+  if (slug === 'wizard') add('Магическое восстановление', 'arcane_rec', 1, 'long');
+  if (slug === 'druid' && lvl >= 2) add('Дикий облик', 'custom', 2, 'short');
+  return r;
+}
+const PB_COST = { 8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9 };
+const STD_ARRAY = [15, 14, 13, 12, 10, 8];
+const AB_KEY = { STRENGTH: 'str', DEXTERITY: 'dex', CONSTITUTION: 'con', INTELLIGENCE: 'int', WISDOM: 'wis', CHARISMA: 'cha' };
+const slugOf = url => String(url || '').split('/').filter(Boolean).pop() || '';
+
+/* ── Разбор текста ttg ── */
+/** Языки из текста: { langs: [...], extra: n } — «на Общем и Дварфском», «два на ваш выбор» */
+function cwParseLangs(text) {
+  const t = String(text || '').toLowerCase(), first = t.split(/\.\s/)[0];
+  const langs = LANGS.filter(([, re]) => re.test(first)).map(([n]) => n);
+  const extra = /на\s+ваш\s+выбор|по\s+вашему\s+выбору|любых?\s+язык/.test(t) ? (/(^|\s)(два|двух)\s/.test(t) ? 2 : /(^|\s)(три|трёх)\s/.test(t) ? 3 : 1) : 0;
+  return { langs, extra };
+}
+/** Навыки из особенностей расы: «Вы владеете навыком Внимательность», «двумя навыками на ваш выбор» */
+function cwParseSkills(features) {
+  const out = { skills: [], extra: 0 };
+  (features || []).forEach(f => {
+    const t = TTG.txt(f.description || f.text || '');
+    if (!/владе[а-яё]*\s+([а-яё]+\s+)?навык/i.test(t)) return; // \w в JS не ловит кириллицу
+    if (/на\s+ваш\s+выбор/i.test(t)) { out.extra += /двум|два/i.test(t) ? 2 : 1; return; }
+    SKILLS.forEach((s, i) => { if (t.toLowerCase().includes(s.label.toLowerCase()) && !out.skills.includes(i)) out.skills.push(i); });
+  });
+  return out;
+}
+
+/* ── Состояние мастера ── */
+let CW = null;
+function cwNew() {
+  const pc = activePC();
+  return { step: 0, src: 'local', loading: false, note: '', lists: { cls: [], race: [], bg: [], feat: [] }, official: true,
+    name: pc?.name && pc.name !== 'Новый персонаж' ? pc.name : '', player: pc?.player || '', level: pc?.level || 1, alignment: pc?.alignment || ALIGNMENTS[4],
+    cls: null, clsD: null, sub: null, subD: null, race: null, raceD: null, subrace: -1, bg: null, bgD: null, feat: null, featD: null, featAb: '',
+    method: 'buy', base: { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 }, assign: {}, rolls: [], bonus: null,
+    pick: new Set(), pickFree: new Set(), langs: new Set(), pers: {}, target: pc ? 'cur' : 'new', eq: { pick: {}, generic: {}, gold: false, goldAmt: 0 } };
+}
+/* Списки с ttg (если прокси знает новые разделы), иначе — встроенные */
+async function cwLoadLists() {
+  CW.loading = true; cwDraw();
+  const L = async (path, extra = {}) => TTG.post(path, { page: 0, size: 300, search: { value: '', exact: false }, ...extra });
+  try {
+    if (!TTG.base()) throw new Error('нет прокси');
+    const [cls, race, bg, feat] = await Promise.all([L('/api/v1/classes'), L('/api/v1/races'), L('/api/v1/backgrounds'), L('/api/v1/feats')]);
+    Object.assign(CW.lists, { cls, race, bg, feat }); CW.src = 'ttg'; CW.note = '';
+  } catch (e) {
+    CW.src = 'local'; CW.note = `ttg.club недоступен (${e.message === 'Failed to fetch' ? 'нет связи' : e.message}) — использую встроенный справочник Книги игрока. Подклассы, особенности и черты будут без текста.`;
+    CW.lists = { cls: Object.entries(CW_CLASSES).map(([s, c]) => ({ name: { rus: c.name }, url: '/classes/' + s, local: true })),
+      race: Object.entries(CW_RACES).map(([s, r]) => ({ name: { rus: r.name }, url: '/races/' + s, local: true })),
+      bg: Object.entries(CW_BGS).map(([s, b]) => ({ name: { rus: b.name }, url: '/backgrounds/' + s, local: true })), feat: [] };
+  }
+  CW.loading = false; cwDraw();
+}
+const cwOff = x => x.local || x.source?.group?.shortName === 'Basic';
+const cwList = k => CW.lists[k].filter(x => (!CW.official || cwOff(x)) && !(k === 'cls' && (x.sidekick || /^Напарник/i.test(x.name?.rus || '')))).sort((a, b) => (a.name?.rus || '').localeCompare(b.name?.rus || '', 'ru'));
+async function cwDetail(kind, url) {
+  if (CW.src !== 'ttg') return null;
+  try { return await TTG.post('/api/v1' + url, kind === 'race' ? {} : undefined); } catch (e) { toast('⚠ ttg.club: ' + e.message, 'err'); return null; }
+}
+
+/* ── Сводка выбранного (ttg + встроенное) ── */
+function cwClass() {
+  if (!CW.cls) return null;
+  const slug = slugOf(CW.cls.url), loc = CW_CLASSES[slug] || {}, d = CW.subD || CW.clsD, t = d?.traits || {};
+  const saves = t.savingThrows ? STATS.filter(s => t.savingThrows.toLowerCase().includes(STAT_NAMES[s].toLowerCase())) : loc.saves || [];
+  const skills = t.availableSkills ? t.availableSkills.map(SK).filter(i => i >= 0) : (loc.skills || []).map(x => typeof x === 'number' ? x : SK(x));
+  let caster = CW.clsD?.spellcasterType || loc.caster || 'NONE';
+  const subSlug = slugOf(CW.sub?.url);
+  if (caster === 'NONE' && /eldritch_knight|arcane_trickster/.test(subSlug)) caster = 'THIRD';
+  if (slug === 'warlock') caster = 'PACT'; if (slug === 'artificer') caster = 'HALF_UP';
+  const ab = AB_KEY[CW.clsD?.spellAbility] || loc.ab || (caster === 'THIRD' ? 'int' : '');
+  const feats = (t.features || []).filter(f => int(f.level, 1) <= CW.level).map(f => ({ name: f.name, level: int(f.level, 1), text: TTG.txt(f.description), sub: !!f.archetypeFeature }));
+  return { slug, name: CW.cls.name.rus, hd: int(t.diceHp, loc.hd || 8), saves: saves.length ? saves : loc.saves || [], skills: skills.length ? skills : (loc.skills || []).map(x => typeof x === 'number' ? x : SK(x)),
+    n: int(t.skillAvailableCount, loc.n || 2), caster, ab, prep: loc.prep || null, arch: int(CW.clsD?.enabledArhitypeLevel, loc.arch || 3),
+    archs: (CW.clsD?.archetypes || []).filter(a => !CW.official || a.source?.group?.shortName === 'Basic'), archName: CW.clsD?.archetypeName || 'Подкласс',
+    feats, armor: t.armor || '', weapon: t.weapon || '', tools: t.tools || '', equipment: TTG.txt(t.equipment || '') };
+}
+function cwRace() {
+  if (!CW.race) return null;
+  const slug = slugOf(CW.race.url).replace(/-/g, '_'), loc = CW_RACES[slug] || {}, d = CW.raceD, sub = CW.subrace >= 0 ? (d ? d.subraces?.[CW.subrace] : loc.subs?.[CW.subrace]) : null;
+  const abil = list => Object.fromEntries((list || []).filter(a => AB_KEY[a.key]).map(a => [AB_KEY[a.key], int(a.value)]));
+  let bonus = d ? abil(sub?.abilities?.length ? sub.abilities : d.abilities) : { ...(loc.bonus || {}), ...(sub?.bonus || {}) };
+  const feats = d ? [...(d.features || []), ...((sub?.features || []).filter(f => !/увеличение характеристик/i.test(f.name)))] : [];
+  const langF = feats.find(f => /^языки$/i.test(f.name)), pl = langF ? cwParseLangs(TTG.txt(langF.description)) : { langs: loc.langs || ['Общий'], extra: (loc.langExtra || 0) + (sub?.langExtra || 0) };
+  const ps = d ? cwParseSkills(feats) : { skills: (loc.skills || []).map(SK), extra: loc.skillExtra || 0 };
+  const speed = int(sub?.speed?.[0]?.value ?? sub?.speed ?? d?.speed?.[0]?.value ?? loc.speed, 30);
+  // «…а значения двух других характеристик на ваш выбор увеличиваются на 1» → свободные +1
+  // (только первый абзац: дальше у людей идёт «Альтернативные особенности» с другими правилами)
+  const asiT = TTG.txt(feats.filter(f => /увеличение характеристик/i.test(f.name)).map(f => f.description).join(' ')).toLowerCase().split('\n\n')[0];
+  const free = Object.keys(bonus).length >= 6 ? 0 : /на\s+ваш\s+выбор/.test(asiT) ? (/(двух|двум|две|два)\s+(других\s+|разных\s+)?характеристик/.test(asiT) ? 2 : /(трёх|трем|три)\s+(других\s+|разных\s+)?характеристик/.test(asiT) ? 3 : 1) : loc.free || 0;
+  const skipF = /^(увеличение характеристик|возраст|мировоззрение|размер|скорость|языки)$/i;
+  return { slug, name: CW.race.name.rus + (sub ? ` (${(sub.name?.rus || sub.name).replace(/^.*\(|\)$/g, '')})` : ''), subs: (d ? d.subraces || [] : loc.subs || []).map(s => s.name?.rus || s.name),
+    bonus, free, speed, dark: int(d?.darkvision ?? loc.dark), langs: pl.langs, langExtra: pl.extra, skills: ps.skills, skillExtra: ps.extra,
+    feats: feats.filter(f => !skipF.test(f.name.trim())).map(f => ({ name: f.name, text: TTG.txt(f.description) })), hpLvl: sub?.hpLvl || (/холмов/i.test(sub?.name?.rus || '') ? 1 : 0) };
+}
+function cwBg() {
+  if (!CW.bg) return null;
+  const slug = slugOf(CW.bg.url), loc = CW_BGS[slug] || {}, d = CW.bgD;
+  const pl = d ? cwParseLangs(d.language || '') : { langs: [], extra: loc.langExtra || 0 };
+  return { name: CW.bg.name.rus, skills: d ? (d.skills || []).map(SK).filter(i => i >= 0) : (loc.skills || []).map(SK), langs: pl.langs, langExtra: pl.extra,
+    feature: d?.skillName || '', featureText: TTG.txt(d?.skillDescription || ''), gold: int(d?.startGold, loc.gold || 0),
+    // ttg режет список по запятым, в том числе внутри скобок: «трофей (кинжал, сломанный клинок…)» — склеиваем обратно
+    equipment: (d?.equipments || []).map(e => TTG.txt(e)).filter(Boolean).reduce((a, s) => { const last = a[a.length - 1];
+      if (last && (last.match(/\(/g) || []).length > (last.match(/\)/g) || []).length) a[a.length - 1] = last + ', ' + s; else a.push(s); return a; }, []),
+    tables: (d?.personalizationTables || []).map(t => ({ name: t.name, rows: (t.tbody || []).map(r => TTG.txt(r[r.length - 1])) })).filter(t => t.rows.length) };
+}
+/* ── Характеристики ── */
+function cwBase() {
+  if (CW.method === 'buy' || CW.method === 'manual') return { ...CW.base };
+  const vals = CW.method === 'std' ? STD_ARRAY : CW.rolls;
+  return Object.fromEntries(STATS.map(s => [s, CW.assign[s] != null ? vals[CW.assign[s]] ?? 8 : 8]));
+}
+function cwFinal() {
+  const b = cwBase(), bon = CW.bonus || {}, f = CW.featAb ? { [CW.featAb]: 1 } : {};
+  return Object.fromEntries(STATS.map(s => [s, clamp(int(b[s], 8) + int(bon[s]) + int(f[s]), 1, 30)]));
+}
+const cwPBLeft = () => 27 - STATS.reduce((n, s) => n + (PB_COST[CW.base[s]] ?? 0), 0);
+function cwResetBonus() { const r = cwRace(); CW.bonus = r ? { ...r.bonus } : {}; }
+
+/* ── Отрисовка ── */
+const CW_STEPS = ['Основа', 'Класс', 'Раса', 'Предыстория', 'Снаряжение', 'Хар-ки', 'Навыки', 'Итог'];
+const cwInfo = url => url && CW.src === 'ttg' ? `<button class="btn xs ghost" data-wz="view" data-u="${esc(url)}" title="Открыть на ttg.club">ℹ ttg</button>` : '';
+const cwSel = (wz, list, cur, ph) => `<select data-wz="${wz}" class="grow"><option value="">${ph}</option>${list.map((x, i) => `<option value="${i}" ${cur && cur.url === x.url ? 'selected' : ''}>${esc(x.name?.rus || '')}${x.source && x.source.shortName && !x.local ? ' · ' + esc(x.source.shortName) : ''}</option>`).join('')}</select>`;
+function cwBody() {
+  if (CW.loading) return '<div class="muted pad center">⏳ Загружаю справочники ttg.club…</div>';
+  const c = cwClass(), r = cwRace(), b = cwBg(), st = CW.step;
+  const note = CW.note ? `<div class="note warn small mb">${esc(CW.note)}</div>` : '';
+  if (st === 0) return `${note}<div class="g2"><div class="fld"><label>Имя персонажа</label><input data-wzin="name" value="${esc(CW.name)}" placeholder="Лиарис"></div><div class="fld"><label>Игрок</label><input data-wzin="player" value="${esc(CW.player)}"></div>
+    <div class="fld"><label>Уровень</label><input type="number" min="1" max="20" data-wzin="level" value="${CW.level}"></div><div class="fld"><label>Мировоззрение</label><select data-wzin="alignment">${ALIGNMENTS.map(a => `<option ${a === CW.alignment ? 'selected' : ''}>${a}</option>`).join('')}</select></div></div>
+    ${CW.src === 'ttg' ? `<label class="chk mt"><input type="checkbox" data-wzin="official" ${CW.official ? 'checked' : ''}> Только официальные книги (без стороннего и хоумбрю)</label>` : ''}
+    <p class="muted small mt">Дальше по шагам: класс → раса → предыстория → характеристики → навыки и языки → итог. Шаги можно проходить в любом порядке.</p>`;
+  if (st === 1) return `${note}<div class="row">${cwSel('cls', cwList('cls'), CW.cls, '— выбери класс —')}${cwInfo(CW.cls?.url)}</div>
+    ${c ? `<div class="well pad mt small"><b>Кость хитов:</b> d${c.hd} · <b>Спасброски:</b> ${c.saves.map(s => STAT_NAMES[s]).join(', ') || '—'} · <b>Навыки:</b> ${c.n} из ${c.skills.length}
+      ${c.caster !== 'NONE' ? ` · <b>Заклинатель</b> (${STAT_NAMES[c.ab] || '?'})` : ''}${c.armor ? `<br><b>Доспехи:</b> ${esc(c.armor)} · <b>Оружие:</b> ${esc(c.weapon)}` : ''}</div>
+    ${c.archs.length ? `<div class="row mt"><div class="fld grow"><label>${esc(c.archName)} (с ${c.arch} ур.)${CW.level < c.arch ? ' — откроется позже, можно выбрать заранее' : ''}</label>${cwSel('sub', c.archs, CW.sub, '— не выбран —')}</div>${cwInfo(CW.sub?.url)}</div>` : ''}
+    ${c.feats.length ? `<div class="lbl mt">Умения до ${CW.level} ур. (${c.feats.length}) — попадут в карточку «Умения класса»</div><div class="chips mt">${c.feats.map(f => `<span class="chip ${f.sub ? 'gold' : ''}">${f.level} · ${esc(f.name)}</span>`).join('')}</div>` : ''}` : ''}`;
+  if (st === 2) return `${note}<div class="row">${cwSel('race', cwList('race'), CW.race, '— выбери расу —')}${cwInfo(CW.race?.url)}</div>
+    ${r ? `${r.subs.length ? `<div class="fld mt"><label>Подраса</label><select data-wz="subrace"><option value="-1">— нет —</option>${r.subs.map((s, i) => `<option value="${i}" ${CW.subrace === i ? 'selected' : ''}>${esc(s)}</option>`).join('')}</select></div>` : ''}
+      <div class="well pad mt small"><b>Бонусы:</b> ${STATS.filter(s => r.bonus[s]).map(s => `${STAT_SHORT[s]} ${sgn(r.bonus[s])}`).join(', ') || '—'}${r.free ? ` + ещё ${r.free}× «+1 на выбор» (распредели на шаге «Хар-ки»)` : ''}
+        · <b>Скорость:</b> ${r.speed} фт.${r.dark ? ` · <b>Тёмное зрение:</b> ${r.dark} фт.` : ''}<br><b>Языки:</b> ${r.langs.join(', ') || '—'}${r.langExtra ? ` + ${r.langExtra} на выбор` : ''}
+        ${r.skills.length || r.skillExtra ? ` · <b>Навыки:</b> ${r.skills.map(i => SKILLS[i].label).join(', ')}${r.skillExtra ? `${r.skills.length ? ' + ' : ''}${r.skillExtra} на выбор` : ''}` : ''}</div>
+      ${r.feats.length ? `<div class="lbl mt">Особенности (${r.feats.length})</div><div class="chips mt">${r.feats.map(f => `<span class="chip">${esc(f.name)}</span>`).join('')}</div>` : ''}` : ''}`;
+  if (st === 3) return `${note}<div class="row">${cwSel('bg', cwList('bg'), CW.bg, '— выбери предысторию —')}${cwInfo(CW.bg?.url)}</div>
+    ${b ? `<div class="well pad mt small"><b>Навыки:</b> ${b.skills.map(i => SKILLS[i].label).join(', ') || '—'} · <b>Языки:</b> ${[...b.langs, b.langExtra ? `${b.langExtra} на выбор` : ''].filter(Boolean).join(', ') || '—'}${b.gold ? ` · <b>Золото:</b> ${b.gold} зм` : ''}
+      ${b.feature ? `<br><b>Особенность:</b> ${esc(b.feature)}` : ''}</div>
+      ${b.tables.map((t, i) => `<div class="fld mt"><label>${esc(t.name)}</label><div class="row"><select data-wz="pers" data-i="${i}" class="grow"><option value="">—</option>${t.rows.map((x, j) => `<option value="${j}" ${CW.pers[t.name] === x ? 'selected' : ''}>${j + 1}. ${esc(x.slice(0, 110))}</option>`).join('')}</select><button class="btn icon" data-wz="persRoll" data-i="${i}" title="Бросить">🎲</button></div></div>`).join('')}` : ''}
+    ${CW.lists.feat.length ? `<div class="orn left mt2">Черта (необязательно)</div><div class="row">${cwSel('feat', cwList('feat'), CW.feat, '— без черты —')}${cwInfo(CW.feat?.url)}</div>
+      ${CW.featD?.abilities?.length ? `<div class="fld mt"><label>+1 к характеристике от черты</label><select data-wz="featAb"><option value="">—</option>${CW.featD.abilities.filter(a => AB_KEY[a]).map(a => `<option value="${AB_KEY[a]}" ${CW.featAb === AB_KEY[a] ? 'selected' : ''}>${STAT_NAMES[AB_KEY[a]]}</option>`).join('')}</select></div>` : ''}` : ''}`;
+  if (st === 4) { if (!_weaponsList && CW.src === 'ttg') eqWeapons().then(cwDraw).catch(() => { }); return note + cwEqBody(); }
+  if (st === 5) {
+    if (!CW.bonus) cwResetBonus();
+    const fin = cwFinal(), vals = CW.method === 'std' ? STD_ARRAY : CW.rolls, used = Object.values(CW.assign);
+    const head = `<div class="seg wrap mb">${[['buy', 'Закупка очков'], ['std', 'Стандартный набор'], ['roll', 'Бросок 4к6'], ['manual', 'Вручную']].map(([k, l]) => `<button data-wz="method" data-v="${k}" class="${CW.method === k ? 'on' : ''}">${l}</button>`).join('')}</div>`;
+    const top = CW.method === 'buy' ? `<div class="mb">Осталось очков: <b class="${cwPBLeft() < 0 ? 'c-red' : 'gold'}">${cwPBLeft()}</b> из 27 · значения 8–15</div>`
+      : CW.method === 'roll' ? `<div class="row mb"><button class="btn pri" data-wz="roll">🎲 Бросить 4к6 ×6</button><span class="muted small">${CW.rolls.length ? 'Выпало: ' + CW.rolls.join(', ') : 'отбрасывается меньший куб'}</span></div>` : CW.method === 'std' ? '<div class="muted small mb">Распредели 15, 14, 13, 12, 10, 8 — каждое один раз.</div>' : '';
+    const cell = s => CW.method === 'buy' ? `<div class="stepper"><button data-wz="pb" data-s="${s}" data-d="-1">−</button><b>${CW.base[s]}</b><button data-wz="pb" data-s="${s}" data-d="1">+</button></div>`
+      : CW.method === 'manual' ? `<input type="number" min="3" max="20" data-wz="man" data-s="${s}" value="${CW.base[s]}" style="width:70px">`
+      : `<select data-wz="asg" data-s="${s}"><option value="">—</option>${vals.map((v, i) => `<option value="${i}" ${CW.assign[s] === i ? 'selected' : ''} ${used.includes(i) && CW.assign[s] !== i ? 'disabled' : ''}>${v}</option>`).join('')}</select>`;
+    return `${head}${top}<table class="cw-ab"><tr><th></th><th>База</th><th>Бонус расы</th><th>Итог</th></tr>
+      ${STATS.map(s => `<tr><td><b>${STAT_SHORT[s]}</b> <small class="muted">${STAT_NAMES[s]}</small></td><td>${cell(s)}</td>
+        <td><input type="number" min="-2" max="4" data-wz="bon" data-s="${s}" value="${int(CW.bonus[s])}" style="width:60px"></td><td><b class="gold">${fin[s]}</b> <small>${sgn(abMod(fin[s]))}</small>${CW.featAb === s ? ' <small class="muted">(+1 черта)</small>' : ''}</td></tr>`).join('')}</table>
+      <div class="row mt"><button class="btn xs ghost" data-wz="resetBonus">↺ Бонусы по расе</button>${r?.free ? `<span class="muted small">Раса даёт ещё ${r.free}× +1 на выбор — допиши в столбце «Бонус»</span>` : ''}</div>`;
+  }
+  if (st === 6) {
+    const fixed = new Set([...(b?.skills || []), ...(r?.skills || [])]), cls = c?.skills || [], n = c?.n || 0, free = r?.skillExtra || 0;
+    const langsFixed = new Set([...(r?.langs || []), ...(b?.langs || [])]), langExtra = (r?.langExtra || 0) + (b?.langExtra || 0);
+    const box = (set, i, wz, max) => `<label class="chk ${fixed.has(i) ? 'muted' : ''}"><input type="checkbox" data-wz="${wz}" data-i="${i}" ${fixed.has(i) || set.has(i) ? 'checked' : ''} ${fixed.has(i) || (!set.has(i) && set.size >= max) ? 'disabled' : ''}> ${SKILLS[i].label}</label>`;
+    return `${c ? `<div class="lbl">Навыки класса — выбери ${n} (выбрано ${[...CW.pick].length})</div><div class="cw-grid">${cls.map(i => box(CW.pick, i, 'pick', n)).join('')}</div>` : '<div class="muted">Сначала выбери класс.</div>'}
+      ${free ? `<div class="lbl mt">Навыки от расы на выбор — ${free} (выбрано ${CW.pickFree.size})</div><div class="cw-grid">${ALL_SK.filter(i => !cls.includes(i) || !CW.pick.has(i)).map(i => box(CW.pickFree, i, 'pickFree', free)).join('')}</div>` : ''}
+      ${fixed.size ? `<div class="muted small mt">Уже есть от расы/предыстории: ${[...fixed].map(i => SKILLS[i].label).join(', ')}</div>` : ''}
+      <div class="lbl mt2">Языки: ${[...langsFixed].join(', ') || '—'}${langExtra ? ` · выбери ещё ${langExtra} (выбрано ${CW.langs.size})` : ''}</div>
+      ${langExtra ? `<div class="cw-grid">${LANGS.map(([l]) => l).filter(l => !langsFixed.has(l)).map(l => `<label class="chk"><input type="checkbox" data-wz="lang" data-l="${esc(l)}" ${CW.langs.has(l) ? 'checked' : ''} ${!CW.langs.has(l) && CW.langs.size >= langExtra ? 'disabled' : ''}> ${l}</label>`).join('')}</div>` : ''}`;
+  }
+  const P = cwPreview();
+  return `${P.warn.length ? `<div class="note warn small mb">${P.warn.map(esc).join('<br>')}</div>` : ''}
+    <div class="well pad"><b class="gold">${esc(P.pc.name)}</b> · ${esc([P.pc.race, P.pc.cls + (P.pc.subclass ? ' (' + P.pc.subclass + ')' : ''), P.pc.level + ' ур.'].filter(Boolean).join(' · '))}${P.pc.background ? ' · ' + esc(P.pc.background) : ''}
+      <div class="cw-sum mt">${STATS.map(s => `<span><small>${STAT_SHORT[s]}</small><b>${P.pc.stats[s]}</b><i>${sgn(abMod(P.pc.stats[s]))}</i></span>`).join('')}</div>
+      <div class="small mt">❤ <b>${P.pc.hp.max}</b> HP (d${P.c?.hd || '?'}) · 🛡 КБ <b>${P.pc.ac}</b> (без доспехов) · 👣 ${P.pc.speed} фт. · Спасброски: ${P.pc.saveProfs.map(s => STAT_SHORT[s]).join(', ') || '—'}</div>
+      <div class="small mt">Навыки: ${P.pc.skillProfs.map(i => SKILLS[i].label).join(', ') || '—'}</div>
+      ${P.pc.hasSpells ? `<div class="small mt">Ячейки: ${Object.entries(P.pc.slots).filter(([, n]) => n).map(([l, n]) => `${l}-й×${n}`).join(', ') || 'пока нет'}${P.pc.warlockLv.length ? ' (колдовские)' : ''} · хар-ка ${STAT_SHORT[P.pc.spellAbility]}</div>` : ''}
+      ${P.pc.resources.length ? `<div class="small mt">Ресурсы: ${P.pc.resources.map(x => `${x.name} ${x.max}`).join(', ')}</div>` : ''}
+      <div class="small mt">Карточки: ${P.pc.cards.map(x => esc(x.title)).join(', ')}${P.items.length ? ` · в рюкзак: ${P.items.length} вещ.` : ''}${P.pc.coins.gp ? ` · ${P.pc.coins.gp} зм` : ''}</div></div>
+    <div class="seg wide mt">${activePC() ? `<button data-wz="target" data-v="cur" class="${CW.target === 'cur' ? 'on' : ''}">Заполнить «${esc(activePC().name)}»</button>` : ''}<button data-wz="target" data-v="new" class="${CW.target === 'new' ? 'on' : ''}">Новый персонаж</button></div>
+    <p class="muted tiny mt">${CW.target === 'cur' ? 'Перезапишутся основа, характеристики, владения, хиты, ячейки, ресурсы и карточки с теми же названиями. Инвентарь, заклинания, атаки и заметки останутся.' : 'Будет создан новый персонаж.'} КБ посчитан без доспехов — надень броню в редакторе.</p>`;
+}
+function cwDraw() {
+  const m = $('#cw-modal'); if (!m) return;
+  $('#cw-steps', m).innerHTML = CW_STEPS.map((s, i) => `<button data-wz="step" data-v="${i}" class="${CW.step === i ? 'on' : ''}">${i + 1}. ${s}</button>`).join('');
+  $('#cw-body', m).innerHTML = cwBody();
+  $('#cw-prev', m).disabled = CW.step === 0;
+  $('#cw-next', m).textContent = CW.step === CW_STEPS.length - 1 ? '✓ Создать персонажа' : 'Далее ›';
+}
+
+/* ── Сборка персонажа ── */
+function cwPreview() {
+  const c = cwClass(), r = cwRace(), b = cwBg(), stats = cwFinal(), lvl = clamp(int(CW.level, 1), 1, 20), warn = [];
+  const mods = Object.fromEntries(STATS.map(s => [s, abMod(stats[s])]));
+  if (!c) warn.push('Не выбран класс'); if (!r) warn.push('Не выбрана раса'); if (!b) warn.push('Не выбрана предыстория');
+  if (CW.method === 'buy' && cwPBLeft() < 0) warn.push(`Закупка очков: перерасход ${-cwPBLeft()}`);
+  if ((CW.method === 'std' || CW.method === 'roll') && Object.keys(CW.assign).length < 6) warn.push('Распредели значения на все 6 характеристик');
+  if (c && CW.pick.size < c.n) warn.push(`Выбрано навыков класса ${CW.pick.size} из ${c.n}`);
+  if (c && CW.clsD?.traits?.equipment && !CW.eq.gold) { const g = eqParse(CW.clsD.traits.equipment).groups;
+    const miss = g.filter((x, i) => x.opts.length > 1 && CW.eq.pick[i] == null).length; if (miss) warn.push(`Снаряжение: не выбрано наборов — ${miss} (возьмётся вариант «а»)`); }
+  if (CW.eq.gold && !CW.eq.goldAmt) warn.push('Снаряжение: золото вместо набора не брошено');
+  const hd = c?.hd || 8, hp = Math.max(1, hd + mods.con) + (lvl - 1) * Math.max(1, Math.floor(hd / 2) + 1 + mods.con) + (r?.hpLvl || 0) * lvl;
+  const ac = 10 + mods.dex + (c?.slug === 'barbarian' ? mods.con : c?.slug === 'monk' ? mods.wis : 0);
+  const sp = c ? cwSlots(c.caster, lvl) : { slots: {}, warlockLv: [] };
+  const langs = [...new Set([...(r?.langs || []), ...(b?.langs || []), ...CW.langs])];
+  const card = (title, color, shape, content) => content ? { title, color, shape, content, collapsed: true, pin: null, pinCollapsed: false } : null;
+  const prof = [c?.armor && `Доспехи: ${c.armor}`, c?.weapon && `Оружие: ${c.weapon}`, c?.tools && c.tools !== 'Нет' && `Инструменты: ${c.tools}`].filter(Boolean).join('\n');
+  const featTxt = CW.featD ? `${CW.featD.name?.rus || CW.feat?.name?.rus}${CW.featD.requirements && CW.featD.requirements !== 'Нет' ? ` (требование: ${CW.featD.requirements})` : ''}\n${TTG.txt(CW.featD.description)}` : (CW.feat ? CW.feat.name.rus : '');
+  const pc = {
+    name: CW.name.trim() || 'Новый персонаж', player: CW.player, level: lvl, alignment: CW.alignment,
+    cls: c?.name || '', subclass: CW.sub?.name?.rus || '', race: r?.name || '', background: b?.name || '',
+    stats, saveProfs: c?.saves || [], skillProfs: [...new Set([...(b?.skills || []), ...(r?.skills || []), ...CW.pick, ...CW.pickFree])],
+    hp: { cur: hp, max: hp, temp: 0 }, hitDice: `d${hd}`, hdUsed: 0, ac, speed: r?.speed || 30,
+    hasSpells: !!c && c.caster !== 'NONE', spellAbility: c?.ab || 'int', spellPrep: !!c?.prep, prepFormula: c?.prep === 'half' ? 'half' : 'full',
+    slots: Object.fromEntries(Array.from({ length: 9 }, (_, i) => [i + 1, int(sp.slots[i + 1])])), warlockLv: sp.warlockLv,
+    resources: c ? cwResources(c.slug, lvl, mods) : [],
+    cards: [
+      card('Умения класса', '#3a7acc', '★', (c?.feats || []).map(f => `${f.level} ур. · ${f.name}${f.sub ? ' (подкласс)' : ''}\n${f.text}`).join('\n\n')),
+      card('Расовые особенности', '#3aaa5a', '◆', [r?.dark && `Тёмное зрение ${r.dark} фт.`, ...(r?.feats || []).map(f => `${f.name}\n${f.text}`)].filter(Boolean).join('\n\n')),
+      card('Языки', '#3aaa5a', '◆', langs.join(', ')),
+      card('Владения', '#2a9988', '■', prof),
+      card('Предыстория', '#e8a020', '■', b ? [`${b.name}${b.feature ? ' — ' + b.feature : ''}`, b.featureText].filter(Boolean).join('\n') : ''),
+      card('Черта', '#8844cc', '⚡', featTxt),
+      card('Стартовое снаряжение класса', '#e8a020', '■', c?.equipment || ''),
+    ].filter(Boolean),
+    coins: { pp: 0, gp: b?.gold || 0, ep: 0, sp: 0, cp: 0 },
+    bio: { personality: CW.pers['Черта характера'] || '', ideals: CW.pers['Идеал'] || '', bonds: CW.pers['Привязанность'] || '', flaws: CW.pers['Слабость'] || '' },
+    // выборы — для повышения уровня и заклинаний класса потом
+    build: c ? { slug: c.slug, cls: CW.cls.url, sub: CW.sub?.url || '', race: CW.race?.url || '', subrace: CW.subrace, bg: CW.bg?.url || '', caster: c.caster, ab: c.ab,
+      arch: c.arch, weapon: c.weapon || null, armor: c.armor || '', hpLvl: r?.hpLvl || 0 } : undefined,
+  };
+  if (CW.eq.gold) pc.coins.gp += int(CW.eq.goldAmt);
+  return { pc, c, items: (b?.equipment || []).map(n => n.replace(/\s+/g, ' ').trim()).filter(n => n.length < 80), warn };
+}
+async function cwApply() {
+  const P = cwPreview();
+  if (P.warn.length && !await confirmBox('Не всё заполнено:\n• ' + P.warn.join('\n• ') + '\n\nВсё равно создать?', { ok: 'Создать' })) return;
+  let pc;
+  if (CW.target === 'cur' && activePC()) {
+    pc = activePC();
+    const keep = pc.cards.filter(x => !P.pc.cards.some(n => n.title === x.title));
+    Object.assign(pc, P.pc, { cards: [...keep, ...P.pc.cards], bio: { ...pc.bio, ...Object.fromEntries(Object.entries(P.pc.bio).filter(([, v]) => v)) },
+      coins: { ...pc.coins, gp: int(pc.coins.gp) + int(P.pc.coins.gp) }, usedSlots: {}, usedRes: {}, ui: { ...pc.ui, pips: {} } });
+    pc = normPC(pc);
+  } else {
+    pc = normPC({ ...newPC(P.pc.name), ...P.pc, id: uid('pc') });
+  }
+  P.items.forEach(n => invAdd(pc, { name: n.charAt(0).toUpperCase() + n.slice(1), emoji: guessEmoji(n) }, 'pack'));
+  // стартовое снаряжение класса → настоящие вещи; доспех и оружие надеты → КБ и атаки
+  let gearN = 0;
+  if (CW.clsD?.traits?.equipment && !CW.eq.gold) {
+    const btn = $('#cw-next'); if (btn) { btn.disabled = true; btn.textContent = '⏳ Собираю снаряжение…'; }
+    const items = await cwEqResolve(); gearN = items.length;
+    items.forEach(it => { const z = eqZone(it); if (z === 'equip' && it.type === 'Доспех' && !/щит/i.test(it.name) && pc.inv.equip.some(x => x.type === 'Доспех' && !/щит/i.test(x.name))) pc.inv.pack.push(it); else pc.inv[z].push(it); });
+  }
+  pcGearSync(pc);
+  STORE.put('pc', pc); setActivePC(pc.id); closeModal(); go('sheet');
+  toast(`🧙 «${pc.name}» готов: ${pc.cls} ${pc.level} ур.${gearN ? ` · снаряжение: ${gearN}` : ''} · КБ ${pc.ac}`, 'ok', 4500);
+  if (pc.hasSpells && TTG.base() && pcClass(pc).spellId && await confirmBox('Выбрать заклинания класса сейчас? Список — с ttg.club, по твоему уровню.', { title: '📚 Заклинания', ok: 'Выбрать' })) spellPicker(pc);
+}
+
+/* ── Окно ── */
+ACT.charWizard = () => {
+  CW = cwNew();
+  const m = openModal({ title: '🧙 Мастер создания персонажа', size: 'wide', cls: 'cw', body: `<div class="seg wrap cw-steps" id="cw-steps"></div><div id="cw-body" class="mt"></div>`,
+    foot: `<button class="btn ghost" id="cw-prev">‹ Назад</button><span class="sp"></span><button class="btn pri" id="cw-next">Далее ›</button>` });
+  m.id = 'cw-modal';
+  const sel = async (kind, i) => {
+    const list = cwList(kind), x = list[int(i, -1)] || null;
+    if (kind === 'cls') { CW.cls = x; CW.clsD = null; CW.sub = null; CW.subD = null; CW.pick.clear(); CW.eq = { pick: {}, generic: {}, gold: false, goldAmt: 0 }; cwDraw(); if (x) { CW.clsD = await cwDetail('cls', x.url); } }
+    if (kind === 'race') { CW.race = x; CW.raceD = null; CW.subrace = -1; CW.pickFree.clear(); cwDraw(); if (x) CW.raceD = await cwDetail('race', x.url); cwResetBonus(); }
+    if (kind === 'bg') { CW.bg = x; CW.bgD = null; CW.pers = {}; cwDraw(); if (x) CW.bgD = await cwDetail('bg', x.url); }
+    if (kind === 'feat') { CW.feat = x; CW.featD = null; CW.featAb = ''; cwDraw(); if (x) { CW.featD = await cwDetail('feat', x.url); const a = (CW.featD?.abilities || []).filter(k => AB_KEY[k]); if (a.length === 1) CW.featAb = AB_KEY[a[0]]; } }
+    cwDraw();
+  };
+  m.addEventListener('change', async e => {
+    const el = e.target, wz = el.dataset.wz, wzin = el.dataset.wzin;
+    if (wzin) { if (wzin === 'official') { CW.official = el.checked; } else CW[wzin] = wzin === 'level' ? clamp(int(el.value, 1), 1, 20) : el.value; if (wzin === 'level' || wzin === 'official') cwDraw(); return; }
+    if (wz === 'cls' || wz === 'race' || wz === 'bg' || wz === 'feat') return sel(wz, el.value);
+    if (wz === 'sub') { const c = cwClass(), x = c.archs[int(el.value, -1)] || null; CW.sub = x; CW.subD = null; cwDraw(); if (x) CW.subD = await cwDetail('cls', x.url); cwDraw(); }
+    if (wz === 'subrace') { CW.subrace = int(el.value, -1); cwResetBonus(); cwDraw(); }
+    if (wz === 'pers') { const t = cwBg().tables[int(el.dataset.i)]; CW.pers[t.name] = t.rows[int(el.value, -1)] || ''; }
+    if (wz === 'featAb') CW.featAb = el.value;
+    if (wz === 'asg') { const s = el.dataset.s; if (el.value === '') delete CW.assign[s]; else CW.assign[s] = int(el.value); cwDraw(); }
+    if (wz === 'man') { CW.base[el.dataset.s] = clamp(int(el.value, 8), 3, 20); cwDraw(); }
+    if (wz === 'bon') { CW.bonus[el.dataset.s] = clamp(int(el.value), -2, 4); cwDraw(); }
+    if (wz === 'pick' || wz === 'pickFree') { const set = wz === 'pick' ? CW.pick : CW.pickFree, i = int(el.dataset.i); el.checked ? set.add(i) : set.delete(i); cwDraw(); }
+    if (wz === 'lang') { el.checked ? CW.langs.add(el.dataset.l) : CW.langs.delete(el.dataset.l); cwDraw(); }
+    if (wz === 'eqOpt') { CW.eq.pick[el.dataset.g] = int(el.dataset.o); cwDraw(); }
+    if (wz === 'eqGen') { if (el.value) CW.eq.generic[el.dataset.k] = el.value; else delete CW.eq.generic[el.dataset.k]; }
+    if (wz === 'eqGold') { CW.eq.gold = el.checked; cwDraw(); }
+  });
+  m.addEventListener('input', e => { const k = e.target.dataset.wzin; if (k === 'name' || k === 'player') CW[k] = e.target.value; });
+  m.addEventListener('click', e => {
+    const b = e.target.closest('[data-wz]'); if (!b || b.tagName === 'SELECT' || b.tagName === 'INPUT' || b.tagName === 'LABEL') return;
+    const wz = b.dataset.wz;
+    if (wz === 'step') { CW.step = int(b.dataset.v); cwDraw(); }
+    if (wz === 'view') ttgView(b.dataset.u);
+    if (wz === 'method') { CW.method = b.dataset.v; CW.assign = {}; if (CW.method === 'buy') CW.base = { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 }; if (CW.method === 'manual') CW.base = { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 }; cwDraw(); }
+    if (wz === 'pb') { const s = b.dataset.s, v = clamp(CW.base[s] + int(b.dataset.d), 8, 15), old = CW.base[s]; CW.base[s] = v; if (cwPBLeft() < 0) { CW.base[s] = old; toast('Очков не хватает'); } cwDraw(); }
+    if (wz === 'roll') { CW.rolls = Array.from({ length: 6 }, () => { const d = [roll(6), roll(6), roll(6), roll(6)].sort((a, c) => c - a); return d[0] + d[1] + d[2]; }); CW.assign = {}; cwDraw(); }
+    if (wz === 'resetBonus') { cwResetBonus(); cwDraw(); }
+    if (wz === 'persRoll') { const t = cwBg().tables[int(b.dataset.i)]; CW.pers[t.name] = t.rows[roll(t.rows.length) - 1]; cwDraw(); }
+    if (wz === 'target') { CW.target = b.dataset.v; cwDraw(); }
+    if (wz === 'eqGoldRoll') { const r = rollFormula(b.dataset.f.replace(/\*\s*\d+/, '')), mul = int((b.dataset.f.match(/\*\s*(\d+)/) || [])[1], 1); CW.eq.goldAmt = (r?.total || 0) * mul; cwDraw(); }
+  });
+  $('#cw-prev', m).addEventListener('click', () => { CW.step = Math.max(0, CW.step - 1); cwDraw(); });
+  $('#cw-next', m).addEventListener('click', () => { if (CW.step < CW_STEPS.length - 1) { CW.step++; cwDraw(); } else cwApply(); });
+  cwDraw(); cwLoadLists();
+};
+
+ACT.newViaWizard = () => { ACT.charWizard(); Object.assign(CW, { target: 'new', name: '', player: '', level: 1 }); cwDraw(); };
+
+/* ── Встроенный просмотр ttg.club (без ухода в браузер) ── */
+function ttgView(path = '') {
+  const url = TTG_SITE + (path.startsWith('/') ? path : '/' + path);
+  openModal({ title: '🌐 ttg.club', size: 'wide', cls: 'ttg-view', body: `<iframe class="ttg-frame" src="${esc(url)}" loading="lazy" referrerpolicy="no-referrer"></iframe>`,
+    foot: `<span class="muted tiny grow ellip">${esc(url)}</span><button class="btn" data-act="ttgOut" data-u="${esc(url)}">↗ В браузере</button><button class="btn pri" data-act="modalClose">Закрыть</button>` });
+}
+ACT.ttgOut = el => openExternal(el.dataset.u);
+
+// ── charmore.js ──
+/* ═══════════════════════════════════════════════════════
+   ПЕРСОНАЖ ДАЛЬШЕ: стартовое снаряжение → настоящие вещи (с атаками и КБ),
+   заклинания класса с ttg.club, повышение уровня.
+═══════════════════════════════════════════════════════ */
+
+/* ── Чей класс у персонажа: из pc.build (мастер создания) или по названию ── */
+const SPELL_CLASS_ID = { bard: 1, wizard: 2, druid: 3, cleric: 4, warlock: 5, paladin: 6, ranger: 7, sorcerer: 8, artificer: 14 };
+const SPELL_BOOKS = ['PHB', 'XGE', 'TCE', 'FTD', 'BMT', 'SCAG', 'GGR', 'SCC', 'AAG', 'SatO', 'LLK', 'AI', 'IDRotF'];
+const ASI_LEVELS = { _: [4, 8, 12, 16, 19], fighter: [4, 6, 8, 12, 14, 16, 19], rogue: [4, 8, 10, 12, 16, 19] };
+function pcClass(pc) {
+  const b = pc.build || {}, name = String(pc.cls || '').trim().toLowerCase();
+  const slug = b.slug || Object.entries(CW_CLASSES).find(([, c]) => c.name.toLowerCase() === name)?.[0] || '';
+  const third = /мистическ\S*\s+(рыцар|ловкач)/i.test(pc.subclass || '');
+  const loc = CW_CLASSES[slug] || {};
+  let caster = b.caster || loc.caster || (third ? 'THIRD' : 'NONE'); if (caster === 'NONE' && third) caster = 'THIRD';
+  return { slug, url: b.cls || (slug ? '/classes/' + slug : ''), sub: b.sub || '', hd: int(String(pc.hitDice).replace(/\D/g, ''), loc.hd || 8), caster,
+    spellId: SPELL_CLASS_ID[slug] || (third ? 2 : 0), arch: b.arch || loc.arch || 3, weapon: b.weapon ?? null, hpLvl: int(b.hpLvl) };
+}
+async function ttgClassData(pc) {
+  const k = pcClass(pc); if (!k.url || !TTG.base()) return { k, d: null };
+  try { const d = await TTG.post('/api/v1' + (k.sub || k.url)); return { k, d, base: k.sub ? await TTG.post('/api/v1' + k.url) : d }; } catch (e) { return { k, d: null, err: e.message }; }
+}
+const colAt = (d, re, lvl) => { const c = (d?.tableColumns || []).find(x => re.test(x.name)); return c ? int(c.levels[clamp(lvl, 1, 20) - 1]) : null; };
+
+/* ═══ Снаряжение ═══ */
+const NUMW = { 'один': 1, 'одна': 1, 'одно': 1, 'два': 2, 'две': 2, 'двух': 2, 'три': 3, 'четыре': 4, 'пять': 5, 'десять': 10, 'двадцать': 20 };
+/** HTML снаряжения класса → [{ opts: [{ label, parts: [{ text, href, qty, generic: 'simple'|'martial'|null, melee }] }] }], gold */
+function eqParse(html) {
+  const doc = new DOMParser().parseFromString(String(html || ''), 'text/html');
+  const groups = [...doc.querySelectorAll('li')].map(li => {
+    const links = []; li.querySelectorAll('a').forEach(a => { links.push({ href: a.getAttribute('href'), name: a.textContent.replace(/\s*\[.*?\]\s*/g, '').trim() }); (a.closest('detail-tooltip') || a).replaceWith(`§${links.length - 1}§`); });
+    const opts = li.textContent.replace(/\s+/g, ' ').trim().split(/\s+или\s+(?=[а-я]\)\s)/i).map((t, i) => {
+      const label = (t.match(/^([а-я])\)\s*/i) || [])[1] || String.fromCharCode(1072 + i);
+      const parts = t.replace(/^[а-я]\)\s*/i, '').split(/,\s*|\s+и\s+/).map(s => s.trim()).filter(Boolean).map(s => {
+        const m = s.match(/^(\d+|[а-яё]+)\s+(.*)$/i), n = m && (/^\d+$/.test(m[1]) ? int(m[1]) : NUMW[m[1].toLowerCase()]);
+        const rest = n ? m[2] : s, li2 = rest.match(/§(\d+)§/), link = li2 ? links[int(li2[1])] : null;
+        const gen = !link && /оружи/i.test(rest) ? (/воинск/i.test(rest) ? 'martial' : /прост/i.test(rest) ? 'simple' : null) : null;
+        return { text: (link ? rest.replace(/§\d+§/, link.name) : rest).trim(), href: link?.href || null, qty: n || 1, generic: gen, melee: /рукопашн/i.test(rest) };
+      });
+      return { label, parts, text: t.replace(/§(\d+)§/g, (_, i) => links[int(i)].name) };
+    });
+    return { opts };
+  });
+  const g = doc.querySelector('dice-roller')?.getAttribute('formula');
+  return { groups, gold: g || null };
+}
+/** Вещь из ttg (или просто по названию) → предмет; стрелы/болты — счётчик снарядов */
+async function eqItem(part, url) {
+  let it = null; const href = url || part.href;
+  if (href && TTG.base()) { try { const kind = TTG.kindOfUrl(href); const d = await TTG.detail(href); it = TTG.convert(kind, d); } catch (e) { } }
+  if (!it) it = normItem({ name: part.text.charAt(0).toUpperCase() + part.text.slice(1), emoji: guessEmoji(part.text) });
+  if (/стрел|болт|игл|пул[ья]/i.test(it.name)) { it.ammo = { name: it.name, cur: part.qty }; it.qty = 1; } else it.qty = part.qty;
+  return it;
+}
+const eqZone = it => it.ammo ? 'belt' : (it.type === 'Доспех' || it.type === 'Оружие') ? 'equip' : 'pack';
+let _weaponsList = null;
+async function eqWeapons() {
+  if (_weaponsList) return _weaponsList;
+  const l = await TTG.post('/api/v1/weapons', { page: 0, size: 200, search: { value: '', exact: false } });
+  return (_weaponsList = l.filter(w => w.source?.group?.shortName === 'Basic'));
+}
+
+/* ── КБ и атаки по надетому ── */
+const propRow = (it, key) => (it.blocks || []).find(b => b.type === 'properties')?.rows?.find(r => r.key === key)?.val || '';
+function pcCalcAC(pc) {
+  const mod = s => abMod(pc.stats[s]), slug = pcClass(pc).slug;
+  let body = null, shield = 0;
+  (pc.inv.equip || []).forEach(it => {
+    if (it.type !== 'Доспех') return;
+    const v = propRow(it, 'КБ');
+    if (/щит/i.test(it.name) || /^\s*\+\s*\d/.test(v)) { shield = Math.max(shield, int((v.match(/\d+/) || [])[0], 2)); return; }
+    const n = int((v.match(/\d+/) || [])[0], 0); if (!n) return;
+    let ac = n; if (/лов/i.test(v)) { const cap = /макс/i.test(v) ? int((v.match(/макс\D*(\d+)/i) || [])[1], 2) : 99; ac += Math.min(mod('dex'), cap); }
+    body = Math.max(body ?? 0, ac);
+  });
+  if (body == null) body = 10 + mod('dex') + (slug === 'barbarian' ? mod('con') : slug === 'monk' && !shield ? mod('wis') : 0);
+  return body + shield;
+}
+function weaponProf(pc, it) {
+  const t = String(pcClass(pc).weapon ?? 'воинское').toLowerCase();
+  if (/воинск/.test(t)) return true;
+  if (/прост/.test(t) && /^прост/i.test(it.subtype || '')) return true;
+  return it.name.toLowerCase().split(/[\s,]+/).filter(w => w.length > 3).some(w => t.includes(w.slice(0, Math.max(4, w.length - 2))));
+}
+function weaponAttack(pc, it) {
+  const dice = (it.blocks || []).find(b => b.type === 'dice'); if (!dice) return null;
+  const props = propRow(it, 'Свойства'), ranged = /дальнобойн/i.test(it.subtype || ''), fin = /фехтовальн/i.test(props);
+  const dex = abMod(pc.stats.dex), str = abMod(pc.stats.str), m = ranged ? dex : fin ? Math.max(dex, str) : str;
+  const prof = weaponProf(pc, it) ? pcPB(pc) : 0, dist = props.match(/\((\d+\/\d+)\)/);
+  const vers = props.match(/универсальн[а-яё]*\s*\((\d*)[кd](\d+)\)/i);
+  return { name: it.name, atkBonus: sgn(prof + m), damage: `${dice.count || 1}d${dice.die}${m ? sgn(m) : ''}`, type: dice.dmgtype || '',
+    range: ranged || /метательн/i.test(props) ? (dist ? dist[1] + ' фт.' : 'Дальнобойная') : 'Рукопашная',
+    description: [props, vers ? `Двумя руками: ${vers[1] || 1}d${vers[2]}${m ? sgn(m) : ''}` : '', prof ? '' : 'без владения — бонус мастерства не добавлен', it.ammo ? `${it.ammo.name}: ${it.ammo.cur}` : ''].filter(Boolean).join(' · ') };
+}
+/** Атаки надетого оружия — на лету, для листа (pcAllAttacks в sheet.js) */
+function gearAttacks(pc) {
+  return (pc.inv.equip || []).filter(it => it.type === 'Оружие').map(it => { const a = weaponAttack(pc, it); return a && { ...a, _g: it.id }; }).filter(Boolean);
+}
+/** КБ по надетым доспехам и щиту (атаки из оружия теперь считаются сами) */
+function pcGearSync(pc) { pc.ac = pcCalcAC(pc); return gearAttacks(pc).length; }
+ACT.gearSync = () => { const pc = activePC(); if (!pc) return; const n = pcGearSync(pc); savePC(pc); ccRefresh('def', 'attacks'); toast(`🛡 КБ ${pc.ac}${n ? ` · ⚔ оружия в руках: ${n} — атаки на листе` : ''}`, 'ok'); };
+
+/* ── Шаг «Снаряжение» в мастере создания ── */
+function cwEqBody() {
+  const c = cwClass(); if (!c) return '<div class="muted">Сначала выбери класс.</div>';
+  const raw = CW.clsD?.traits?.equipment;
+  if (!raw) return `<div class="note small">Список снаряжения класса берётся с ttg.club — он сейчас недоступен. Вещи предыстории всё равно попадут в рюкзак, остальное добавишь в инвентаре.</div>`;
+  const P = eqParse(raw), eq = CW.eq;
+  const wl = _weaponsList || [], wopts = (kind, melee) => wl.filter(w => (kind === 'martial' ? /^воинск/i : /^прост/i).test(w.type?.name || '') && (!melee || /рукопаш/i.test(w.type?.name || '')));
+  let gi = 0;
+  return `<label class="chk mb"><input type="checkbox" data-wz="eqGold" ${eq.gold ? 'checked' : ''}> Вместо снаряжения класса взять золото${P.gold ? ` (${esc(P.gold.replace('*', '×'))} зм)` : ''}</label>
+    ${eq.gold ? `<div class="row"><button class="btn" data-wz="eqGoldRoll" data-f="${esc(P.gold || '5к4*10')}">🎲 Бросить</button><b class="gold">${eq.goldAmt ? eq.goldAmt + ' зм' : ''}</b></div>`
+    : P.groups.map((g, i) => `<div class="cw-eq"><div class="lbl">Набор ${i + 1}</div>${g.opts.map((o, j) => `<label class="chk cw-eq-o"><input type="radio" name="eq${i}" data-wz="eqOpt" data-g="${i}" data-o="${j}" ${int(eq.pick[i]) === j ? 'checked' : ''}> <b>${o.label})</b> ${esc(o.text)}</label>`).join('')}
+      ${(g.opts[int(eq.pick[i])]?.parts || []).filter(p => p.generic).flatMap((p, k) => Array.from({ length: p.qty }, (_, q) => { const key = `${i}.${k}.${q}`; gi++;
+        return `<div class="row mt"><span class="muted small">${esc(p.text)}${p.qty > 1 ? ' #' + (q + 1) : ''}:</span><select data-wz="eqGen" data-k="${key}" class="grow"><option value="">${wl.length ? '— выбери оружие —' : '⏳ загружаю список оружия…'}</option>${wopts(p.generic, p.melee).map(w => `<option value="${esc(w.url)}" ${eq.generic[key] === w.url ? 'selected' : ''}>${esc(w.name.rus)} · ${esc(w.damage?.dice || '')} ${esc(w.damage?.type || '')}</option>`).join('')}</select></div>`; })).join('')}</div>`).join('')}
+    <p class="muted tiny mt">Доспехи и оружие лягут в «Надето» — КБ и атаки посчитаются сами. Стрелы и болты — счётчиком на поясе, наборы — в рюкзак.${gi && !_weaponsList ? '' : ''}</p>`;
+}
+/** Разрешить выбранное снаряжение в предметы */
+async function cwEqResolve() {
+  const raw = CW.clsD?.traits?.equipment; if (!raw || CW.eq.gold) return [];
+  const P = eqParse(raw), out = [];
+  for (const [i, g] of P.groups.entries()) {
+    const o = g.opts[int(CW.eq.pick[i])]; if (!o) continue;
+    for (const [k, p] of o.parts.entries()) {
+      if (p.generic) { for (let q = 0; q < p.qty; q++) { const url = CW.eq.generic[`${i}.${k}.${q}`]; if (url) out.push(await eqItem({ ...p, qty: 1, text: p.text }, url)); } }
+      else out.push(await eqItem(p));
+    }
+  }
+  return out;
+}
+
+/* ═══ Заклинания класса ═══ */
+async function spellPicker(pc, { title = '📚 Заклинания класса', hint = '' } = {}) {
+  const k = pcClass(pc);
+  if (!k.spellId) return toast('Для этого класса нет списка заклинаний на ttg.club (или класс не распознан)', 'err', 4000);
+  if (!TTG.base()) return toast('Нужен прокси ttg.club — Сохранения → 🔎 Поиск на ttg.club', 'err', 4000);
+  const maxLv = Math.max(0, ...Object.entries(pc.slots).filter(([, n]) => int(n) > 0).map(([l]) => int(l)));
+  const known = new Set(pc.spells.map(s => s.name.toLowerCase()));
+  const m = openModal({ title, size: 'wide', body: `<div class="muted pad">⏳ Загружаю список заклинаний…</div>`, foot: `<span class="muted small grow" id="sp-cnt"></span><button class="btn ghost" data-act="modalClose">Закрыть</button><button class="btn pri" id="sp-add" disabled>＋ Добавить</button>` });
+  let list = [], info = { cant: null, spells: null };
+  try {
+    const [l, cd] = await Promise.all([TTG.post('/api/v1/spells', { page: 0, size: 600, search: { value: '', exact: false }, filter: { book: SPELL_BOOKS, level: Array.from({ length: maxLv + 1 }, (_, i) => i), class: [k.spellId] } }),
+      ttgClassData(pc)]);
+    list = l; info = { cant: colAt(cd.base, /заговор/i, pc.level), spells: colAt(cd.base, /известные заклинания/i, pc.level) };
+  } catch (e) { modalBody(m).innerHTML = `<div class="note warn">⚠ ttg.club: ${esc(e.message)}</div>`; return; }
+  const sel = new Set(); let q = '';
+  const cantHave = pc.spells.filter(s => int(s.level) === 0).length, splHave = pc.spells.filter(s => int(s.level) > 0).length;
+  const draw = () => {
+    const f = list.filter(s => !q || (s.name.rus + ' ' + s.name.eng).toLowerCase().includes(q));
+    const byLv = {}; f.forEach(s => (byLv[s.level] = byLv[s.level] || []).push(s));
+    modalBody(m).innerHTML = `${hint ? `<div class="note small mb">${hint}</div>` : ''}
+      <div class="small mb">${info.cant != null ? `Заговоров знаешь: <b>${cantHave}</b> / ${info.cant}. ` : ''}${info.spells != null ? `Заклинаний знаешь: <b>${splHave}</b> / ${info.spells}. ` : ''}${pc.spellPrep ? `Готовишь каждый день: ${prepMax(pc)} — в карточки можно добавить хоть весь список. ` : ''}Круги до ${maxLv || 'заговоров'}.</div>
+      <input type="search" id="sp-q" placeholder="🔍 Поиск…" value="${esc(q)}" class="mb">
+      ${Object.keys(byLv).sort((a, b) => a - b).map(lv => `<div class="lbl mt">${+lv ? lv + '-й круг' : 'Заговоры'} (${byLv[lv].length})</div><div class="cw-grid">${byLv[lv].map(s => { const has = known.has(s.name.rus.toLowerCase());
+        return `<label class="chk ${has ? 'muted' : ''}" title="${esc(s.school || '')}"><input type="checkbox" data-sp="${esc(s.url)}" ${has || sel.has(s.url) ? 'checked' : ''} ${has ? 'disabled' : ''}> ${esc(s.name.rus)}${s.concentration ? ' <small class="muted">К</small>' : ''}${s.ritual ? ' <small class="muted">Р</small>' : ''} <a class="muted small" data-spv="${esc(s.url)}">ℹ</a></label>`; }).join('')}</div>`).join('') || '<div class="muted">Ничего не нашлось</div>'}`;
+    const qi = $('#sp-q', m); qi.addEventListener('input', () => { q = qi.value.toLowerCase(); const pos = qi.selectionStart; draw(); const n = $('#sp-q', m); n.focus(); n.setSelectionRange(pos, pos); });
+    $('#sp-cnt', m).textContent = sel.size ? `Выбрано: ${sel.size}` : ''; $('#sp-add', m).disabled = !sel.size;
+  };
+  m.addEventListener('change', e => { const u = e.target.dataset.sp; if (!u) return; e.target.checked ? sel.add(u) : sel.delete(u); $('#sp-cnt', m).textContent = sel.size ? `Выбрано: ${sel.size}` : ''; $('#sp-add', m).disabled = !sel.size; });
+  m.addEventListener('click', e => { const v = e.target.closest('[data-spv]'); if (v) { e.preventDefault(); ttgView(v.dataset.spv); } });
+  $('#sp-add', m).addEventListener('click', async () => {
+    const btn = $('#sp-add', m); btn.disabled = true; btn.textContent = '⏳ Загружаю…';
+    const urls = [...sel], got = [];
+    for (let i = 0; i < urls.length; i += 4) got.push(...await Promise.all(urls.slice(i, i + 4).map(u => TTG.detail(u).then(d => TTG.spell(d)).catch(() => null))));
+    const add = got.filter(Boolean).filter(s => !known.has(s.name.toLowerCase()));
+    pc.hasSpells = true; pc.spells.push(...add); savePC(pc); closeModal();
+    if (CUR_VIEW === 'creator') ccRefresh('spells', 'spellcards'); else if (CUR_VIEW === 'sheet') sheetRefresh('spells');
+    toast(`✨ Добавлено заклинаний: ${add.length}${add.length < urls.length ? ` (не загрузилось: ${urls.length - add.length})` : ''}`, 'ok', 4000);
+  });
+  draw();
+}
+ACT.classSpells = () => { const pc = activePC(); if (pc) spellPicker(pc); };
+
+/* ═══ Повышение уровня ═══ */
+ACT.levelUp = async () => {
+  const pc = activePC(); if (!pc) return;
+  if (pc.level >= 20) return toast('Уже 20-й уровень');
+  const L = pc.level + 1, k = pcClass(pc), con = abMod(pc.stats.con);
+  const m = openModal({ title: `⬆ ${esc(pc.name)}: ${pc.level} → ${L} уровень`, size: 'wide', body: '<div class="muted pad">⏳ Загружаю умения класса с ttg.club…</div>',
+    foot: `<button class="btn ghost" data-act="modalClose">Отмена</button><button class="btn pri" id="lu-go">⬆ Повысить</button>` });
+  const { d, base, err } = await ttgClassData(pc);
+  const st = { hpMode: 'avg', hpRoll: 0, sub: null, subD: null, asi: 'two', a1: '', a2: '', feat: null, featD: null, featAb: '' };
+  const archs = (base?.archetypes || []).filter(a => a.source?.group?.shortName === 'Basic');
+  const archLvl = int(base?.enabledArhitypeLevel, k.arch), needSub = !pc.subclass && L >= archLvl && archs.length;
+  let feats = [];
+  // умения нового уровня + (если подкласс выбран только сейчас) пропущенные умения подкласса прошлых уровней
+  const getFeats = () => ((st.subD || d)?.traits?.features || []).filter(f => int(f.level) === L || (st.sub && f.archetypeFeature && int(f.level) < L))
+    .sort((a, b) => int(a.level) - int(b.level)).map(f => ({ name: f.name, text: TTG.txt(f.description), sub: !!f.archetypeFeature, level: int(f.level) }));
+  const isASI = () => feats.some(f => /увеличение характеристик/i.test(f.name)) || (!d && (ASI_LEVELS[k.slug] || ASI_LEVELS._).includes(L));
+  const avg = Math.floor(k.hd / 2) + 1, gain = () => Math.max(1, (st.hpMode === 'roll' ? st.hpRoll || avg : avg) + con) + k.hpLvl;
+  const featList = d ? await TTG.post('/api/v1/feats', { page: 0, size: 300, search: { value: '', exact: false } }).catch(() => []) : [];
+  const newSlots = cwSlots(k.caster, L), oldSlots = cwSlots(k.caster, pc.level);
+  const res = cwResources(k.slug, L, Object.fromEntries(STATS.map(s => [s, abMod(pc.stats[s])])));
+  const sp = { cant: [colAt(base, /заговор/i, pc.level), colAt(base, /заговор/i, L)], spells: [colAt(base, /известные заклинания/i, pc.level), colAt(base, /известные заклинания/i, L)] };
+  const draw = () => {
+    feats = getFeats();
+    const sl = o => Object.entries(o.slots).filter(([, n]) => n).map(([l, n]) => `${l}-й×${n}`).join(', ') || '—';
+    modalBody(m).innerHTML = `${err ? `<div class="note warn small mb">ttg.club: ${esc(err)} — умения уровня не подтянутся, остальное посчитается.</div>` : !d ? `<div class="note small mb">Класс «${esc(pc.cls)}» не найден на ttg.club (или нет прокси) — умения впиши сам, хиты, ячейки и ресурсы посчитаю.</div>` : ''}
+      <div class="lbl">❤ Хиты (d${k.hd}, ТЕЛ ${sgn(con)}${k.hpLvl ? ', +1 холмовой дварф' : ''})</div>
+      <div class="row wrap"><div class="seg"><button data-lu="hp" data-v="avg" class="${st.hpMode === 'avg' ? 'on' : ''}">Среднее (${avg})</button><button data-lu="hp" data-v="roll" class="${st.hpMode === 'roll' ? 'on' : ''}">Бросок d${k.hd}${st.hpRoll ? ': ' + st.hpRoll : ''}</button></div><b class="gold">+${gain()} HP</b> <span class="muted small">(${pc.hp.max} → ${pc.hp.max + gain()})</span></div>
+      ${needSub ? `<div class="fld mt"><label>${esc(base?.archetypeName || 'Подкласс')} — выбирается на ${archLvl} уровне</label><div class="row"><select data-lu="sub" class="grow"><option value="">— выбери —</option>${archs.map((a, i) => `<option value="${i}" ${st.sub === a ? 'selected' : ''}>${esc(a.name.rus)} · ${esc(a.source.shortName)}</option>`).join('')}</select>${st.sub ? `<button class="btn xs ghost" data-lu="view" data-u="${esc(st.sub.url)}">ℹ</button>` : ''}</div></div>` : ''}
+      ${feats.length ? `<div class="lbl mt">Новые умения</div>${feats.map(f => `<details class="lu-f"><summary><b>${esc(f.name)}</b> <small class="muted">${f.level} ур.</small>${f.sub ? ' <small class="gold">подкласс</small>' : ''}</summary><div class="small dim">${nl2br(esc(f.text.slice(0, 1500)))}</div></details>`).join('')}` : d ? '<div class="muted small mt">Новых умений класса на этом уровне нет.</div>' : ''}
+      ${isASI() ? `<div class="lbl mt">Увеличение характеристик</div><div class="seg wrap"><button data-lu="asi" data-v="two" class="${st.asi === 'two' ? 'on' : ''}">+1 и +1</button><button data-lu="asi" data-v="one" class="${st.asi === 'one' ? 'on' : ''}">+2 к одной</button>${featList.length ? `<button data-lu="asi" data-v="feat" class="${st.asi === 'feat' ? 'on' : ''}">Черта</button>` : ''}</div>
+        ${st.asi === 'feat' ? `<div class="row mt"><select data-lu="feat" class="grow"><option value="">— черта —</option>${featList.filter(f => f.source?.group?.shortName === 'Basic').sort((a, b) => a.name.rus.localeCompare(b.name.rus, 'ru')).map(f => `<option value="${esc(f.url)}" ${st.feat === f.url ? 'selected' : ''}>${esc(f.name.rus)}</option>`).join('')}</select>${st.feat ? `<button class="btn xs ghost" data-lu="view" data-u="${esc(st.feat)}">ℹ</button>` : ''}</div>
+          ${st.featD?.abilities?.filter(a => AB_KEY[a]).length ? `<select data-lu="featAb" class="mt"><option value="">+1 к…</option>${st.featD.abilities.filter(a => AB_KEY[a]).map(a => `<option value="${AB_KEY[a]}" ${st.featAb === AB_KEY[a] ? 'selected' : ''}>${STAT_NAMES[AB_KEY[a]]} (${pc.stats[AB_KEY[a]]})</option>`).join('')}</select>` : ''}`
+        : `<div class="row mt">${[['a1', st.asi === 'one' ? '+2' : '+1'], ...(st.asi === 'two' ? [['a2', '+1']] : [])].map(([key, l]) => `<select data-lu="${key}"><option value="">${l} к…</option>${STATS.map(s => `<option value="${s}" ${st[key] === s ? 'selected' : ''} ${pc.stats[s] >= 20 ? 'disabled' : ''}>${STAT_NAMES[s]} (${pc.stats[s]})</option>`).join('')}</select>`).join('')}</div>`}` : ''}
+      ${k.caster !== 'NONE' ? `<div class="lbl mt">✨ Магия</div><div class="small">Ячейки: ${sl(oldSlots)} → <b>${sl(newSlots)}</b>
+        ${sp.cant[1] != null && sp.cant[1] > sp.cant[0] ? ` · заговоров +${sp.cant[1] - sp.cant[0]}` : ''}${sp.spells[1] != null && sp.spells[1] > sp.spells[0] ? ` · заклинаний известно +${sp.spells[1] - sp.spells[0]}` : ''}${pc.spellPrep ? ` · готовишь ${prepMax({ ...pc, level: L })}` : ''}</div>
+        <label class="chk mt"><input type="checkbox" id="lu-sp" checked> После повышения открыть выбор заклинаний класса</label>` : ''}
+      ${res.length ? `<div class="small mt">Ресурсы: ${res.map(r => `${r.name} ${r.max}`).join(', ')}</div>` : ''}`;
+  };
+  m.addEventListener('click', async e => {
+    const b = e.target.closest('[data-lu]'); if (!b || b.tagName === 'SELECT') return; const a = b.dataset.lu;
+    if (a === 'hp') { st.hpMode = b.dataset.v; if (st.hpMode === 'roll') st.hpRoll = roll(k.hd); }
+    if (a === 'asi') st.asi = b.dataset.v;
+    if (a === 'view') return ttgView(b.dataset.u);
+    draw();
+  });
+  m.addEventListener('change', async e => {
+    const el = e.target, a = el.dataset.lu; if (!a) return;
+    if (a === 'sub') { st.sub = archs[int(el.value, -1)] || null; st.subD = null; draw(); st.subD = st.sub ? await TTG.post('/api/v1' + st.sub.url).catch(() => null) : null; }
+    if (a === 'feat') { st.feat = el.value || null; st.featD = st.feat ? await TTG.detail(st.feat).catch(() => null) : null; st.featAb = ''; const ab = (st.featD?.abilities || []).filter(x => AB_KEY[x]); if (ab.length === 1) st.featAb = AB_KEY[ab[0]]; }
+    if (a === 'a1' || a === 'a2' || a === 'featAb') st[a] = el.value;
+    draw();
+  });
+  $('#lu-go', m).addEventListener('click', async () => {
+    if (needSub && !st.sub && !await confirmBox('Подкласс не выбран. Повысить уровень без него?', { ok: 'Повысить' })) return;
+    const go = $('#lu-go', m); go.disabled = true; go.textContent = '⏳…';
+    if (st.sub && !st.subD) st.subD = await TTG.post('/api/v1' + st.sub.url).catch(() => null); // умения подкласса могли не успеть загрузиться
+    feats = getFeats();
+    const openSpells = $('#lu-sp', m)?.checked;
+    const g = gain(); pc.level = L; pc.hp.max += g; pc.hp.cur += g;
+    if (st.sub) { pc.subclass = st.sub.name.rus; pc.build = { ...(pc.build || {}), sub: st.sub.url }; }
+    if (isASI()) {
+      if (st.asi === 'feat' && st.featD) { if (st.featAb) pc.stats[st.featAb] = Math.min(20, pc.stats[st.featAb] + 1);
+        const c = pc.cards.find(x => x.title === 'Черта'), txt = `${st.featD.name.rus}\n${TTG.txt(st.featD.description)}`; if (c) c.content += '\n\n' + txt; else pc.cards.push({ title: 'Черта', color: '#8844cc', shape: '⚡', content: txt, collapsed: true, pin: null, pinCollapsed: false }); }
+      else { const up = st.asi === 'one' ? [[st.a1, 2]] : [[st.a1, 1], [st.a2, 1]]; up.forEach(([s, n]) => { if (s) pc.stats[s] = Math.min(20, pc.stats[s] + n); }); }
+    }
+    if (k.caster !== 'NONE') { pc.hasSpells = true; Object.assign(pc, { slots: Object.fromEntries(Array.from({ length: 9 }, (_, i) => [i + 1, int(newSlots.slots[i + 1])])), warlockLv: newSlots.warlockLv }); }
+    res.forEach(r => { const ex = pc.resources.find(x => x.name === r.name); if (ex) ex.max = r.max; else pc.resources.push(r); });
+    if (feats.length) { const c = pc.cards.find(x => x.title === 'Умения класса'), txt = feats.map(f => `${f.level || L} ур. · ${f.name}${f.sub ? ' (подкласс)' : ''}\n${f.text}`).join('\n\n');
+      if (c) c.content += '\n\n' + txt; else pc.cards.push({ title: 'Умения класса', color: '#3a7acc', shape: '★', content: txt, collapsed: true, pin: null, pinCollapsed: false }); }
+    pc.ac = pcCalcAC(pc);
+    savePC(pc); closeModal(); route(); toast(`⬆ ${pc.name}: ${L} уровень · +${g} HP${feats.length ? ` · ${feats.map(f => f.name).join(', ')}` : ''}`, 'ok', 5000);
+    if (openSpells && k.spellId) setTimeout(() => spellPicker(pc, { title: `📚 Заклинания · ${L} уровень`, hint: 'Добавь новые заклинания уровня. Уже известные отмечены серым.' }), 400);
+  });
+  draw();
 };
 
 // ── saves.js ──
@@ -5777,10 +6457,10 @@ VIEWS.home = {
         <div class="grow" style="min-width:0"><b class="ellip">${esc(pc.name)}</b><small class="ellip">${esc([pc.race, pc.cls].filter(Boolean).join(' · ') || 'Персонаж')} · ${pc.level} ур.</small>
           <div class="hp-bar sm"><div style="width:${pct}%;background:${hpColor(pct)}"></div></div><small class="muted">❤ ${pc.hp.cur}/${pc.hp.max} · 🛡 ${pc.ac} · 💰 ${fmtGp(coinsCp(pc.coins))} ЗЗ</small></div></div>` : ''}
       <div class="home-menu">
-        ${pc ? `<button class="hexbtn pri" data-act="go" data-v="sheet">Продолжить</button>` : `<button class="hexbtn pri" data-act="pcNew">✨ Создать персонажа</button>`}
+        ${pc ? `<button class="hexbtn pri" data-act="go" data-v="sheet">Продолжить</button>` : `<button class="hexbtn pri" data-act="charWizard">🧙 Мастер создания персонажа</button><button class="hexbtn" data-act="pcNew">✨ Пустой лист</button>`}
         ${pc ? `<button class="hexbtn" data-act="go" data-v="inv">🎒 Инвентарь</button>` : ''}
         ${pcs.length > (pc ? 1 : 0) ? `<button class="hexbtn" data-act="go" data-v="saves">📂 Мои персонажи <small>${pcs.length}</small></button>` : ''}
-        ${pc ? `<button class="hexbtn" data-act="pcNew">✨ Новый персонаж</button>` : ''}
+        ${pc ? `<button class="hexbtn" data-act="newViaWizard">🧙 Новый персонаж (мастер)</button>` : ''}
         <button class="hexbtn" data-act="shareImport">📥 Вставить код</button>
         ${m ? `<div class="orn"><i>◆</i> Мастерская <i>◆</i></div><div class="home-gm">
           ${['gm', 'tracker', 'scenes', 'npc', 'loot', 'exped', 'wiki'].map(id => { const n = NAV.find(x => x.id === id); return `<button class="gm-tile" data-act="go" data-v="${id}"><span>${n.icon}</span>${n.label}</button>`; }).join('')}
