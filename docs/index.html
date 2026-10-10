@@ -1162,7 +1162,7 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:grabbing;}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '9.2.1';
+const APP_VERSION = '9.2.2';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -2378,6 +2378,11 @@ function normPC(d) {
   p.ds = Object.assign({ s: 0, f: 0 }, p.ds);
   ['saveProfs', 'skillProfs', 'skillExp', 'attacks', 'warlockLv', 'spells', 'resources', 'cards', 'conds', 'prepared', 'trades'].forEach(k => { if (!Array.isArray(p[k])) p[k] = []; });
   ['slots', 'usedSlots', 'usedRes', 'inv'].forEach(k => { if (!p[k] || typeof p[k] !== 'object') p[k] = {}; });
+  // навыки и спасброски можно задать названиями («Скрытность», «ЛОВ», «Ловкость») — переводим в индексы/ключи
+  const skIdx = x => typeof x === 'number' ? x : SKILLS.findIndex(s => s.label.toLowerCase() === String(x).trim().toLowerCase().replace('восприятие', 'внимательность'));
+  p.skillProfs = [...new Set(p.skillProfs.map(skIdx).filter(i => i >= 0 && i < SKILLS.length))];
+  p.skillExp = [...new Set(p.skillExp.map(skIdx).filter(i => i >= 0 && i < SKILLS.length))];
+  p.saveProfs = [...new Set(p.saveProfs.map(x => STATS.includes(x) ? x : STATS.find(s => [STAT_SHORT[s], STAT_NAMES[s]].some(n => n.toLowerCase() === String(x).trim().toLowerCase()))).filter(Boolean))];
   p.cards = p.cards.map(c => Object.assign({ title: '', color: CARD_COLORS[0], shape: '', content: '', collapsed: false, pin: null, pinCollapsed: false }, c));
   ZONE_KEYS.forEach(z => { p.inv[z] = (p.inv[z] || []).map(normItem); });
   for (let i = 1; i <= 9; i++) p.slots[i] = int(p.slots[i]);
@@ -2478,6 +2483,91 @@ function normMap(d) {
   m.edges = (m.edges || []).map(e => ({ from: String(e.from), to: String(e.to), label: e.label || '' }));
   return m;
 }
+
+/* ── Сюжет = карта сцен + всё, на что она ссылается (lib: npc / item / batt / wiki) ──
+   Экспорт: MAPIO.bundle(m) кладёт в код связанных NPC, предметы, бои и статьи — на другом устройстве ничего не потеряется.
+   Импорт: MAPIO.import(d) создаёт их в библиотеках с новыми id, перепривязывает ссылки сцен (по ключу или по имени),
+   чинит сцены/связи и раскладывает сцены без координат. Возвращает отчёт. */
+const MAPIO = {
+  bundle(m) {
+    const ids = k => [...new Set(m.nodes.flatMap(n => k === 'batt' ? (n.battleKey ? [n.battleKey] : []) : n[k] || []))];
+    const wiki = STORE.get('wiki', []);
+    const batt = ids('batt').map(id => STORE.one('batt', id)).filter(Boolean);
+    return { ...clone(m), lib: {
+      npc: ids('npcs').map(id => STORE.one('npc', id)).filter(Boolean),
+      item: ids('lootCards').map(id => STORE.one('item', id)).filter(Boolean),
+      batt, wiki: ids('wikiLinks').map(id => wiki.find(a => a.id === id)).filter(Boolean) } };
+  },
+  import(d) {
+    const rep = { nodes: 0, edges: 0, npc: 0, item: 0, batt: 0, wiki: 0, lost: [], fixed: [] };
+    const lib = d.lib || {}, key = { npc: {}, item: {}, batt: {}, wiki: {} };
+    const low = s => String(s ?? '').trim().toLowerCase();
+    // 1) библиотеки сюжета: одинаковая запись (тот же id и имя) — переиспользуем, иначе новая копия
+    const same = (store, x) => { const old = x.id && STORE.one(store, x.id); return old && low(old.name) === low(x.name) ? old : null; };
+    (lib.npc || []).forEach(x => { if (!x || !x.name) return; let n = same('npc', x); if (!n) { n = normNPC({ ...x, id: uid('npc') }); STORE.put('npc', n); }
+      key.npc[x.id ?? x.name] = n.id; key.npc[low(x.name)] = n.id; rep.npc++; });
+    (lib.item || []).forEach(x => { if (!x || !x.name) return; let it = same('item', x); if (!it) { it = normItem({ ...x, id: uid('it') }); STORE.put('item', it); }
+      key.item[x.id ?? x.name] = it.id; key.item[low(x.name)] = it.id; rep.item++; });
+    const wikiNow = STORE.get('wiki', []);
+    (lib.wiki || []).forEach(a => { if (!a || !a.title) return; const old = a.id && wikiNow.find(w => w.id === a.id && low(w.title) === low(a.title));
+      const { id: _drop, ...rest } = a;
+      const art = old || normArticle({ ...rest, tags: Array.isArray(a.tags) ? a.tags : String(a.tags || '').split(',').map(s => s.trim()).filter(Boolean) });
+      if (!old) { if (!WIKI_CATS[art.category]) art.category = 'lore'; wikiNow.push(art); } key.wiki[a.id ?? a.title] = art.id; key.wiki[low(a.title)] = art.id; rep.wiki++; });
+    STORE.set('wiki', wikiNow);
+    (lib.batt || []).forEach(b => {
+      // бой можно описать просто списком NPC: { id, name, npcs: ['goblin', 'goblin', 'boss'] }
+      const list = Array.isArray(b.npcs) ? b.npcs.map((r, i) => { const nid = key.npc[r] || key.npc[low(r)] || (STORE.one('npc', r) ? r : null); const n = nid && STORE.one('npc', nid);
+        if (!n) { rep.lost.push(`бой «${b.name || b.id}»: NPC «${r}»`); return null; } return npcToCombatant(n, i + 1); }).filter(Boolean) : b.list;
+      const { npcs: _refs, ...bRest } = b; // «npcs» у normBattle — старый формат V8, не передаём
+      const nb = normBattle({ ...bRest, id: uid('b'), list: list || [] }); STORE.put('batt', nb);
+      key.batt[b.id ?? b.name] = nb.id; if (b.name) key.batt[low(b.name)] = nb.id; rep.batt++; });
+    // 2) сцены: уникальные id, правильные типы полей
+    const m = normMap({ ...d, id: uid('map') }); delete m.lib;
+    const seen = new Set();
+    m.nodes.forEach((n, i) => {
+      if (!n.id || n.id === 'undefined' || seen.has(n.id)) { const nid = 's' + i + Date.now().toString(36); rep.fixed.push(`повтор/пустой id сцены «${n.title}» → ${nid}`); n.id = nid; }
+      seen.add(n.id);
+      if (!SM_TAGS[n.tag]) { rep.fixed.push(`тип сцены «${n.tag}» → explore`); n.tag = 'explore'; }
+      n.triggers = (n.triggers || []).map(t => typeof t === 'string' ? { condition: t, text: '' } : { condition: t.condition || '', text: t.text || '' });
+      n.checks = (n.checks || []).map(c => typeof c === 'string' ? { skill: c, dc: null, dcSuper: null, note: '', fail: '', success: '', super: '' }
+        : { skill: c.skill || '', dc: c.dc == null || c.dc === '' ? null : int(c.dc), dcSuper: c.dcSuper == null || c.dcSuper === '' ? null : int(c.dcSuper), note: c.note || '', fail: c.fail || '', success: c.success || '', super: c.super || '' });
+      ['description', 'notes', 'loot', 'title', 'displayId', 'color'].forEach(f => { if (typeof n[f] !== 'string') n[f] = n[f] == null ? '' : String(n[f]); });
+      // 3) ссылки: ключ из lib → имя → уже существующий id
+      const res = (kind, store, r, label) => { const id = key[kind][r] || key[kind][low(r)]; if (id) return id;
+        if (kind === 'wiki') { const a = wikiNow.find(w => w.id === r || low(w.title) === low(r)); if (a) return a.id; }
+        else { if (STORE.one(store, r)) return r; const byName = STORE.list(store).find(x => low(x.name) === low(r)); if (byName) return byName.id; }
+        rep.lost.push(`сцена «${n.title}»: ${label} «${r}»`); return null; };
+      n.npcs = (n.npcs || []).map(r => res('npc', 'npc', r, 'NPC')).filter(Boolean);
+      n.lootCards = (n.lootCards || []).map(r => res('item', 'item', r, 'предмет')).filter(Boolean);
+      n.wikiLinks = (n.wikiLinks || []).map(r => res('wiki', null, r, 'статья вики')).filter(Boolean);
+      n.battleKey = n.battleKey ? res('batt', 'batt', n.battleKey, 'бой') : null;
+    });
+    // 4) связи: ссылки на сцены по id, displayId или названию; дубли и петли — прочь
+    const nodeOf = r => m.nodes.find(n => n.id === r) || m.nodes.find(n => n.displayId && n.displayId === r) || m.nodes.find(n => low(n.title) === low(r));
+    const eseen = new Set();
+    m.edges = m.edges.map(e => { const a = nodeOf(e.from), b = nodeOf(e.to);
+      if (!a || !b) { rep.lost.push(`связь ${e.from} → ${e.to}: нет такой сцены`); return null; }
+      const k = a.id + '>' + b.id; if (a === b || eseen.has(k)) return null; eseen.add(k); return { from: a.id, to: b.id, label: e.label || '' }; }).filter(Boolean);
+    // 5) раскладка, если координат нет или все сцены в одной точке
+    const pos = m.nodes.map(n => `${num(n.x)},${num(n.y)}`);
+    if (m.nodes.length > 1 && new Set(pos).size < m.nodes.length * 0.7) { MAPIO.layout(m); rep.laid = true; }
+    rep.nodes = m.nodes.length; rep.edges = m.edges.length;
+    return { map: m, rep };
+  },
+  /** Слои по связям: корни слева, дальше вправо по шагам; в слое — сверху вниз */
+  layout(m) {
+    const depth = {}, inn = {}; m.nodes.forEach(n => { inn[n.id] = 0; }); m.edges.forEach(e => { inn[e.to]++; });
+    let q = m.nodes.filter(n => !inn[n.id]).map(n => n.id); if (!q.length && m.nodes.length) q = [m.nodes[0].id];
+    q.forEach(id => { depth[id] = 0; });
+    for (let i = 0; i < q.length; i++) m.edges.filter(e => e.from === q[i]).forEach(e => { if (depth[e.to] == null) { depth[e.to] = depth[q[i]] + 1; q.push(e.to); } });
+    let extra = Math.max(0, ...Object.values(depth)) + 1; m.nodes.forEach(n => { if (depth[n.id] == null) depth[n.id] = extra++; });
+    const row = {}; m.nodes.forEach(n => { const d = depth[n.id]; row[d] = (row[d] || 0) + 1; n.x = 40 + d * 270; n.y = 40 + (row[d] - 1) * 190; });
+  },
+  summary(r) {
+    const p = [`${r.nodes} сцен`, r.edges && `${r.edges} связей`, r.npc && `NPC: ${r.npc}`, r.item && `предметов: ${r.item}`, r.batt && `боёв: ${r.batt}`, r.wiki && `статей: ${r.wiki}`, r.laid && 'сцены разложены по связям'].filter(Boolean);
+    return p.join(', ');
+  },
+};
 
 /* ── Экспедиция ── */
 const EXP_DEFAULT = { day: 1, hoursToday: 0, supplies: 20, party: 4, names: ['Персонаж 1', 'Персонаж 2', 'Персонаж 3', 'Персонаж 4'],
@@ -2600,7 +2690,11 @@ const LEGACY = {
   },
   mergeWiki(arts) {
     const cur = STORE.get('wiki', []); let n = 0;
-    arts.forEach(a => { if (!a || !a.title) return; const i = cur.findIndex(x => x.id === a.id); if (i >= 0) cur[i] = normArticle(a); else { cur.push(normArticle(a)); n++; } });
+    arts.forEach(a => { if (!a || !a.title) return;
+      const { id, ...rest } = a, art = normArticle(id ? a : rest);
+      if (!WIKI_CATS[art.category]) art.category = 'lore';
+      if (!Array.isArray(art.tags)) art.tags = String(art.tags || '').split(',').map(s => s.trim()).filter(Boolean);
+      const i = cur.findIndex(x => x.id === art.id); if (i >= 0) cur[i] = art; else { cur.push(art); n++; } });
     STORE.set('wiki', cur); return n;
   },
   hasOld() { for (let i = 0; i < localStorage.length; i++) if (localStorage.key(i)?.startsWith('hdnf_')) return true; return false; },
@@ -2698,9 +2792,14 @@ const SHARE = {
         return { status: 'partial', have, total, missing: Array.from({ length: total }, (_, i) => i + 1).filter(i => !parts[i]) };
       }
     }
-    const s = t.trim();
-    if (s.startsWith('{') || s.startsWith('[')) { try { return { status: 'json', json: JSON.parse(s) }; } catch (e) { } }
-    return { status: 'none' };
+    // JSON — в том числе из ответа нейросети: в ```json …```, с текстом до и после
+    const s = t.trim(), fence = s.match(/```(?:json)?\s*([\s\S]*?)```/i);
+    let err = null;
+    for (const cand of [fence && fence[1].trim(), s, (() => { const a = s.search(/[{[]/), b = Math.max(s.lastIndexOf('}'), s.lastIndexOf(']')); return a >= 0 && b > a ? s.slice(a, b + 1) : null; })()]) {
+      if (!cand || !/^[{[]/.test(cand)) continue;
+      try { return { status: 'json', json: JSON.parse(cand) }; } catch (e) { err = err || e.message; }
+    }
+    return err ? { status: 'badjson', error: err } : { status: 'none' };
   },
 
   /* ── Окно «Поделиться» ── */
@@ -2753,8 +2852,9 @@ const SHARE = {
       const r = SHARE.scan(ta.value);
       if (r.status === 'none') { st.innerHTML = ta.value.trim() ? '<span class="c-red">Код не найден. Он начинается с DND9</span>' : ''; return; }
       if (r.status === 'partial') { st.innerHTML = `<span class="c-orange">Найдено частей: ${r.have} из ${r.total}. Не хватает: ${r.missing.join(', ')} — вставь их тоже (можно сразу следом).</span>`; return; }
+      if (r.status === 'badjson') { st.innerHTML = `<span class="c-red">Похоже на JSON, но в нём ошибка: ${esc(r.error)}. Попроси нейросеть прислать исправленный JSON целиком.</span>`; return; }
       try {
-        if (r.status === 'json') parsed = { legacy: r.json };
+        if (r.status === 'json') parsed = r.json && r.json.v === 9 && r.json.k ? r.json : { legacy: r.json };
         else parsed = await SHARE.decodePayload(r.payload);
         st.innerHTML = `<span class="c-green">✓ ${esc(SHARE.describe(parsed))}</span>`; go.disabled = false;
       } catch (e) { st.innerHTML = `<span class="c-red">Код повреждён: ${esc(e.message)}. Возможно, скопирован не целиком.</span>`; }
@@ -2770,15 +2870,16 @@ const SHARE = {
   },
   describe(o) {
     if (o.legacy) return 'Файл/JSON старой версии — будет перенесён';
-    const d = o.d;
+    const d = o.d || {}, arr = Array.isArray(d) ? d : [d];
     switch (o.k) {
       case 'pc': return `Персонаж «${d.name || '?'}»${d.cls ? ' · ' + d.cls : ''}${d.level ? ' ' + d.level + ' ур.' : ''}`;
-      case 'items': return `Предметы: ${(d || []).map(i => (i.qty > 1 ? i.qty + '× ' : '') + i.name).slice(0, 6).join(', ')}${d.length > 6 ? '…' : ''}`;
+      case 'items': return `Предметы: ${arr.map(i => (i.qty > 1 ? i.qty + '× ' : '') + i.name).slice(0, 6).join(', ')}${arr.length > 6 ? '…' : ''}`;
       case 'npc': return `NPC «${d.name}»`;
-      case 'npcs': return `NPC: ${d.length}`;
-      case 'batt': return `Бой «${d.name || 'без названия'}» · ${(d.list || []).length} участн.`;
-      case 'map': return `Карта сцен «${d.title}» · ${(d.nodes || []).length} сцен`;
-      case 'wiki': return `Статей вики: ${(d || []).length}`;
+      case 'npcs': return `NPC: ${arr.map(n => n.name).slice(0, 6).join(', ')}${arr.length > 6 ? '…' : ''}`;
+      case 'batt': return `Бой «${d.name || 'без названия'}» · ${d.fighters ? d.fighters.reduce((s, f) => s + clamp(int(f.count, 1), 1, 20), 0) : (d.list || []).length} участн.`;
+      case 'map': { const l = d.lib || {}; const extra = [l.npc?.length && `NPC ${l.npc.length}`, l.item?.length && `предм. ${l.item.length}`, l.batt?.length && `боёв ${l.batt.length}`, l.wiki?.length && `статей ${l.wiki.length}`].filter(Boolean);
+        return `Сюжет «${d.title || 'без названия'}» · ${(d.nodes || []).length} сцен${extra.length ? ' · ' + extra.join(', ') : ''}`; }
+      case 'wiki': return `Статей вики: ${arr.length}`;
       case 'all': return 'Резервная копия всех данных';
     }
     return SHARE.KIND_LABEL[o.k] || o.k;
@@ -2786,7 +2887,8 @@ const SHARE = {
   /** Применить импортированный бандл */
   async apply(o) {
     if (o.legacy) return SHARE.applyLegacy(o.legacy);
-    const d = o.d;
+    let d = o.d;
+    if (d == null || typeof d !== 'object') return toast('В коде нет данных (поле d)', 'err');
     if (o.k === 'pc') {
       const pc = normPC(d);
       const same = STORE.one('pc', pc.id) || STORE.list('pc').find(p => p.name === pc.name);
@@ -2799,7 +2901,7 @@ const SHARE = {
       toast(`🧙 «${pc.name}» загружен`, 'ok'); go('sheet'); return;
     }
     if (o.k === 'items') {
-      const items = (d || []).map(normItem);
+      const items = (Array.isArray(d) ? d : [d]).filter(Boolean).map(normItem);
       const pc = activePC();
       const opts = []; if (pc) opts.push(`В рюкзак «${pc.name}»`); if (SETTINGS.mode === 'master' || !pc) opts.push('В библиотеку лута (мастер)');
       const ch = opts.length > 1 ? await choiceBox('Куда положить?', opts) : 0; if (ch == null) return;
@@ -2807,10 +2909,22 @@ const SHARE = {
       else { items.forEach(it => STORE.put('item', itemCopy(it))); toast(`📜 В библиотеку: ${items.length}`, 'ok'); go('loot'); }
       return;
     }
-    if (o.k === 'npc' || o.k === 'npcs') { const list = o.k === 'npc' ? [d] : d; list.forEach(n => STORE.put('npc', normNPC({ ...n, id: uid('npc') }))); toast(`👹 NPC добавлено: ${list.length}`, 'ok'); go('npc'); return; }
-    if (o.k === 'batt') { const b = normBattle(d); b.id = uid('b'); STORE.put('batt', b); toast('⚔ Бой сохранён в библиотеку', 'ok'); go('tracker'); return; }
-    if (o.k === 'map') { const mp = normMap({ ...d, id: uid('map') }); STORE.put('map', mp); SETTINGS.map = mp.id; saveSettings(); toast('🗺 Карта загружена', 'ok'); go('scenes'); return; }
-    if (o.k === 'wiki') { const n = LEGACY.mergeWiki(d || []); toast(`📚 Новых статей: ${n}`, 'ok'); go('wiki'); return; }
+    if (o.k === 'npc' || o.k === 'npcs') { const list = (Array.isArray(d) ? d : [d]).filter(x => x && x.name); list.forEach(n => STORE.put('npc', normNPC({ ...n, id: uid('npc') }))); toast(`👹 NPC добавлено: ${list.length}`, 'ok'); go('npc'); return; }
+    if (o.k === 'batt') {
+      // простой формат: { name, fighters: [ {…NPC…, count: 3} ] } — бойцы строятся как из библиотеки NPC
+      if (Array.isArray(d.fighters)) { let tag = 1; d = { ...d, list: d.fighters.flatMap(f => Array.from({ length: clamp(int(f.count, 1), 1, 20) }, (_, i) =>
+        npcToCombatant(normNPC({ ...f, name: int(f.count, 1) > 1 ? `${f.name} ${i + 1}` : f.name }), tag++))) }; delete d.fighters; }
+      const b = normBattle(d); b.id = uid('b'); STORE.put('batt', b); toast('⚔ Бой сохранён в библиотеку', 'ok'); go('tracker'); return; }
+    if (o.k === 'map') {
+      const { map: mp, rep } = MAPIO.import(d || {});
+      STORE.put('map', mp); SETTINGS.map = mp.id; saveSettings(); MAP = null;
+      if (rep.lost.length || rep.fixed.length) await confirmBox(`Сюжет «${mp.title}» загружен: ${MAPIO.summary(rep)}.` +
+        (rep.lost.length ? `\n\n⚠ Не нашлось (ссылки убраны):\n• ${rep.lost.slice(0, 12).join('\n• ')}${rep.lost.length > 12 ? `\n…и ещё ${rep.lost.length - 12}` : ''}` : '') +
+        (rep.fixed.length ? `\n\n🔧 Исправлено:\n• ${rep.fixed.slice(0, 8).join('\n• ')}` : ''), { title: '🗺 Сюжет загружен', ok: 'Понятно' });
+      else toast(`🗺 Сюжет «${mp.title}»: ${MAPIO.summary(rep)}`, 'ok', 4500);
+      go('scenes'); return;
+    }
+    if (o.k === 'wiki') { const n = LEGACY.mergeWiki(Array.isArray(d) ? d : [d]); toast(`📚 Новых статей: ${n}`, 'ok'); go('wiki'); return; }
     if (o.k === 'all') { if (await confirmBox('Восстановить резервную копию? Совпадающие записи будут перезаписаны.', { ok: 'Восстановить' })) { BACKUP.restore(d); } return; }
     toast('Неизвестный тип кода', 'err');
   },
@@ -4597,8 +4711,8 @@ ACT.smMaps = el => {
     { icon: '＋', label: 'Новая карта', fn: async () => { const t = await promptBox('Название новой карты', 'Новая кампания'); if (!t) return; const nm = newMap(t.trim()); STORE.put('map', nm); SETTINGS.map = nm.id; saveSettings(); MAP = null; SM.sel = null; route(); } },
     { icon: '✎', label: 'Переименовать', fn: async () => { const t = await promptBox('Название карты', m.title); if (t == null) return; m.title = t.trim() || 'Без названия'; mapSave(); renderTop(); route(); } },
     { icon: '⧉', label: 'Дублировать', fn: () => { const c = clone(m); c.id = uid('map'); c.title += ' (копия)'; STORE.put('map', c); SETTINGS.map = c.id; saveSettings(); MAP = null; route(); } },
-    { icon: '📤', label: 'Поделиться кодом', fn: () => SHARE.open('map', m, m.title) },
-    { icon: '📄', label: 'Скачать JSON', fn: () => download(`сцены_${fileSafe(m.title)}.json`, JSON.stringify({ v: 9, k: 'map', d: m }, null, 1)) },
+    { icon: '📤', label: 'Поделиться кодом (с NPC, лутом, боями, вики)', fn: () => SHARE.open('map', MAPIO.bundle(m), m.title) },
+    { icon: '📄', label: 'Скачать JSON', fn: () => download(`сцены_${fileSafe(m.title)}.json`, JSON.stringify({ v: 9, k: 'map', d: MAPIO.bundle(m) }, null, 1)) },
     { icon: '📥', label: 'Импорт (код или файл V8)', fn: () => SHARE.openImport() },
     { sep: 1 },
     { icon: '🧹', label: 'Очистить карту', danger: true, fn: async () => { if (!await confirmBox('Удалить все сцены и связи этой карты?', { ok: 'Очистить', danger: true })) return; m.nodes = []; m.edges = []; SM.sel = null; mapSave(); route(); } },
