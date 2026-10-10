@@ -223,7 +223,7 @@ html.in-tg #nav{top:var(--safe-t,0px);height:calc(100vh - var(--safe-t,0px));}
 html.in-tg #top{top:var(--safe-t,0px);}
 html.in-tg #app{min-height:calc(100vh - var(--safe-t,0px));}
 /* полоса под кнопками Telegram — непрозрачная, чтобы прокручиваемое не просвечивало */
-html.in-tg body::before{content:'';position:fixed;left:0;right:0;top:0;height:var(--safe-t,0px);background:#0c0b0a;z-index:80;pointer-events:none;}
+html.in-tg body::before{content:'';position:fixed;left:0;right:0;top:0;height:var(--safe-t,0px);background:var(--bg0);z-index:80;pointer-events:none;}
 /* В Telegram меню слева — узкий рельс из одних иконок (названия — во всплывающей подсказке) */
 @media (min-width:640px){
   html.in-tg{--nav-w:58px;}
@@ -683,6 +683,11 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:grabbing;}
 .font-pick button{display:flex;flex-direction:column;gap:3px;padding:10px 12px;text-align:left;border:1px solid var(--line2);border-radius:6px;background:rgba(0,0,0,.25);}
 .font-pick button b{font-size:17px;color:var(--gold2);} .font-pick button small{font-size:13px;color:var(--tx2);}
 .font-pick button.on{border-color:var(--teal2);background:rgba(36,96,111,.25);}
+.theme-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;}
+.theme-pick button{display:flex;flex-direction:column;gap:4px;padding:12px;text-align:left;border:1px solid var(--line2);border-radius:6px;}
+.theme-pick button b{font-size:16px;color:#f2ecf6;} .theme-pick button small{font-size:12.5px;color:#a99fb4;}
+.theme-pick button.on{border-color:var(--teal2);box-shadow:0 0 0 1px var(--teal2);}
+.th-sw{display:flex;gap:5px;} .th-sw i{width:18px;height:18px;border-radius:50%;box-shadow:0 0 0 1px rgba(0,0,0,.6);}
 
 /* Мастер создания персонажа */
 .cw-steps{display:flex;flex-wrap:wrap;}
@@ -698,9 +703,11 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:grabbing;}
 @media (max-width:520px){ .cw-sum{grid-template-columns:repeat(3,1fr);} .cw-steps button{font-size:12px;padding:5px 6px;} }
 
 /* Встроенный ttg.club */
-.ttg-view .mbody{padding:0;}
-.ttg-frame{display:block;width:100%;height:72vh;border:0;background:#0d0d0d;}
-@media (max-width:639px){ .ttg-frame{height:calc(100vh - 170px);} }
+/* почти во весь экран: на ПК 96%×92%, на телефоне — вся высота */
+.mbox.ttg-view{max-width:none;width:96vw;height:92vh;max-height:none;}
+.ttg-view .mbody{padding:0;display:flex;overflow:hidden;}
+.ttg-frame{display:block;flex:1;width:100%;height:auto;min-height:0;border:0;background:#0d0d0d;}
+@media (max-width:639px){ .mbox.ttg-view{width:100%;height:calc(100vh - var(--safe-t,0px));max-height:none;} }
 
 /* ── inv.css ── */
 /* ═══════════════════════════════════════════════════════
@@ -1157,6 +1164,291 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:grabbing;}
   .gm-card{padding:12px;} .gm-title{font-size:27px;}
 }
 
+/* ── theme.css ── */
+/* ═══════════════════════════════════════════════════════
+   ТЕМА «БАГРОВЫЕ СУМЕРКИ» — html[data-theme="crimson"]
+   Воронёное железо, кровавая луна, розы, лиловые сумерки, плёночное зерно.
+   Включается в «Сохранения → 🎨 Тема». Всё ниже действует только при этой теме.
+═══════════════════════════════════════════════════════ */
+html[data-theme="crimson"]{
+  --bg0:#09080b; --bg1:#0e0c11; --bg2:#141118; --bg3:#1b1720; --bg4:#241f2b; --bg5:#2e2836;
+  --line:#25202c; --line2:#383042; --line3:#574a66;
+  --gold:#b3303f; --gold2:#e9dfee; --gold3:#6e5d82; --gold-glow:rgba(190,36,56,.28);
+  --tx:#e6deec; --tx2:#ab9fb8; --tx3:#736a80;
+  --teal:#6d1421; --teal2:#c2293c; --teal3:#ff9aa6; --teal-bg:#2a0b11;
+  --red:#c2293c; --red2:#ec5f72; --green:#55744a; --green2:#8db27a; --blue:#5869a3; --blue2:#9ba8dc;
+  --purple:#7b5ca3; --purple2:#b9a0db; --orange:#b35c3a; --orange2:#e2906a; --yellow:#c8a14d;
+  --r:3px;
+  --frame:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect x='3.5' y='3.5' width='41' height='41' fill='none' stroke='%233e3450'/%3E%3Crect x='6.5' y='6.5' width='35' height='35' fill='none' stroke='%23c2293c' stroke-opacity='.22'/%3E%3Cpath d='M4 0 5.6 2.4 8 4 5.6 5.6 4 8 2.4 5.6 0 4 2.4 2.4ZM44 0 45.6 2.4 48 4 45.6 5.6 44 8 42.4 5.6 40 4 42.4 2.4ZM4 40 5.6 42.4 8 44 5.6 45.6 4 48 2.4 45.6 0 44 2.4 42.4ZM44 40 45.6 42.4 48 44 45.6 45.6 44 48 42.4 45.6 40 44 42.4 42.4Z' fill='%23b3303f'/%3E%3Cpath d='M24 1 25.5 3.5 24 6 22.5 3.5ZM24 42 25.5 44.5 24 47 22.5 44.5Z' fill='%236e5d82'/%3E%3C/svg%3E");
+  --thorn:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='9'%3E%3Cpath d='M0 5.5H22' stroke='%235b4b6c' stroke-width='1'/%3E%3Cpath d='M9.5 5.5 11 1.5 12.5 5.5Z' fill='%23a32838'/%3E%3Cpath d='M3 5.5 4 7.6 5 5.5Z' fill='%235b4b6c'/%3E%3C/svg%3E");
+  color-scheme:dark;
+}
+/* ── Небо: лиловые сумерки, кровавая луна, силуэт замка ── */
+html[data-theme="crimson"] body{
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 260' preserveAspectRatio='xMidYMax slice'%3E%3Cpath d='M0 260V205Q140 182 290 200L330 196V160H342V118L350 96L358 118V160H392V132H402V96L412 52L422 96V132H440V150H486V112H494V68L506 18L518 68V112H526V150H566V128H576V96L584 78L592 96V128H612V176L700 186Q790 168 880 190L930 182V150H940V124L947 108L954 124V150H964V186Q1080 176 1200 196V260Z' fill='%23060509' fill-opacity='.92'/%3E%3Cpath d='M0 260V228Q180 212 380 226Q600 210 820 230Q1010 214 1200 232V260Z' fill='%23040306'/%3E%3C/svg%3E") bottom center / 100% auto no-repeat fixed,
+    radial-gradient(circle at 82% 13%,rgba(158,26,42,.62) 0,rgba(150,24,40,.55) 46px,rgba(150,24,40,.16) 49px,rgba(120,18,34,.06) 150px,transparent 260px) fixed,
+    radial-gradient(ellipse 90% 45% at 50% 105%,rgba(96,62,120,.22),transparent 70%) fixed,
+    linear-gradient(180deg,#0b0a0e 0%,#131019 42%,#1c1524 72%,#100c14 100%) fixed;
+}
+@media (max-width:639px){ html[data-theme="crimson"] body{background-attachment:scroll,fixed,fixed,fixed;} }
+/* Туман — медленно дрейфует (как слоу-версия трека) */
+html[data-theme="crimson"] #app{position:relative;}
+html[data-theme="crimson"] #app::before{content:'';position:fixed;inset:-25%;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 40% 22% at 30% 70%,rgba(140,110,170,.07),transparent 70%),
+    radial-gradient(ellipse 35% 18% at 70% 40%,rgba(160,60,80,.05),transparent 70%),
+    radial-gradient(ellipse 50% 25% at 50% 95%,rgba(120,90,150,.08),transparent 70%);
+  animation:cwFog 70s ease-in-out infinite alternate;}
+html[data-theme="crimson"] #nav,html[data-theme="crimson"] #main{position:relative;z-index:1;}
+html[data-theme="crimson"] #nav{position:sticky;}
+@keyframes cwFog{0%{transform:translate3d(-3%,1%,0) scale(1)}50%{transform:translate3d(2%,-2%,0) scale(1.05)}100%{transform:translate3d(4%,1%,0) scale(1.02)}}
+/* Плёночное зерно + слабые строки развёртки, поверх всего */
+html[data-theme="crimson"] #app::after{content:'';position:fixed;inset:-50px;z-index:1500;pointer-events:none;opacity:.07;mix-blend-mode:overlay;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.5) 0 1px,transparent 1px 3px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:cwGrain 1.2s steps(5) infinite;}
+@keyframes cwGrain{0%{transform:translate(0,0)}20%{transform:translate(-14px,9px)}40%{transform:translate(11px,-12px)}60%{transform:translate(-8px,-6px)}80%{transform:translate(13px,11px)}100%{transform:translate(0,0)}}
+@media (prefers-reduced-motion:reduce){ html[data-theme="crimson"] #app::before,html[data-theme="crimson"] #app::after{animation:none;} }
+
+/* ── Типографика и орнаменты ── */
+html[data-theme="crimson"] ::selection{background:rgba(194,41,60,.4);}
+html[data-theme="crimson"] .t-title,html[data-theme="crimson"] .mhead h3{text-shadow:0 0 18px rgba(170,30,50,.25);}
+html[data-theme="crimson"] .orn{font-size:14px;letter-spacing:2.2px;text-transform:uppercase;color:var(--gold2);}
+html[data-theme="crimson"] .orn::before,html[data-theme="crimson"] .orn::after{height:9px;background:var(--thorn) repeat-x center;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 45%);mask-image:linear-gradient(90deg,transparent,#000 45%);}
+html[data-theme="crimson"] .orn::after{-webkit-mask-image:linear-gradient(90deg,#000 55%,transparent);mask-image:linear-gradient(90deg,#000 55%,transparent);}
+html[data-theme="crimson"] .orn i{color:var(--red);text-shadow:0 0 8px rgba(194,41,60,.6);}
+html[data-theme="crimson"] .divider{background:var(--thorn) repeat-x center;height:9px;opacity:.8;}
+html[data-theme="crimson"] .die-res{color:#f3e8f2;text-shadow:0 0 22px rgba(200,30,50,.55),0 0 2px rgba(255,180,190,.4);}
+
+/* ── Поверхности: воронёная сталь вместо тёплого дерева ── */
+html[data-theme="crimson"] .frame{background:linear-gradient(180deg,rgba(27,23,33,.96),rgba(13,11,16,.97));}
+html[data-theme="crimson"] .panel{background:linear-gradient(180deg,var(--bg3),var(--bg2));box-shadow:0 0 0 1px rgba(0,0,0,.7),inset 0 1px 0 rgba(194,41,60,.18),0 8px 26px rgba(0,0,0,.55);}
+html[data-theme="crimson"] .sec{background:linear-gradient(180deg,rgba(27,22,33,.94),rgba(13,11,17,.95));border-color:var(--line2);
+  box-shadow:inset 0 1px 0 rgba(194,41,60,.3),0 6px 22px rgba(0,0,0,.45);}
+html[data-theme="crimson"] .sec-h{letter-spacing:1.2px;}
+html[data-theme="crimson"] .sec-h.t-red{background:linear-gradient(135deg,rgba(194,41,60,.26),transparent 65%),var(--bg3);}
+html[data-theme="crimson"] .sec-h.t-gold,html[data-theme="crimson"] .sec-h.t-orange{background:linear-gradient(135deg,rgba(150,40,70,.2),transparent 65%),var(--bg3);}
+html[data-theme="crimson"] .pill,html[data-theme="crimson"] .abil,html[data-theme="crimson"] .hpb,html[data-theme="crimson"] .pc-card,html[data-theme="crimson"] .np-card,
+html[data-theme="crimson"] .nc,html[data-theme="crimson"] .smn,html[data-theme="crimson"] .gm-tile,html[data-theme="crimson"] .die,html[data-theme="crimson"] .trk-bar{
+  background:linear-gradient(180deg,#1d1924,#100d14);}
+html[data-theme="crimson"] .gm-card,html[data-theme="crimson"] .lib-form .ifm,html[data-theme="crimson"] .izone{background:linear-gradient(180deg,rgba(27,22,33,.96),rgba(12,10,15,.96));}
+html[data-theme="crimson"] .izone-h{background:var(--bg3);}
+html[data-theme="crimson"] .anchors{background:linear-gradient(180deg,rgba(11,9,14,.97) 70%,rgba(11,9,14,0));}
+html[data-theme="crimson"] .anchors button{background:rgba(22,18,27,.92);}
+html[data-theme="crimson"] .well{background:rgba(5,4,8,.4);}
+html[data-theme="crimson"] .chk-row:hover,html[data-theme="crimson"] .menu .mi:hover{background:rgba(194,41,60,.1);}
+html[data-theme="crimson"] .home-logo span{filter:drop-shadow(0 0 16px rgba(200,30,50,.6));}
+html[data-theme="crimson"] .home-logo h1{color:#f0e6f4;letter-spacing:2px;text-shadow:0 0 28px rgba(170,20,40,.55),0 2px 12px rgba(0,0,0,.9);}
+html[data-theme="crimson"] .nav-brand .logo{filter:drop-shadow(0 0 8px rgba(200,30,50,.6));}
+html[data-theme="crimson"] .nav-brand b{color:#efe5f3;}
+
+/* ── Каркас: меню, шапка, нижняя панель, окна ── */
+html[data-theme="crimson"] #nav{background:linear-gradient(180deg,#120f17,#08070a);border-right-color:#2a2331;}
+html[data-theme="crimson"] .nav-item.on{background:linear-gradient(90deg,rgba(150,24,40,.42),rgba(150,24,40,.06));border-color:rgba(194,41,60,.4);color:#fbe9ec;}
+html[data-theme="crimson"] .nav-item:hover{background:rgba(110,93,130,.12);}
+html[data-theme="crimson"] #top{background:linear-gradient(180deg,rgba(20,16,25,.96),rgba(10,8,13,.96));}
+html[data-theme="crimson"] #top::after{background:linear-gradient(90deg,transparent,rgba(194,41,60,.75),transparent);}
+html[data-theme="crimson"] #tabbar{background:linear-gradient(180deg,#151119,#08070a);border-top-color:#3a2f45;}
+html[data-theme="crimson"] #tabbar::before{background:linear-gradient(90deg,transparent,var(--red),transparent);}
+html[data-theme="crimson"] .tab.on{color:#f3a1ad;}
+html[data-theme="crimson"] .tab.on .ti{filter:drop-shadow(0 0 6px rgba(200,30,50,.65));}
+html[data-theme="crimson"] .modal{background:rgba(6,4,9,.78);backdrop-filter:blur(4px) saturate(.8);}
+html[data-theme="crimson"] .mbox{background:linear-gradient(180deg,#1b1621,#0d0b10);box-shadow:0 0 0 1px rgba(0,0,0,.6),0 20px 70px rgba(0,0,0,.85),0 0 60px rgba(120,15,30,.18);}
+html[data-theme="crimson"] .menu{background:linear-gradient(180deg,#1c1722,#0f0d13);}
+html[data-theme="crimson"] .toast{background:linear-gradient(180deg,#1e1924,#100d14);}
+html[data-theme="crimson"] .toast.ok{border-color:var(--red);box-shadow:0 10px 30px rgba(0,0,0,.7),0 0 18px rgba(194,41,60,.25);}
+
+/* ── Кнопки: воронёная сталь, острые грани; главные — клинок ── */
+html[data-theme="crimson"] .btn{border-radius:2px;background:linear-gradient(180deg,#26212e,#141118);border-color:#4b4058;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 1px 0 rgba(0,0,0,.7);}
+html[data-theme="crimson"] .btn:hover{border-color:var(--red);color:#fbe9ec;box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 0 14px rgba(194,41,60,.3);}
+html[data-theme="crimson"] .btn.pri{background:linear-gradient(180deg,#8c1a2a,#470a14);border-color:#d23a4e;color:#fff0f2;text-shadow:0 1px 2px rgba(0,0,0,.6);}
+html[data-theme="crimson"] .btn.pri:hover{border-color:#ff7a8c;box-shadow:0 0 18px rgba(214,40,62,.5);}
+html[data-theme="crimson"] .btn.gold{background:linear-gradient(180deg,#4e4760,#26212f);border-color:#b8adc9;color:#f4eff8;}
+html[data-theme="crimson"] .btn.on{background:linear-gradient(180deg,#5c1220,#2c070e);border-color:var(--red);color:#ffd9de;}
+html[data-theme="crimson"] .btn.ghost{background:transparent;}
+html[data-theme="crimson"] .hexbtn{--hx:24px;background:linear-gradient(180deg,#5a4a6b,#2a2232);letter-spacing:1.5px;}
+html[data-theme="crimson"] .hexbtn::before{background:linear-gradient(180deg,#1f1a26 0%,#0e0c12 100%);}
+html[data-theme="crimson"] .hexbtn.pri{background:linear-gradient(180deg,#e0475b,#7a1424);color:#fff1f3;}
+html[data-theme="crimson"] .hexbtn.pri::before{background:linear-gradient(180deg,#741424 0%,#2a050c 100%);}
+html[data-theme="crimson"] .hexbtn:hover{filter:brightness(1.22) saturate(1.1);}
+html[data-theme="crimson"] .seg{border-radius:2px;}
+html[data-theme="crimson"] .seg button.on{background:linear-gradient(180deg,#8c1a2a,#470a14);color:#fff0f2;}
+html[data-theme="crimson"] .tgl input:checked+span{background:#6d1421;border-color:var(--red);}
+html[data-theme="crimson"] .atk-roll:hover{box-shadow:0 0 12px rgba(194,41,60,.35);}
+
+/* ── Активные состояния: багрянец вместо бирюзы ── */
+html[data-theme="crimson"] .chip.on,html[data-theme="crimson"] .tagb-opt.on,html[data-theme="crimson"] .font-pick button.on,html[data-theme="crimson"] .zone-pick button.on,
+html[data-theme="crimson"] .lib-row.on,html[data-theme="crimson"] .exp-terr button.on,html[data-theme="crimson"] .gm-scene.on,html[data-theme="crimson"] .theme-pick button.on{
+  background:rgba(170,30,48,.2);border-color:var(--red);color:#ffd9de;}
+html[data-theme="crimson"] .pc-card.on{border-color:var(--red);box-shadow:0 0 0 1px rgba(194,41,60,.3);}
+html[data-theme="crimson"] .note,html[data-theme="crimson"] .help-ex,html[data-theme="crimson"] .gm-tip{background:rgba(110,93,130,.1);border-left-color:var(--gold3);}
+html[data-theme="crimson"] .round-btn{background:linear-gradient(180deg,rgba(140,26,42,.35),rgba(60,10,20,.45));border-color:var(--red);}
+html[data-theme="crimson"] .smn.sel{box-shadow:0 0 0 2px rgba(194,41,60,.5),0 8px 24px rgba(0,0,0,.6);}
+html[data-theme="crimson"] .gm-tile:hover{border-color:var(--red);color:#ffd9de;}
+html[data-theme="crimson"] .drop-ok{outline-color:var(--red);background:rgba(170,30,48,.12)!important;}
+html[data-theme="crimson"] .drop-hover{outline-color:#ff8a98!important;background:rgba(170,30,48,.25)!important;}
+html[data-theme="crimson"] .flash{animation-name:cwFlash;}
+@keyframes cwFlash{0%{box-shadow:0 0 0 0 rgba(214,40,62,.7)}100%{box-shadow:0 0 0 12px rgba(214,40,62,0)}}
+html[data-theme="crimson"] input:focus,html[data-theme="crimson"] select:focus,html[data-theme="crimson"] textarea:focus{border-color:var(--red);box-shadow:0 0 0 2px rgba(194,41,60,.18);}
+html[data-theme="crimson"] input[type=text],html[data-theme="crimson"] input[type=number],html[data-theme="crimson"] input[type=search],
+html[data-theme="crimson"] input:not([type]),html[data-theme="crimson"] select,html[data-theme="crimson"] textarea{border-radius:2px;background:rgba(6,5,9,.55);}
+html[data-theme="crimson"] .tagc.adv{background:rgba(185,173,201,.1);border-color:rgba(220,210,232,.35);color:#e6dcef;}
+
+/* ── Магия: ячейки — фиолетовый «аркан», а не синий ── */
+html[data-theme="crimson"] .slot-pip{background:linear-gradient(180deg,#8a63b8,#4b2d72);color:#efe4ff;box-shadow:0 2px 10px rgba(123,92,163,.45);}
+html[data-theme="crimson"] .hp-bar{background:#050407;}
+
+/* ── theme_light.css ── */
+/* ═══════════════════════════════════════════════════════
+   ТЕМА «СОЛНЕЧНАЯ БАЛЛАДА» — html[data-theme="light"]
+   Светлое фэнтези: пергамент и чернила, золото, лазурь неба и витражей, шалфей лугов, маки,
+   солнечные лучи сквозь листву и пылинки в них. Всё ниже действует только при этой теме.
+═══════════════════════════════════════════════════════ */
+html[data-theme="light"]{
+  --bg0:#f2e9d6; --bg1:#efe5cf; --bg2:#ebdfc4; --bg3:#f8f1e2; --bg4:#e4d6b8; --bg5:#d9c7a2;
+  --line:#e0d1b0; --line2:#cdb88c; --line3:#ad9563;
+  --gold:#b08a2e; --gold2:#6b4a12; --gold3:#c4a462; --gold-glow:rgba(232,190,90,.4);
+  --tx:#3a2e20; --tx2:#5e4f3d; --tx3:#8a7a60;
+  --teal:#2e6aa0; --teal2:#3f86c4; --teal3:#1f5a8c; --teal-bg:#dceaf5;
+  --red:#b8402c; --red2:#a8361f; --green:#4f7a3a; --green2:#3c6a28; --blue:#3b72a8; --blue2:#2a5f93;
+  --purple:#7a59a8; --purple2:#634592; --orange:#c07a2a; --orange2:#9a5a14; --yellow:#b8901e;
+  --r:8px;
+  --frame:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect x='3.5' y='3.5' width='41' height='41' rx='2' fill='none' stroke='%23c4a462'/%3E%3Crect x='6.5' y='6.5' width='35' height='35' fill='none' stroke='%23b08a2e' stroke-opacity='.25'/%3E%3Cg fill='%23b08a2e'%3E%3Ccircle cx='4' cy='4' r='2.6'/%3E%3Ccircle cx='44' cy='4' r='2.6'/%3E%3Ccircle cx='4' cy='44' r='2.6'/%3E%3Ccircle cx='44' cy='44' r='2.6'/%3E%3C/g%3E%3Cg fill='%237d9a55'%3E%3Cellipse cx='9' cy='4' rx='2.6' ry='1.1'/%3E%3Cellipse cx='39' cy='4' rx='2.6' ry='1.1'/%3E%3Cellipse cx='9' cy='44' rx='2.6' ry='1.1'/%3E%3Cellipse cx='39' cy='44' rx='2.6' ry='1.1'/%3E%3C/g%3E%3Cg fill='%23fff6dc'%3E%3Ccircle cx='4' cy='4' r='1'/%3E%3Ccircle cx='44' cy='4' r='1'/%3E%3Ccircle cx='4' cy='44' r='1'/%3E%3Ccircle cx='44' cy='44' r='1'/%3E%3C/g%3E%3C/svg%3E");
+  --vine:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='10'%3E%3Cpath d='M0 5.5Q7.5 3.5 15 5.5T30 5.5' fill='none' stroke='%23c4a462' stroke-width='1.1'/%3E%3Cellipse cx='9' cy='3.6' rx='2.6' ry='1.2' transform='rotate(-25 9 3.6)' fill='%237d9a55'/%3E%3Cellipse cx='22' cy='7.2' rx='2.4' ry='1.1' transform='rotate(25 22 7.2)' fill='%2391ad69'/%3E%3Ccircle cx='15.5' cy='5.4' r='1.3' fill='%23c94a35'/%3E%3C/svg%3E");
+  color-scheme:light;
+}
+/* ── Небо, солнце, лучи, луга с маками, далёкий замок ── */
+html[data-theme="light"] body{color:var(--tx);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 260' preserveAspectRatio='xMidYMax slice'%3E%3Cg fill='%23b7c3cc' fill-opacity='.55'%3E%3Cpath d='M860 150V120H868V96L874 80L880 96V120H896V104L903 86L910 104V124H930V112H936V92L942 78L948 92V112H956V150Z'/%3E%3C/g%3E%3Cpath d='M0 260V176Q160 140 330 168Q520 196 700 160Q900 124 1200 170V260Z' fill='%23b4c48e' fill-opacity='.55'/%3E%3Cpath d='M0 260V206Q220 178 460 204Q700 228 900 196Q1060 176 1200 198V260Z' fill='%239bb174' fill-opacity='.6'/%3E%3Cg fill='%23d0503a' fill-opacity='.75'%3E%3Ccircle cx='120' cy='226' r='3'/%3E%3Ccircle cx='190' cy='240' r='2.4'/%3E%3Ccircle cx='260' cy='222' r='2.2'/%3E%3Ccircle cx='410' cy='238' r='3'/%3E%3Ccircle cx='480' cy='226' r='2.2'/%3E%3Ccircle cx='620' cy='244' r='2.8'/%3E%3Ccircle cx='760' cy='226' r='2.4'/%3E%3Ccircle cx='840' cy='242' r='3'/%3E%3Ccircle cx='990' cy='230' r='2.4'/%3E%3Ccircle cx='1090' cy='244' r='2.8'/%3E%3Ccircle cx='60' cy='246' r='2.4'/%3E%3Ccircle cx='330' cy='248' r='2.6'/%3E%3C/g%3E%3C/svg%3E") bottom center / 100% auto no-repeat fixed,
+    radial-gradient(circle at 34% 4%,rgba(255,252,236,.95) 0,rgba(255,240,190,.55) 70px,rgba(255,226,150,.18) 220px,transparent 460px) fixed,
+    repeating-linear-gradient(115deg,rgba(255,236,170,.0) 0 60px,rgba(255,236,170,.13) 60px 95px,rgba(255,236,170,0) 95px 170px) fixed,
+    linear-gradient(180deg,#cfe1ec 0%,#e6e9dc 28%,#f2e9d6 55%,#efe4cc 100%) fixed;
+}
+@media (max-width:639px){ html[data-theme="light"] body{background-attachment:scroll,fixed,fixed,fixed;} }
+/* Пылинки в лучах — медленно всплывают */
+html[data-theme="light"] #app{position:relative;}
+html[data-theme="light"] #nav,html[data-theme="light"] #main{position:relative;z-index:1;}
+html[data-theme="light"] #nav{position:sticky;}
+html[data-theme="light"] #app::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.7;
+  background:radial-gradient(circle,rgba(255,244,200,.95) 0 1.4px,transparent 2.4px) 0 0/230px 260px,
+    radial-gradient(circle,rgba(255,236,170,.8) 0 1px,transparent 2px) 60px 90px/170px 210px,
+    radial-gradient(circle,rgba(255,250,225,.9) 0 1.8px,transparent 3px) 120px 30px/310px 340px;
+  animation:sbMotes 90s linear infinite;}
+@keyframes sbMotes{from{background-position:0 0,60px 90px,120px 30px}to{background-position:40px -780px,10px -840px,160px -1020px}}
+/* Фактура бумаги */
+html[data-theme="light"] #app::after{content:'';position:fixed;inset:0;z-index:1500;pointer-events:none;opacity:.05;mix-blend-mode:multiply;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .32 0 0 0 0 .15 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+@media (prefers-reduced-motion:reduce){ html[data-theme="light"] #app::before{animation:none;} }
+
+/* ── Типографика и орнаменты ── */
+html[data-theme="light"] ::selection{background:rgba(232,190,90,.45);}
+html[data-theme="light"] a{color:var(--teal3);}
+html[data-theme="light"] .t-title,html[data-theme="light"] .mhead h3{text-shadow:0 1px 0 rgba(255,255,255,.7);}
+html[data-theme="light"] .orn{letter-spacing:1px;}
+html[data-theme="light"] .orn::before,html[data-theme="light"] .orn::after{height:10px;background:var(--vine) repeat-x center;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 40%);mask-image:linear-gradient(90deg,transparent,#000 40%);}
+html[data-theme="light"] .orn::after{-webkit-mask-image:linear-gradient(90deg,#000 60%,transparent);mask-image:linear-gradient(90deg,#000 60%,transparent);}
+html[data-theme="light"] .orn i{color:var(--gold);}
+html[data-theme="light"] .divider{background:var(--vine) repeat-x center;height:10px;}
+html[data-theme="light"] .die-res{color:var(--gold2);text-shadow:0 1px 0 #fff,0 0 22px rgba(240,200,110,.7);}
+html[data-theme="light"] .home-logo span{filter:drop-shadow(0 0 16px rgba(255,214,120,.9));}
+html[data-theme="light"] .home-logo h1{color:var(--gold2);text-shadow:0 1px 0 #fff,0 0 30px rgba(255,226,150,.8);}
+html[data-theme="light"] .nav-brand .logo{filter:drop-shadow(0 0 8px rgba(255,210,110,.9));}
+html[data-theme="light"] .nav-brand b{color:var(--gold2);}
+html[data-theme="light"] .rar-common{color:#7d7262;}
+
+/* ── Поверхности: пергамент. Выпуклые — светлее, вдавленные — тонкий тёплый тон ── */
+html[data-theme="light"] .frame,html[data-theme="light"] .pill,html[data-theme="light"] .abil,html[data-theme="light"] .hpb,html[data-theme="light"] .pc-card,
+html[data-theme="light"] .np-card,html[data-theme="light"] .nc,html[data-theme="light"] .smn,html[data-theme="light"] .gm-tile,html[data-theme="light"] .die,html[data-theme="light"] .trk-bar{
+  background:linear-gradient(180deg,#fdf9ee,#f1e6cc);}
+html[data-theme="light"] .panel{background:linear-gradient(180deg,#fcf7ea,#f3e9d2);box-shadow:0 0 0 1px rgba(160,125,60,.12),inset 0 1px 0 #fff,0 6px 20px rgba(120,90,40,.14);}
+html[data-theme="light"] .sec{background:linear-gradient(180deg,rgba(255,252,243,.95),rgba(247,239,221,.95));border-color:var(--line2);box-shadow:inset 0 1px 0 #fff,0 4px 18px rgba(120,90,40,.12);}
+html[data-theme="light"] .gm-card,html[data-theme="light"] .lib-form .ifm,html[data-theme="light"] .izone{background:linear-gradient(180deg,rgba(255,252,243,.95),rgba(245,236,214,.95));}
+html[data-theme="light"] .izone-h{background:var(--bg2);}
+html[data-theme="light"] .anchors{background:linear-gradient(180deg,rgba(242,233,214,.96) 70%,rgba(242,233,214,0));}
+html[data-theme="light"] .anchors button{background:rgba(252,247,234,.94);}
+html[data-theme="light"] .well,html[data-theme="light"] .chip,html[data-theme="light"] .seg,html[data-theme="light"] .tagb-opt,html[data-theme="light"] .shp,html[data-theme="light"] .ed-item,
+html[data-theme="light"] .lib-row,html[data-theme="light"] .np-stats div,html[data-theme="light"] .nc-stats div,html[data-theme="light"] .round-box,html[data-theme="light"] .ini,
+html[data-theme="light"] .nc-h,html[data-theme="light"] .nact,html[data-theme="light"] .exp-sec,html[data-theme="light"] .exp-terr button,html[data-theme="light"] .exp-qb-row,
+html[data-theme="light"] .wiki-edit,html[data-theme="light"] .gm-scene,html[data-theme="light"] .gm-read,html[data-theme="light"] .gm-trig,html[data-theme="light"] .gm-note,
+html[data-theme="light"] .ctr,html[data-theme="light"] .zone-pick button,html[data-theme="light"] .stepper,html[data-theme="light"] .emoji-btn,html[data-theme="light"] .qty-ed button,
+html[data-theme="light"] .tr-side,html[data-theme="light"] .tr-item,html[data-theme="light"] .insp,html[data-theme="light"] .hd-chip,html[data-theme="light"] .ds-pip,
+html[data-theme="light"] .act-chip,html[data-theme="light"] .atk-roll,html[data-theme="light"] .res-block,html[data-theme="light"] .slot-lv,html[data-theme="light"] .spc,
+html[data-theme="light"] .spc-meta span,html[data-theme="light"] .prep-count,html[data-theme="light"] .prep-row,html[data-theme="light"] .cond,html[data-theme="light"] .coin,
+html[data-theme="light"] .ro,html[data-theme="light"] .cc-ab,html[data-theme="light"] .cc-slot,html[data-theme="light"] .rule-card,html[data-theme="light"] .pick-row,
+html[data-theme="light"] .lib-tile,html[data-theme="light"] .font-pick button,html[data-theme="light"] .cw-sum span,html[data-theme="light"] .badge{
+  background:rgba(170,135,70,.08);}
+html[data-theme="light"] .act-chip.used{background:rgba(120,95,50,.16);opacity:.55;}
+html[data-theme="light"] .ic{border-color:rgba(140,110,60,.25);background:rgba(255,255,255,.55);}
+html[data-theme="light"] .ic-b{border-top-color:rgba(140,110,60,.15);}
+html[data-theme="light"] .hp-bar,html[data-theme="light"] .exp-tbar,html[data-theme="light"] .exp-sbar{background:#e6dbc2;}
+html[data-theme="light"] .code-box{background:#fbf6ea;color:#2f5f1f;}
+html[data-theme="light"] .chk-row:hover,html[data-theme="light"] .menu .mi:hover{background:rgba(232,190,90,.16);}
+html[data-theme="light"] .mclose:hover,html[data-theme="light"] .nc-btn:hover,html[data-theme="light"] .exp-ev-type.sys{background:rgba(120,90,40,.08);}
+/* Вещи в инвентаре — светлые плашки с цветом редкости слева */
+html[data-theme="light"] .irow{border-color:hsl(var(--h),30%,78%);border-left-color:hsl(var(--h),48%,48%);background:linear-gradient(90deg,hsla(var(--h),50%,90%,.9),rgba(255,252,244,.92));}
+html[data-theme="light"] .irow:hover{border-color:hsl(var(--h),45%,55%);}
+html[data-theme="light"] .irow-txt b{color:hsl(var(--h),45%,26%);}
+
+/* ── Каркас ── */
+html[data-theme="light"] #nav{background:linear-gradient(180deg,#f8f1e1,#ebdfc3);border-right-color:var(--line2);box-shadow:inset -1px 0 0 rgba(255,255,255,.6);}
+html[data-theme="light"] .nav-item{color:var(--tx2);}
+html[data-theme="light"] .nav-item:hover{background:rgba(232,190,90,.14);color:var(--tx);}
+html[data-theme="light"] .nav-item.on{background:linear-gradient(90deg,rgba(63,134,196,.2),rgba(63,134,196,.03));border-color:rgba(63,134,196,.45);color:#1d4f7c;}
+html[data-theme="light"] #top{background:linear-gradient(180deg,rgba(252,247,234,.96),rgba(243,234,213,.96));box-shadow:0 1px 0 rgba(255,255,255,.7),0 6px 18px rgba(120,90,40,.12);}
+html[data-theme="light"] #top::after{background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+html[data-theme="light"] #tabbar{background:linear-gradient(180deg,#faf3e3,#ece0c4);border-top-color:var(--line2);box-shadow:0 -6px 20px rgba(120,90,40,.14);}
+html[data-theme="light"] .tab.on{color:var(--teal3);}
+html[data-theme="light"] .modal{background:rgba(70,52,24,.32);backdrop-filter:blur(4px);}
+html[data-theme="light"] .mbox{background:linear-gradient(180deg,#fdf9ef,#f1e6cd);box-shadow:0 20px 60px rgba(80,60,25,.35);}
+html[data-theme="light"] .menu{background:linear-gradient(180deg,#fdf9ef,#f1e6cd);box-shadow:0 12px 40px rgba(80,60,25,.3);}
+html[data-theme="light"] .menu-veil{background:rgba(70,52,24,.15);}
+html[data-theme="light"] .toast{background:linear-gradient(180deg,#fffaf0,#f1e6cd);box-shadow:0 10px 30px rgba(80,60,25,.25);}
+html[data-theme="light"] .toast.ok{border-color:var(--green);}
+
+/* ── Кнопки: пергамент в золотой оправе; главные — лазурь неба и витражей ── */
+html[data-theme="light"] .btn{background:linear-gradient(180deg,#fffaf0,#efe3c8);border-color:var(--line2);color:var(--tx);
+  box-shadow:inset 0 1px 0 #fff,0 1px 2px rgba(120,90,40,.15);}
+html[data-theme="light"] .btn:hover{border-color:var(--gold);color:var(--gold2);box-shadow:inset 0 1px 0 #fff,0 0 14px rgba(240,200,110,.55);}
+html[data-theme="light"] .btn.pri{background:linear-gradient(180deg,#4f97d4,#2c64a0);border-color:#c9a64e;color:#fff;text-shadow:0 1px 1px rgba(20,50,90,.4);}
+html[data-theme="light"] .btn.pri:hover{border-color:#e8c46a;box-shadow:0 0 16px rgba(80,150,220,.45);color:#fff;}
+html[data-theme="light"] .btn.gold{background:linear-gradient(180deg,#f0cf74,#c79a32);border-color:#9a7420;color:#3a2a08;text-shadow:0 1px 0 rgba(255,240,200,.6);}
+html[data-theme="light"] .btn.on{background:linear-gradient(180deg,#d9e9f6,#bcd6ec);border-color:var(--teal2);color:#1d4f7c;}
+html[data-theme="light"] .btn.good{border-color:#8fae6a;color:var(--green2);}
+html[data-theme="light"] .btn.danger{border-color:#d49a8a;color:var(--red2);}
+html[data-theme="light"] .btn.ghost{background:transparent;box-shadow:none;}
+html[data-theme="light"] .hexbtn{background:linear-gradient(180deg,#e2c06a,#a8822c);color:var(--tx);}
+html[data-theme="light"] .hexbtn::before{background:linear-gradient(180deg,#fffaf0 0%,#efe2c3 100%);}
+html[data-theme="light"] .hexbtn small{color:var(--tx3);}
+html[data-theme="light"] .hexbtn.pri{background:linear-gradient(180deg,#f2d27c,#b48a2e);color:#fff;text-shadow:0 1px 2px rgba(20,50,90,.5);}
+html[data-theme="light"] .hexbtn.pri::before{background:linear-gradient(180deg,#5aa1dc 0%,#2b62a0 100%);}
+html[data-theme="light"] .hexbtn:hover{filter:brightness(1.06) saturate(1.1) drop-shadow(0 0 10px rgba(255,214,120,.6));}
+html[data-theme="light"] .seg button{color:var(--tx2);border-right-color:var(--line2);}
+html[data-theme="light"] .seg button.on{background:linear-gradient(180deg,#4f97d4,#2c64a0);color:#fff;}
+html[data-theme="light"] .tgl span{background:#e6dbc2;}
+html[data-theme="light"] .tgl span::before{background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);}
+html[data-theme="light"] .tgl input:checked+span{background:#4f97d4;border-color:#2c64a0;}
+html[data-theme="light"] input[type=text],html[data-theme="light"] input[type=number],html[data-theme="light"] input[type=search],
+html[data-theme="light"] input:not([type]),html[data-theme="light"] select,html[data-theme="light"] textarea{background:#fffdf7;border-color:var(--line2);}
+html[data-theme="light"] input:focus,html[data-theme="light"] select:focus,html[data-theme="light"] textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(232,190,90,.3);}
+
+/* ── Активные состояния — лазурь ── */
+html[data-theme="light"] .chip.on,html[data-theme="light"] .tagb-opt.on,html[data-theme="light"] .font-pick button.on,html[data-theme="light"] .zone-pick button.on,
+html[data-theme="light"] .lib-row.on,html[data-theme="light"] .exp-terr button.on,html[data-theme="light"] .gm-scene.on{background:rgba(63,134,196,.14);border-color:var(--teal2);color:#1d4f7c;}
+html[data-theme="light"] .note,html[data-theme="light"] .help-ex,html[data-theme="light"] .gm-tip{background:rgba(63,134,196,.08);}
+html[data-theme="light"] .note.warn{background:rgba(192,122,42,.1);}
+html[data-theme="light"] .round-btn{background:linear-gradient(180deg,#e3eff9,#cbe0f1);color:#1d4f7c;}
+html[data-theme="light"] .smn.sel{box-shadow:0 0 0 2px rgba(63,134,196,.5),0 8px 24px rgba(80,60,25,.25);}
+html[data-theme="light"] .drop-ok{background:rgba(63,134,196,.1)!important;}
+html[data-theme="light"] .drop-hover{background:rgba(63,134,196,.2)!important;}
+html[data-theme="light"] .tagc.adv{background:rgba(232,190,90,.18);border-color:rgba(176,138,46,.5);color:var(--gold2);}
+html[data-theme="light"] .slot-pip{background:linear-gradient(180deg,#6aaee6,#2f68a6);color:#fff;box-shadow:0 2px 8px rgba(60,120,190,.35);}
+html[data-theme="light"] .res-pip.used,html[data-theme="light"] .slot-pip.used{border-color:var(--line3);}
+html[data-theme="light"] .mbox::before{background:var(--line3);}
+
 </style>
 </head>
 <body>
@@ -1180,7 +1472,7 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:grabbing;}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '9.4.0';
+const APP_VERSION = '9.5.0';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -1505,7 +1797,8 @@ const TGX = {
     TGX.wa = wa; document.documentElement.classList.add('in-tg');
     try { wa.ready(); wa.expand(); } catch (e) { }
     try { if (TGX.v('7.7')) wa.disableVerticalSwipes(); } catch (e) { } // свайп вниз не закрывает приложение во время драга
-    try { if (TGX.v('6.1')) { wa.setHeaderColor('#0c0b0a'); wa.setBackgroundColor('#0c0b0a'); } if (TGX.v('7.10')) wa.setBottomBarColor('#0c0b0a'); } catch (e) { }
+    try { const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg0').trim() || '#0c0b0a'; // цвет фона текущей темы
+      if (TGX.v('6.1')) { wa.setHeaderColor(bg); wa.setBackgroundColor(bg); } if (TGX.v('7.10')) wa.setBottomBarColor(bg); } catch (e) { }
     // Планшет (iPad и т.п.): Telegram открывает мини-приложение маленьким окном — просим весь экран
     try { if (TGX.v('8.0') && TGX.tablet()) wa.requestFullscreen(); } catch (e) { }
     TGX.inset(); ['safeAreaChanged', 'contentSafeAreaChanged', 'fullscreenChanged', 'viewportChanged'].forEach(ev => wa.onEvent?.(ev, TGX.inset));
@@ -6013,7 +6306,7 @@ ACT.newViaWizard = () => { ACT.charWizard(); Object.assign(CW, { target: 'new', 
 /* ── Встроенный просмотр ttg.club (без ухода в браузер) ── */
 function ttgView(path = '') {
   const url = TTG_SITE + (path.startsWith('/') ? path : '/' + path);
-  openModal({ title: '🌐 ttg.club', size: 'wide', cls: 'ttg-view', body: `<iframe class="ttg-frame" src="${esc(url)}" loading="lazy" referrerpolicy="no-referrer"></iframe>`,
+  openModal({ title: '🌐 ttg.club', size: 'wide', cls: 'ttg-view', body: `<iframe class="ttg-frame" src="${esc(url)}" referrerpolicy="no-referrer"></iframe>`,
     foot: `<span class="muted tiny grow ellip">${esc(url)}</span><button class="btn" data-act="ttgOut" data-u="${esc(url)}">↗ В браузере</button><button class="btn pri" data-act="modalClose">Закрыть</button>` });
 }
 ACT.ttgOut = el => openExternal(el.dataset.u);
@@ -6307,7 +6600,11 @@ VIEWS.saves = {
       <p class="small dim mb">Заклинания, предметы, снаряжение и бестиарий с 5e14.ttg.club — прямо в карточки. Нужен свой бесплатный прокси (Cloudflare Worker), инструкция — в файле <b>TTG_PROXY.md</b>.</p>
       <div class="row wrap"><input id="ttg-proxy" class="grow" style="min-width:220px" placeholder="https://ttg-proxy.ваш-ник.workers.dev" value="${esc(SETTINGS.ttgProxy || TTG_DEFAULT_PROXY)}" data-enter="ttgProxyTest"><button class="btn" data-act="ttgProxySave">Сохранить</button><button class="btn pri" data-act="ttgProxyTest">Проверить</button></div>
 
-      <div class="orn left mt2">🎨 Шрифт</div>
+      <div class="orn left mt2">🎨 Тема</div>
+      <div class="theme-pick">${THEMES.map(t => `<button class="${(SETTINGS.theme || 'gold') === t.id ? 'on' : ''}" data-act="setTheme" data-v="${t.id}" style="background:${t.bg}">
+        <span class="th-sw">${t.sw.map(c => `<i style="background:${c}"></i>`).join('')}</span><b>${t.label}</b><small>${t.desc}</small></button>`).join('')}</div>
+
+      <div class="orn left mt2">🔤 Шрифт</div>
       <div class="font-pick">${FONTS.map(f => `<button class="${(SETTINGS.font || 'inter') === f.id ? 'on' : ''}" data-act="setFont" data-v="${f.id}" style="font-family:'${f.css}',sans-serif"><b>${f.label}</b><small>Астарион · 27/31 HP · +7 · 1d4+4</small></button>`).join('')}</div>
 
       <div class="orn left mt2">⚙ Хранилище</div>
@@ -6318,6 +6615,20 @@ VIEWS.saves = {
 };
 const FONTS = [{ id: 'inter', css: 'Inter', label: 'Обычный (Inter)' }, { id: 'philosopher', css: 'Philosopher', label: 'Фэнтези (Philosopher)' }, { id: 'rubik', css: 'Rubik', label: 'Мягкий (Rubik)' }];
 function applyFont() { document.documentElement.dataset.font = SETTINGS.font || 'inter'; }
+const THEMES = [
+  { id: 'gold', label: 'Врата Балдура', desc: 'тёплое золото и бирюза', bg: 'linear-gradient(135deg,#221d17,#0d0b09)', sw: ['#c8a86b', '#5fa8b8', '#ebe0c8'] },
+  { id: 'crimson', label: 'Багровые сумерки', desc: 'воронёная сталь, кровавая луна, розы', bg: 'linear-gradient(135deg,#1c1524,#09080b)', sw: ['#c2293c', '#6e5d82', '#e6deec'] },
+  { id: 'light', label: 'Солнечная баллада', desc: 'пергамент, золото, лазурь, маки', bg: 'linear-gradient(135deg,#6b8fae,#8a7a4a)', sw: ['#f2e9d6', '#3f86c4', '#c4a462'] },
+];
+/** Тема: атрибут на <html> + цвет шапки браузера/Telegram под фон темы */
+function applyTheme() {
+  const t = SETTINGS.theme && SETTINGS.theme !== 'gold' ? SETTINGS.theme : '';
+  if (t) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme;
+  const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg0').trim() || '#0b0a09';
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', bg);
+  if (typeof TGX !== 'undefined' && TGX.on) { try { TGX.wa.setHeaderColor(bg); TGX.wa.setBackgroundColor(bg); TGX.wa.setBottomBarColor?.(bg); } catch (e) { } }
+}
+ACT.setTheme = el => { SETTINGS.theme = el.dataset.v; saveSettings(); applyTheme(); route(); };
 ACT.setFont = el => { SETTINGS.font = el.dataset.v; saveSettings(); applyFont(); route(); };
 ACT.pcPlay = el => { setActivePC(el.dataset.id); go('sheet'); };
 ACT.pcMenu = el => {
@@ -6481,7 +6792,7 @@ ACT.legacyHide = () => { SETTINGS.legacyDone = true; saveSettings(); route(); };
 // ── boot.js ──
 /* ═══ ЗАПУСК ═══ */
 (function boot() {
-  applyFont();
+  applyFont(); applyTheme();
   renderNav();
   route();
   // Открыли по ссылке с кодом в адресе: …#code=DND9:…
