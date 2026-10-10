@@ -1162,7 +1162,7 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:grabbing;}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '9.1.2';
+const APP_VERSION = '9.2.0';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -3555,7 +3555,7 @@ CCSEC.spellcards = pc => !pc.hasSpells ? '' : `<section class="sec fold" id="cc-
     <div class="fld mt"><label>Компоненты</label><input data-bind="spells.${i}.components" value="${esc(s.components)}" placeholder="В, С, М (щепотка серы)"></div>
     <div class="fld mt"><label>Описание</label><textarea class="auto" data-bind="spells.${i}.description">${esc(s.description)}</textarea></div>
     <div class="row mt"><label class="chk"><input type="checkbox" data-bind="spells.${i}.concentration" ${s.concentration ? 'checked' : ''}> Концентрация</label><label class="chk"><input type="checkbox" data-bind="spells.${i}.ritual" ${s.ritual ? 'checked' : ''}> Ритуал</label></div></div>`).join('')}
-  <button class="btn" data-act="ccAdd" data-arr="spells">+ Добавить заклинание</button></div></section>`;
+  <div class="btns"><button class="btn" data-act="ccAdd" data-arr="spells">+ Добавить заклинание</button><button class="btn gold" data-act="ttgSpell">🔎 Найти на ttg.club</button></div></div></section>`;
 CCSEC.res = pc => `<section class="sec fold ${pc.resources.length ? '' : 'closed'}" id="cc-res">${ccSecHead('res', '🔋 Классовые ресурсы', 'resources')}<div class="sec-b fold-b">
   <p class="muted tiny mb">Очки чародейства, ци, бардовское вдохновение, ярость и т.п. — кружочки на листе.</p>
   ${pc.resources.map((r, i) => `<div class="ed-item"><button class="btn xs danger ed-del" data-act="ccDel" data-arr="resources" data-i="${i}">✕</button><div class="g2">
@@ -3694,7 +3694,7 @@ function invQuickAddHTML(zone, { zones = false } = {}) {
   return `<div class="qadd">
     ${zones ? `<div class="seg qz">${ZONE_KEYS.map(k => `<button class="${k === z ? 'on' : ''}" data-act="invQZ" data-z="${k}" title="${ZONES[k].label}">${ZONES[k].icon}<span class="qz-l"> ${ZONES[k].label}</span></button>`).join('')}</div>` : ''}
     <div class="qadd-row"><input class="qadd-in" placeholder="Быстро: меч, 3 факела, зелье ×2…" data-enter="invQuick" data-z="${z}" list="dl-items" autocomplete="off" enterkeyhint="done">
-    <button class="btn pri icon" data-act="invQuick" data-z="${z}" title="Добавить">＋</button><button class="btn icon" data-act="invNewFull" data-z="${z}" title="Подробный предмет">✎</button></div>
+    <button class="btn pri icon" data-act="invQuick" data-z="${z}" title="Добавить">＋</button><button class="btn icon" data-act="invNewFull" data-z="${z}" title="Подробный предмет">✎</button><button class="btn icon" data-act="ttgInv" data-z="${z}" title="Найти на ttg.club">🔎</button></div>
     <datalist id="dl-items">${[...new Set([...STORE.list('item').map(x => x.name), ...invAll(activePC() || { inv: { equip: [], belt: [], pack: [] } }).map(x => x.it.name)])].slice(0, 300).map(n => `<option value="${esc(n)}">`).join('')}</datalist>
   </div>`;
 }
@@ -4113,11 +4113,11 @@ VIEWS.npc = {
   render(el) {
     const n = npcObj(); if (NPCV.id && !n) NPCV.id = null;
     el.innerHTML = `<div class="lib-layout ${n ? 'has-sel' : ''}">
-      <aside class="lib-side ${isPhone() && n ? 'hide-phone' : ''}"><div class="row"><input type="search" placeholder="🔍 Поиск…" value="${esc(NPCV.q)}" data-in="npcQ" class="grow"><button class="btn pri icon" data-act="npcNew" title="Новый NPC">＋</button></div>
+      <aside class="lib-side ${isPhone() && n ? 'hide-phone' : ''}"><div class="row"><input type="search" placeholder="🔍 Поиск…" value="${esc(NPCV.q)}" data-in="npcQ" class="grow"><button class="btn pri icon" data-act="npcNew" title="Новый NPC">＋</button><button class="btn icon" data-act="ttgNpc" title="Бестиарий ttg.club">🔎</button></div>
         <div class="lib-list" id="npc-list">${npcListHTML()}</div></aside>
       <section class="lib-main ${!n ? 'hide-phone' : ''}">${n ? `${isPhone() ? '<button class="btn sm ghost mb" data-act="npcBack">‹ Все NPC</button>' : ''}
         <div class="lib-edit"><div data-model="npcEd" id="npc-form" class="lib-form">${npcFormHTML(n)}</div><div class="lib-prev"><div class="lbl mb">Карточка в бою</div><div id="npc-prev">${npcPreviewHTML(n)}</div></div></div>`
-        : `<div class="empty-hero frame"><div class="big">👹</div><h2 class="t-title">NPC и монстры</h2><p class="dim">Создай NPC — потом одной кнопкой ⚔ отправишь его в бой. Можно добавить сразу нескольких одинаковых.</p><button class="hexbtn pri mt" data-act="npcNew">＋ Новый NPC</button></div>`}</section></div>`;
+        : `<div class="empty-hero frame"><div class="big">👹</div><h2 class="t-title">NPC и монстры</h2><p class="dim">Создай NPC — потом одной кнопкой ⚔ отправишь его в бой. Можно добавить сразу нескольких одинаковых.</p><button class="hexbtn pri mt" data-act="npcNew">＋ Новый NPC</button><button class="btn gold mt" data-act="ttgNpc">🔎 Взять из бестиария ttg.club</button></div>`}</section></div>`;
     autosizeAll(el);
   },
   actions() {
@@ -4307,7 +4307,7 @@ function fighterModal(title, onAdd) {
     <div class="row wrap mt"><div class="seg" id="qn-side">${Object.entries(ALIGN).map(([k, a]) => `<button class="${k === 'enemy' ? 'on' : ''}" data-v="${k}">${a.icon} ${a.label}</button>`).join('')}</div><span class="sp"></span><input id="qn-n" type="number" value="1" min="1" max="20" style="width:64px" title="Сколько"><button class="btn pri" data-act="btQuick">Добавить</button></div>
     ${pcs.length ? `<div class="row mt2"><div class="orn left grow">Персонажи игроков</div>${pcs.length > 1 ? '<button class="btn xs" data-act="btPcAll">＋ Все</button>' : ''}</div>
     <div class="pick-list">${pcs.map(p => row(ALIGN.player.icon, p.name || 'Игрок', `❤ ${int(p.hp?.cur)}/${int(p.hp?.max)} · 🛡 ${int(p.ac, 10)}`, 'btPcAdd', p.id)).join('')}</div>` : ''}
-    <div class="orn left mt2">Из библиотеки NPC</div>
+    <div class="row mt2"><div class="orn left grow">Из библиотеки NPC</div><button class="btn xs" data-act="ttgFight">🔎 Бестиарий ttg.club</button></div>
     ${lib.length > 6 ? '<input type="search" id="bt-lq" placeholder="🔍 Поиск…" class="mb">' : ''}
     <div class="pick-list" id="bt-lib">${lib.map(n => row(ALIGN[n.align]?.icon || '🟡', n.name, `❤ ${n.hp} · 🛡 ${n.ac}`, 'btLibAdd', n.id)).join('') || '<div class="empty small">Библиотека пуста — создай NPC в разделе «NPC»</div>'}</div>`,
     foot: '<button class="btn pri" data-act="modalClose">Готово</button>', onClose: () => { FPICK = null; } });
@@ -5164,14 +5164,14 @@ VIEWS.loot = {
     const phoneEdit = isPhone() && it;
     el.innerHTML = `<div class="lib-layout ${it ? 'has-sel' : ''}">
       <aside class="lib-side ${phoneEdit ? 'hide-phone' : ''}">
-        <div class="row"><input type="search" placeholder="🔍 Поиск…" value="${esc(LOOT.q)}" data-in="lootQ" class="grow"><button class="btn pri icon" data-act="lootNew" title="Новый предмет">＋</button></div>
+        <div class="row"><input type="search" placeholder="🔍 Поиск…" value="${esc(LOOT.q)}" data-in="lootQ" class="grow"><button class="btn pri icon" data-act="lootNew" title="Новый предмет">＋</button><button class="btn icon" data-act="ttgLoot" title="Найти на ttg.club">🔎</button></div>
         <div class="lib-list" id="loot-list">${lootListHTML()}</div>
       </aside>
       <section class="lib-main ${!it ? 'hide-phone' : ''}">${it ? `
         ${isPhone() ? '<button class="btn sm ghost mb" data-act="lootBack">‹ Вся библиотека</button>' : ''}
         <div class="lib-edit"><div data-model="lootEd" id="loot-form" class="lib-form">${itemFormHTML(it, 'lootEd', { player: false })}</div>
         <div class="lib-prev"><div class="lbl mb">Предпросмотр · так будет в PNG</div><div id="loot-prev">${lootCardHTML(it)}</div></div></div>`
-        : `<div class="empty-hero frame"><div class="big">📜</div><h2 class="t-title">Редактор лута</h2><p class="dim">Выбери карточку слева или создай новую. Готовые предметы можно выдать игроку кодом — они упадут ему в рюкзак.</p><button class="hexbtn pri mt" data-act="lootNew">＋ Новый предмет</button></div>`}
+        : `<div class="empty-hero frame"><div class="big">📜</div><h2 class="t-title">Редактор лута</h2><p class="dim">Выбери карточку слева или создай новую. Готовые предметы можно выдать игроку кодом — они упадут ему в рюкзак.</p><button class="hexbtn pri mt" data-act="lootNew">＋ Новый предмет</button><button class="btn gold mt" data-act="ttgLoot">🔎 Найти на ttg.club</button></div>`}
       </section></div>`;
     autosizeAll(el);
   },
@@ -5222,6 +5222,236 @@ const TEMPLATE_ITEM = { name: 'Меч Теней', emoji: '⚔️', type: 'Ор�
     { type: 'action', title: 'Теневой удар', text: 'Эффект' }, { type: 'feature', title: 'Пассив', text: 'Эффект' }, { type: 'lore', text: 'История' }],
   tags: [{ category: 'attack', target: 'Оружием', effect: '+1' }], ammo: null, charges: { max: 3, cur: 3, reset: 'рассвет', note: '' } };
 
+// ── ttgclub.js ──
+/* ═══════════════════════════════════════════════════════
+   ПОИСК НА TTG.CLUB (5e 2014) → свои карточки: заклинания, предметы, снаряжение, бестиарий → NPC.
+   ttg.club не пускает запросы с чужих сайтов (CORS), поэтому ходим через свой прокси (Cloudflare Worker,
+   код — tools/ttg_worker.js, инструкция — TTG_PROXY.md). Без прокси — разбор вставленного со страницы текста.
+═══════════════════════════════════════════════════════ */
+const TTG_DEFAULT_PROXY = ''; // адрес своего Worker'а, чтобы не вводить на каждом устройстве: 'https://….workers.dev'
+const TTG = {
+  KINDS: {
+    spell: { label: '✨ Заклинания', list: '/api/v1/spells' },
+    magic: { label: '💎 Магия', list: '/api/v1/items/magic' },
+    weapon: { label: '⚔ Оружие', list: '/api/v1/weapons' },
+    armor: { label: '🛡 Доспехи', list: '/api/v1/armors' },
+    item: { label: '🎒 Снаряжение', list: '/api/v1/items' },
+    beast: { label: '👹 Бестиарий', list: '/api/v1/bestiary' },
+  },
+  cache: new Map(),
+  base() { return String(SETTINGS.ttgProxy || TTG_DEFAULT_PROXY || '').trim().replace(/\/+$/, ''); },
+  async post(path, body) {
+    const key = path + JSON.stringify(body || '');
+    if (TTG.cache.has(key)) return TTG.cache.get(key);
+    if (!TTG.base()) throw new Error('не настроен прокси');
+    const r = await fetch(TTG.base() + path, { method: 'POST', headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined });
+    if (!r.ok) throw new Error(r.status === 404 ? 'не найдено' : 'ответ ' + r.status);
+    const d = await r.json(); TTG.cache.set(key, d); return d;
+  },
+  /** Поиск; сначала точное совпадение, потом «начинается с», потом остальное */
+  async search(kind, q) {
+    const list = await TTG.post(TTG.KINDS[kind].list, { page: 0, size: 40, search: { value: q, exact: false } });
+    const s = q.toLowerCase().replace(/ё/g, 'е'), score = x => { const n = [x.name?.rus, x.name?.eng].map(v => String(v || '').toLowerCase().replace(/ё/g, 'е'));
+      return n.includes(s) ? 0 : n.some(v => v.startsWith(s)) ? 1 : 2; };
+    return [...list].sort((a, b) => score(a) - score(b));
+  },
+  detail(url) { return TTG.post('/api/v1' + url); },
+  kindOfUrl(url) { const m = String(url).match(/^\/(spells|items\/magic|weapons|armors|items|bestiary)\//); return m ? { spells: 'spell', 'items/magic': 'magic', weapons: 'weapon', armors: 'armor', items: 'item', bestiary: 'beast' }[m[1]] : null; },
+
+  /* ── HTML ttg.club → обычный текст (DOMParser: без скриптов и загрузки картинок) ── */
+  txt(h) {
+    if (!h) return '';
+    const s = String(h).replace(/<dice-roller\b([^>]*?)\/>/gi, (_, a) => (a.match(/formula="([^"]*)"/) || [])[1] || '')
+      .replace(/<dice-roller\b[^>]*>([\s\S]*?)<\/dice-roller>/gi, '$1')
+      .replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|div|h\d|tr|ul|ol)>/gi, '\n\n').replace(/<li[^>]*>/gi, '• ').replace(/<\/li>/gi, '\n').replace(/<\/t[dh]>/gi, '  ');
+    const t = new DOMParser().parseFromString(s, 'text/html').body.textContent || '';
+    return t.replace(/ /g, ' ').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+  },
+  /** Все <dice-roller label=… formula=…> из HTML */
+  rollers(h) { return [...String(h || '').matchAll(/<dice-roller\b([^>]*)>/gi)].map(m => ({ label: (m[1].match(/label="([^"]*)"/) || [])[1] || '', formula: (m[1].match(/formula="([^"]*)"/) || [])[1] || '' })); },
+  cap: s => s ? s.charAt(0).toUpperCase() + s.slice(1) : '',
+  src: d => d.source ? [d.source.shortName, d.source.name].filter(Boolean).join(' · ') : '',
+
+  /* ── Конвертеры ── */
+  spell(d) {
+    const c = d.components || {};
+    const comp = [c.v && 'В', c.s && 'С', c.m && (c.m === true ? 'М' : `М (${c.m})`)].filter(Boolean).join(', ');
+    let desc = TTG.txt(d.description);
+    if (d.upper) desc += '\n\nНа больших уровнях: ' + TTG.txt(d.upper);
+    return { name: d.name?.rus || 'Заклинание', level: int(d.level), school: TTG.cap(d.school) || SPELL_SCHOOLS[0], castTime: d.time || '', range: d.range || '',
+      duration: d.duration || '', components: comp, description: desc, concentration: !!d.concentration || /концентрац/i.test(d.duration || ''), ritual: !!d.ritual };
+  },
+  RAR_HUE: { common: 30, uncommon: 120, rare: 210, veryrare: 270, legendary: 45, artifact: 0 },
+  TYPE_EMOJI: { 'Оружие': '⚔️', 'Доспех': '🛡️', 'Зелье': '🧪', 'Кольцо': '💍', 'Жезл': '✨', 'Свиток': '📜', 'Посох': '✨', 'Дивный предмет': '✨', 'Снаряжение': '🎒', 'Инструмент': '🔧' },
+  itemType(name) {
+    const n = String(name || '').toLowerCase();
+    return /чудесн/.test(n) ? 'Дивный предмет' : /оруж|боеприпас/.test(n) ? 'Оружие' : /доспех|(^|[^а-яё])щит/.test(n) ? 'Доспех' : /зель/.test(n) ? 'Зелье' : /кольц/.test(n) ? 'Кольцо'
+      : /жезл|палочк/.test(n) ? 'Жезл' : /свит/.test(n) ? 'Свиток' : /посох/.test(n) ? 'Посох' : 'Дивный предмет';
+  },
+  mkItem(o) {
+    const it = normItem(o); it.hue = TTG.RAR_HUE[it.rarity] ?? 30;
+    it.emoji = guessEmoji(it.name) || TTG.TYPE_EMOJI[it.type] || '📦';
+    if ((itemDesc(it) || '').length > 700) it.width = 'medium';
+    it.blocks = it.blocks.filter(b => b.type !== 'properties' || b.rows.length);
+    return it;
+  },
+  magic(d) {
+    const r = String(d.rarityRaw || d.rarity?.type || '').toLowerCase().replace(/[_\s-]/g, '');
+    const rarity = RARITY[r] ? r : 'uncommon', type = TTG.itemType(d.type?.name);
+    const rows = [d.type?.name && { key: 'Тип', val: TTG.cap(d.type.name) + (d.detailType?.length ? ` (${d.detailType.map(x => x.name).join(', ')})` : '') },
+      d.cost?.dmg && { key: 'Цена', val: d.cost.dmg }, d.curse && { key: 'Проклятие', val: 'да' }, { key: 'Источник', val: TTG.src(d) }].filter(Boolean);
+    const blocks = [...(d.images?.[0] ? [{ type: 'image', imageUrl: d.images[0], showPlaceholder: false }] : []), { type: 'description', text: TTG.txt(d.description) }, { type: 'properties', rows }];
+    return TTG.mkItem({ name: d.name?.rus, type, subtype: TTG.cap(d.type?.name || ''), rarity, attune: !!d.customization, blocks });
+  },
+  weapon(d) {
+    const props = (d.properties || []).map(p => p.name + (p.distance ? ` (${p.distance})` : '') + (p.two_handed_dice ? ` (${p.two_handed_dice})` : '')).join(', ');
+    const rows = [props && { key: 'Свойства', val: props }, d.weight && { key: 'Вес', val: d.weight + ' фнт.' }, d.price && { key: 'Цена', val: d.price }, { key: 'Источник', val: TTG.src(d) }].filter(Boolean);
+    const blocks = [{ type: 'description', text: TTG.txt(d.description) }, { type: 'properties', rows }];
+    if (d.damageDice || d.damage?.dice) blocks.push({ type: 'dice', label: 'Урон', count: String(d.numberDice || 1), die: String(d.damageDice || d.damage.dice).replace(/^\d*[dк]/i, ''), mod: '', dmgtype: TTG.cap(d.damage?.type || '') });
+    return TTG.mkItem({ name: d.name?.rus, type: 'Оружие', subtype: d.type?.name || '', rarity: 'common', blocks });
+  },
+  armor(d) {
+    const rows = [{ key: 'КБ', val: d.armorClass || '' }, d.requirement && { key: 'Сила', val: String(d.requirement) }, d.disadvantage && { key: 'Скрытность', val: 'помеха' },
+      d.duration && { key: 'Надеть / снять', val: d.duration }, d.weight && { key: 'Вес', val: d.weight + ' фнт.' }, d.price && { key: 'Цена', val: d.price }, { key: 'Источник', val: TTG.src(d) }].filter(Boolean);
+    return TTG.mkItem({ name: d.name?.rus, type: 'Доспех', subtype: d.type?.name || '', rarity: 'common', blocks: [{ type: 'description', text: TTG.txt(d.description) }, { type: 'properties', rows }] });
+  },
+  item(d) {
+    const cat = (d.categories || []).join(', '), type = /инструмент/i.test(cat) ? 'Инструмент' : 'Снаряжение';
+    const rows = [cat && { key: 'Категория', val: cat }, d.weight && { key: 'Вес', val: d.weight + ' фнт.' }, d.price && { key: 'Цена', val: d.price }, { key: 'Источник', val: TTG.src(d) }].filter(Boolean);
+    return TTG.mkItem({ name: d.name?.rus, type, rarity: 'common', blocks: [{ type: 'description', text: TTG.txt(d.description) }, { type: 'properties', rows }] });
+  },
+  DMG_TYPE: { 'колющего': 'Колющий', 'рубящего': 'Рубящий', 'дробящего': 'Дробящий', 'огнём': 'Огонь', 'холодом': 'Холод', 'ядом': 'Яд', 'кислотой': 'Кислота', 'электричеством': 'Молния',
+    'звуком': 'Гром', 'некротической': 'Некротика', 'излучением': 'Лучистый', 'психической': 'Психика', 'силовым': 'Сила' },
+  npcAction(a) {
+    const text = TTG.txt(a.value), dmg = TTG.rollers(a.value).find(r => /урон/i.test(r.label) || /^\d*[кd]\d+/i.test(r.formula.replace(/\s/g, '')) && !/^[кd]20/i.test(r.formula.replace(/\s/g, '')));
+    const f = dmg ? dmg.formula.replace(/\s/g, '').replace(/к/gi, 'd').match(/^(\d*d\d+)([+-]\d+)?/i) : null;
+    const tm = text.match(/(колющего|рубящего|дробящего)\s+урона/i) || text.match(/урона\s+(огнём|холодом|ядом|кислотой|электричеством|звуком|некротической|излучением|психической|силовым)/i);
+    const rng = text.match(/(досягаемость|дистанция)\s+([\d/ ]+\s*фт\.?)/i);
+    const per = a.name.match(/\((\d+)\s*\/\s*день/i);
+    return { name: a.name.replace(/\s*\((\d+)\s*\/\s*день[^)]*\)/i, ''), range: rng ? rng[2].trim() : '', description: text, dice: f ? f[1] : '', damagemod: f && f[2] ? String(int(f[2])) : '',
+      damagetype: tm ? TTG.DMG_TYPE[tm[1].toLowerCase()] || '' : '', limits: per ? [{ type: 'charges', amount: int(per[1]), period: 'day' }] : [] };
+  },
+  beast(d) {
+    const ab = d.ability || {}, sp = d.speed || [], walk = sp.find(s => !s.name) || sp[0] || { value: 30 };
+    const feats = list => (list || []).map(f => `${f.name}. ${TTG.txt(f.value)}`).join('\n\n');
+    const join = a => (a || []).map(x => typeof x === 'string' ? x : x.name || '').filter(Boolean).join(', ');
+    const sum = [
+      `ПО ${d.challengeRating || '?'}${d.experience ? ` (${d.experience} опыта)` : ''} · ${[d.size?.rus, d.type?.name].filter(Boolean).join(' ')}${d.alignment ? ', ' + d.alignment : ''}`,
+      `Хиты: ${d.hits?.average ?? '?'}${d.hits?.formula ? ` (${d.hits.formula}${d.hits.bonus ? d.hits.sign + d.hits.bonus : ''})` : ''} · КД ${d.armorClass ?? '?'}${d.armors?.length ? ` (${join(d.armors)})` : ''}`,
+      `Скорость: ${sp.map(s => (s.name ? s.name + ' ' : '') + s.value + ' фт.').join(', ')}`,
+      d.savingThrows?.length && `Спасброски: ${d.savingThrows.map(s => `${s.shortName || s.name} ${sgn(int(s.value))}`).join(', ')}`,
+      d.skills?.length && `Навыки: ${d.skills.map(s => `${s.name} ${sgn(int(s.value))}`).join(', ')}`,
+      d.damageVulnerabilities?.length && `Уязвимость: ${join(d.damageVulnerabilities)}`,
+      d.damageResistances?.length && `Сопротивление: ${join(d.damageResistances)}`,
+      d.damageImmunities?.length && `Иммунитет к урону: ${join(d.damageImmunities)}`,
+      d.conditionImmunities?.length && `Иммунитет к состояниям: ${join(d.conditionImmunities)}`,
+      d.senses && `Чувства: ${[...(d.senses.senses || []).map(s => `${s.name} ${s.value} фт.`), d.senses.passivePerception && 'пасс. Внимательность ' + d.senses.passivePerception].filter(Boolean).join(', ')}`,
+      d.languages?.length && `Языки: ${join(d.languages)}`,
+      `Источник: ${TTG.src(d)}`,
+    ].filter(Boolean).join('\n');
+    const card = (title, color, shape, content, collapsed = true) => content ? { title, color, shape, content, collapsed } : null;
+    const leg = d.legendary ? [TTG.txt(d.legendary.description), feats(d.legendary.list)].filter(Boolean).join('\n\n') : '';
+    return normNPC({ name: d.name?.rus || 'Существо', hp: int(d.hits?.average, 10), ac: int(d.armorClass, 10), speed: Math.max(1, Math.round(int(walk.value, 30) / 5)), align: 'enemy',
+      stats: { str: int(ab.str, 10), dex: int(ab.dex, 10), con: int(ab.con, 10), int: int(ab.int, 10), wis: int(ab.wiz ?? ab.wis, 10), cha: int(ab.cha, 10) },
+      actions: (d.actions || []).map(TTG.npcAction), bonusActions: (d.bonusActions || []).map(TTG.npcAction),
+      customCards: [card('Сводка', '#2a9988', '◆', sum, false), card('Особенности', '#3a7acc', '★', feats(d.feats)), card('Реакции', '#e06020', '⚡', feats(d.reactions)),
+        card('Легендарные действия', '#8844cc', '☽', leg), card('Описание', '#e8a020', '', TTG.txt(d.description))].filter(Boolean) });
+  },
+  convert(kind, d) { return TTG[kind](d); },
+
+  /* ── Запасной вариант: разбор текста, скопированного со страницы ttg.club ── */
+  parse(kind, raw) {
+    const t = String(raw || '').replace(/\r/g, '').replace(/[ \t]+/g, ' ');
+    const lines = t.split('\n').map(s => s.trim()).filter(Boolean);
+    const field = re => { const m = t.match(new RegExp(re + '\\s*:?\\s*\\n*\\s*([^\\n]+)', 'i')); return m ? m[1].trim() : ''; };
+    const name = (lines[0] || 'Без названия').replace(/\s*\[.*?\]\s*$/, '');
+    const cut = (from, stops) => { let s = t; if (from) { const i = s.search(from); if (i >= 0) s = s.slice(i).replace(from, ''); } const j = s.search(stops); return (j >= 0 ? s.slice(0, j) : s).trim(); };
+    if (kind === 'spell') {
+      const lv = t.match(/(\d)\s*уровень,?\s*([а-яё]+)/i), cant = t.match(/заговор,?\s*([а-яё]+)/i);
+      const desc = cut(/Компоненты\s*:?[^\n]*\n+[^\n]*\n/i, /\n(Классы|Подклассы|Комментарии)\s*:?/i);
+      return { name, level: lv ? int(lv[1]) : 0, school: TTG.cap((lv ? lv[2] : cant ? cant[1] : '').toLowerCase()) || SPELL_SCHOOLS[0], castTime: field('Время накладывания'), range: field('Дистанция'),
+        duration: field('Длительность'), components: field('Компоненты').replace(/Вербальный/i, 'В').replace(/Соматический/i, 'С').replace(/Материальный/i, 'М'), description: desc,
+        concentration: /концентрац/i.test(field('Длительность')), ritual: /ритуал/i.test(t.slice(0, 300)) };
+    }
+    if (kind === 'beast') {
+      const st = t.match(/СИЛ[\s\S]{0,40}?ХАР[\s\S]{0,10}?(\d+)\s*\([^)]*\)\s*(\d+)\s*\([^)]*\)\s*(\d+)\s*\([^)]*\)\s*(\d+)\s*\([^)]*\)\s*(\d+)\s*\([^)]*\)\s*(\d+)/i);
+      return normNPC({ name, hp: int((t.match(/Хиты\s*:?\s*(\d+)/i) || [])[1], 10), ac: int((t.match(/Класс\s+(?:Доспеха|брони)\s*:?\s*(\d+)/i) || [])[1], 10),
+        speed: Math.max(1, Math.round(int((t.match(/Скорость\s*:?\s*(\d+)/i) || [])[1], 30) / 5)), align: 'enemy',
+        stats: st ? { str: int(st[1]), dex: int(st[2]), con: int(st[3]), int: int(st[4]), wis: int(st[5]), cha: int(st[6]) } : undefined,
+        customCards: [{ title: 'Статблок', color: '#2a9988', shape: '◆', content: lines.slice(1).join('\n'), collapsed: false }] });
+    }
+    const rar = Object.entries({ veryrare: /очень\s+редк/i, legendary: /легендарн/i, artifact: /артефакт/i, rare: /редк/i, uncommon: /необычн/i }).find(([, re]) => re.test(t.slice(0, 400)));
+    const body = lines.slice(1).join('\n');
+    const it = { name, rarity: kind === 'magic' ? (rar ? rar[0] : 'uncommon') : 'common', attune: /настройк/i.test(t.slice(0, 400)),
+      type: kind === 'weapon' ? 'Оружие' : kind === 'armor' ? 'Доспех' : kind === 'item' ? 'Снаряжение' : TTG.itemType(t.slice(0, 200)), blocks: [{ type: 'description', text: body }] };
+    return TTG.mkItem(it);
+  },
+
+  /* ── Окно поиска ── kinds: какие вкладки; onPick(obj, kind) — куда класть результат */
+  open({ kinds, title = '🔎 Поиск на ttg.club', onPick }) {
+    const st = { kind: kinds[0], q: '', rows: [], busy: false, err: '' };
+    const meta = (k, x) => k === 'spell' ? `${x.level ? x.level + '-й' : 'заговор'} · ${x.school || ''}${x.concentration ? ' · К' : ''}${x.ritual ? ' · Р' : ''}`
+      : k === 'magic' ? `${x.rarity?.name || ''} · ${x.type?.name || ''}` : k === 'weapon' ? `${x.type?.name || ''} · ${x.damage?.dice || ''} ${x.damage?.type || ''}`
+      : k === 'armor' ? `${x.type?.name || ''} · КД ${x.armorClass || ''}` : k === 'beast' ? `ПО ${x.challengeRating} · ${x.type || ''}` : x.price || '';
+    const official = x => x.source?.group?.shortName === 'Basic';
+    const m = openModal({ title, size: 'wide', body: `
+      ${kinds.length > 1 ? `<div class="seg wrap mb" id="ttg-k">${kinds.map(k => `<button data-k="${k}" class="${k === st.kind ? 'on' : ''}">${TTG.KINDS[k].label}</button>`).join('')}</div>` : ''}
+      <div class="row"><input type="search" id="ttg-q" class="grow" placeholder="Название по-русски или по-английски, или ссылка на страницу ttg.club"><label class="chk small" title="Скрыть сторонний контент и хоумбрю"><input type="checkbox" id="ttg-off" ${SETTINGS.ttgAll ? '' : 'checked'}> только офиц.</label></div>
+      <div id="ttg-res" class="pick-list mt"></div>
+      <details class="mt" id="ttg-paste-box"><summary class="muted small" style="cursor:pointer">📋 Нет прокси или сайт не отвечает — вставить текст со страницы ttg.club</summary>
+        <textarea id="ttg-paste" rows="6" class="mt" placeholder="Открой страницу на ttg.club, выдели текст карточки (от названия до конца описания), скопируй и вставь сюда"></textarea>
+        <button class="btn mt" id="ttg-parse">Сделать карточку из текста</button></details>`,
+      foot: '<span class="muted tiny grow">Данные — 5e14.ttg.club. Карточку потом можно править как свою.</span><button class="btn pri" data-act="modalClose">Готово</button>' });
+    const res = $('#ttg-res', m), qi = $('#ttg-q', m), off = $('#ttg-off', m);
+    const draw = () => {
+      if (!TTG.base()) { res.innerHTML = `<div class="note warn">Поиск не настроен: нужен адрес своего прокси (бесплатный Cloudflare Worker).<br>Задай его в <b>Сохранения → 🔎 Поиск на ttg.club</b> — инструкция в файле <b>TTG_PROXY.md</b>. А пока — вставь текст ниже.</div>`; $('#ttg-paste-box', m).open = true; return; }
+      if (st.busy) { res.innerHTML = '<div class="muted small pad">⏳ Ищу…</div>'; return; }
+      if (st.err) { res.innerHTML = `<div class="note warn">⚠ ttg.club: ${esc(st.err)}. Можно вставить текст со страницы ниже.</div>`; return; }
+      if (!st.q) { res.innerHTML = '<div class="muted small pad">Начни вводить название…</div>'; return; }
+      const rows = st.rows.filter(x => !off.checked || official(x));
+      res.innerHTML = rows.map(x => `<div class="pick-row"><span class="grow" style="min-width:0"><b>${esc(x.name?.rus || '')}</b> <small class="muted">${esc(x.name?.eng || '')}</small><br><small class="muted">${esc(meta(st.kind, x))} · <span class="${official(x) ? 'gold' : ''}">${esc(x.source?.shortName || '')}</span></small></span>
+        <span class="badge" data-cnt="${esc(x.url)}" hidden>0</span><button class="btn sm pri" data-ttg="${esc(x.url)}">＋</button></div>`).join('')
+        || `<div class="muted small pad">Ничего не нашлось${off.checked && st.rows.length ? ' среди официальных — сними галочку «только офиц.»' : ''}</div>`;
+    };
+    const run = debounce(async () => {
+      st.q = qi.value.trim(); st.err = '';
+      const link = st.q.match(/ttg\.club(\/(?:spells|items\/magic|weapons|armors|items|bestiary)\/[^?#\s]+)/i);
+      if (link) { pick(decodeURIComponent(link[1])); qi.value = ''; st.q = ''; draw(); return; }
+      if (!st.q || !TTG.base()) { st.rows = []; draw(); return; }
+      st.busy = true; draw();
+      try { st.rows = await TTG.search(st.kind, st.q); } catch (e) { st.err = e.message === 'Failed to fetch' ? 'нет связи с прокси' : e.message; st.rows = []; }
+      st.busy = false; draw();
+    }, 350);
+    const pick = async url => {
+      const kind = TTG.kindOfUrl(url) || st.kind;
+      if (!kinds.includes(kind)) return toast(`Здесь нужен раздел: ${kinds.map(k => TTG.KINDS[k].label).join(', ')}`, 'err');
+      try { const obj = TTG.convert(kind, await TTG.detail(url)); onPick(obj, kind); const b = $(`[data-cnt="${CSS.escape(url)}"]`, m); if (b) { b.hidden = false; b.textContent = int(b.textContent) + 1; } }
+      catch (e) { toast('⚠ Не получилось загрузить: ' + (e.message === 'Failed to fetch' ? 'нет связи с прокси' : e.message), 'err', 4000); }
+    };
+    qi.addEventListener('input', run); off.addEventListener('change', () => { SETTINGS.ttgAll = !off.checked; saveSettings(); draw(); });
+    $('#ttg-k', m)?.addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (!b) return; st.kind = b.dataset.k; $$('#ttg-k button', m).forEach(x => x.classList.toggle('on', x === b)); run(); });
+    res.addEventListener('click', e => { const b = e.target.closest('[data-ttg]'); if (b) pick(b.dataset.ttg); });
+    $('#ttg-parse', m).addEventListener('click', () => { const v = $('#ttg-paste', m).value.trim(); if (!v) return; onPick(TTG.parse(st.kind, v), st.kind); $('#ttg-paste', m).value = ''; });
+    draw(); setTimeout(() => qi.focus(), 60);
+  },
+};
+
+/* ── Точки входа ── */
+const ITEM_KINDS = ['magic', 'weapon', 'armor', 'item'];
+ACT.ttgSpell = () => TTG.open({ kinds: ['spell'], title: '🔎 Заклинание с ttg.club', onPick: s => { const pc = activePC(); pc.hasSpells = true; pc.spells.push(s); savePC(pc); ccRefresh('spellcards'); toast(`✨ «${s.name}» добавлено`, 'ok'); } });
+ACT.ttgInv = el => { const z = el.dataset.z || 'pack'; TTG.open({ kinds: ITEM_KINDS, title: `🔎 Предмет с ttg.club → ${ZONES[z].label}`, onPick: it => { const pc = activePC(); invAdd(pc, it, z); savePC(pc); invRefresh(); toast(`${ZONES[z].icon} «${it.name}» добавлен`, 'ok'); } }); };
+ACT.ttgLoot = () => { let last = null; TTG.open({ kinds: ITEM_KINDS, title: '🔎 Предмет с ttg.club → библиотека лута', onPick: it => { STORE.put('item', it); last = it; lootListRefresh(); toast(`📜 «${it.name}» в библиотеке`, 'ok'); } });
+  MODAL_STACK.at(-1).onClose = () => { if (last) { LOOT.id = last.id; _lootObj = null; route(); } }; };
+ACT.ttgNpc = () => { let last = null; TTG.open({ kinds: ['beast'], title: '🔎 Бестиарий ttg.club → NPC', onPick: n => { STORE.put('npc', n); last = n; npcListRefresh(); toast(`👹 «${n.name}» в библиотеке NPC`, 'ok'); } });
+  MODAL_STACK.at(-1).onClose = () => { if (last) { NPCV.id = last.id; _npcObj = null; route(); } }; };
+ACT.ttgFight = () => { const add = FPICK; TTG.open({ kinds: ['beast'], title: '🔎 Бестиарий ttg.club → в бой', onPick: n => { STORE.put('npc', n); add?.(normNPC(clone(n))); toast(`⚔ «${n.name}» в бою и в библиотеке NPC`, 'ok'); } }); };
+ACT.ttgProxySave = () => { SETTINGS.ttgProxy = ($('#ttg-proxy')?.value || '').trim(); saveSettings(); TTG.cache.clear(); toast(SETTINGS.ttgProxy ? '✓ Адрес прокси сохранён' : 'Адрес прокси очищен', 'ok'); };
+ACT.ttgProxyTest = async () => {
+  ACT.ttgProxySave(); if (!TTG.base()) return;
+  try { const r = await TTG.search('spell', 'огненный шар'); toast(r.length ? `✓ Работает: нашёлся «${r[0].name.rus}»` : '✓ Прокси отвечает', 'ok', 4000); }
+  catch (e) { toast('⚠ Прокси не отвечает: ' + (e.message === 'Failed to fetch' ? 'нет связи / неверный адрес / не тот сайт в ALLOW' : e.message), 'err', 6000); }
+};
+
 // ── saves.js ──
 /* ═══════════════════════════════════════════════════════
    СОХРАНЕНИЯ: мои персонажи, коды, резервные копии, перенос из V8
@@ -5256,6 +5486,10 @@ VIEWS.saves = {
 
       ${m ? `<div class="orn left mt2">🎭 Библиотеки мастера</div><div class="lib-grid">${lib.map(([k, ic, l, v]) => `<button class="lib-tile" data-act="go" data-v="${v}"><span>${ic}</span><b>${STORE.keys(k + '_').length}</b><small>${l}</small></button>`).join('')}
         <button class="lib-tile" data-act="go" data-v="wiki"><span>📚</span><b>${STORE.get('wiki', []).length}</b><small>Статей вики</small></button></div>` : ''}
+
+      <div class="orn left mt2">🔎 Поиск на ttg.club</div>
+      <p class="small dim mb">Заклинания, предметы, снаряжение и бестиарий с 5e14.ttg.club — прямо в карточки. Нужен свой бесплатный прокси (Cloudflare Worker), инструкция — в файле <b>TTG_PROXY.md</b>.</p>
+      <div class="row wrap"><input id="ttg-proxy" class="grow" style="min-width:220px" placeholder="https://ttg-proxy.ваш-ник.workers.dev" value="${esc(SETTINGS.ttgProxy || TTG_DEFAULT_PROXY)}" data-enter="ttgProxyTest"><button class="btn" data-act="ttgProxySave">Сохранить</button><button class="btn pri" data-act="ttgProxyTest">Проверить</button></div>
 
       <div class="orn left mt2">🎨 Шрифт</div>
       <div class="font-pick">${FONTS.map(f => `<button class="${(SETTINGS.font || 'inter') === f.id ? 'on' : ''}" data-act="setFont" data-v="${f.id}" style="font-family:'${f.css}',sans-serif"><b>${f.label}</b><small>Астарион · 27/31 HP · +7 · 1d4+4</small></button>`).join('')}</div>
