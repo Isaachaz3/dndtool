@@ -1162,7 +1162,7 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:grabbing;}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '9.2.0';
+const APP_VERSION = '9.2.1';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -3951,7 +3951,7 @@ ACT.trade = () => {
         <div class="tr-items" id="tr-pay-items">${trItemsHTML('pay')}</div><button class="btn sm ghost mt" data-act="trPickItem">+ Отдать вещь из инвентаря</button></div>
       <div class="tr-side get"><div class="orn left">Я получаю</div>${trCoinsEd('get')}
         <div class="tr-items" id="tr-get-items">${trItemsHTML('get')}</div>
-        <div class="row mt"><input id="tr-get-in" placeholder="Вещи: зелье лечения, 2 стрелы…" class="grow" data-enter="trAddGet" list="dl-items"><button class="btn sm" data-act="trAddGet">+</button></div></div>
+        <div class="row mt"><input id="tr-get-in" placeholder="Вещи: зелье лечения, 2 стрелы…" class="grow" data-enter="trAddGet" list="dl-items"><button class="btn sm" data-act="trAddGet">+</button><button class="btn sm" data-act="ttgTrade" title="Найти предмет на ttg.club — с ценой">🔎</button></div></div>
     </div>
     <div class="tr-sum well" id="tr-sum"></div>
     <div class="row wrap mt"><input id="tr-who" placeholder="С кем / за что (для истории)" class="grow"></div>
@@ -3981,7 +3981,7 @@ function trCommit() {
   const pc = activePC(); trSummary(); if (!TR.after) return;
   pc.coins = TR.after;
   TR.payItems.forEach(x => { const f = invFind(pc, x.id); if (!f) return; f.it.qty -= x.qty; if (f.it.qty <= 0) pc.inv[f.z].splice(f.i, 1); });
-  TR.getItems.forEach(x => { const tpl = itemTemplate(x.name); invAdd(pc, tpl ? itemCopy(tpl, x.qty) : { name: x.name, qty: x.qty, emoji: x.emoji }, 'pack'); });
+  TR.getItems.forEach(x => { const tpl = x.full || itemTemplate(x.name); invAdd(pc, tpl ? itemCopy(tpl, x.qty) : { name: x.name, qty: x.qty, emoji: x.emoji }, 'pack'); });
   const pay = [fmtCoins(TR.pay, ''), ...TR.payItems.map(x => (x.qty > 1 ? x.qty + '× ' : '') + x.name)].filter(Boolean).join(', ');
   const get = [fmtCoins(TR.get, ''), ...TR.getItems.map(x => (x.qty > 1 ? x.qty + '× ' : '') + x.name)].filter(Boolean).join(', ');
   pc.trades.unshift({ ts: Date.now(), who: ($('#tr-who')?.value || '').trim(), pay, get }); pc.trades = pc.trades.slice(0, 50);
@@ -5080,6 +5080,7 @@ function gmToolsHTML() {
       <div class="row mt"><span class="lbl">кол-во</span><input type="number" id="gm-dn" min="1" max="30" value="${GM.cnt || 1}" style="width:60px" data-in="gmDn"><span class="lbl">мод</span><input type="number" id="gm-dm" value="${GM.mod || 0}" style="width:64px" data-in="gmDm"></div>
       <div class="die-res" id="gm-res">${GM.rolls[0]?.total ?? '—'}</div><div class="center muted small" id="gm-sub">${esc(GM.rolls[0]?.sub || '')}</div>
       <div class="gm-hist" id="gm-hist">${GM.rolls.slice(1, 8).map(r => `<div>${esc(r.sub)} → <b>${r.total}</b></div>`).join('')}</div></div>
+    <button class="btn block gm-ttg" data-act="ttgSite">🌐 Открыть ttg.club ↗</button>
     <div class="gm-tool fold closed"><div class="gm-sec-h fold-h" data-act="fold"><span class="arr">▾</span> 📋 Состояния</div><div class="fold-b"><div class="gm-conds">${GS_CONDITIONS.map((c, i) => `<button class="chip btnlike ${GM.tip === i ? 'on' : ''}" data-act="gmTip" data-i="${i}">${c.name}</button>`).join('')}</div>
       ${GM.tip != null ? `<div class="gm-tip">${nl2br(GS_CONDITIONS[GM.tip].tip)}</div>` : '<div class="muted small mt">Нажми на состояние — покажу правило</div>'}</div></div>
     <div class="gm-tool fold closed"><div class="gm-sec-h fold-h" data-act="fold"><span class="arr">▾</span> 📊 Сложность (СЛ) и укрытия</div><div class="fold-b"><table class="dc-t">${DC_TABLE.map(([l, v, c]) => `<tr><td>${l}</td><td class="${c}"><b>${v}</b></td></tr>`).join('')}</table>
@@ -5228,7 +5229,20 @@ const TEMPLATE_ITEM = { name: 'Меч Теней', emoji: '⚔️', type: 'Ор�
    ttg.club не пускает запросы с чужих сайтов (CORS), поэтому ходим через свой прокси (Cloudflare Worker,
    код — tools/ttg_worker.js, инструкция — TTG_PROXY.md). Без прокси — разбор вставленного со страницы текста.
 ═══════════════════════════════════════════════════════ */
-const TTG_DEFAULT_PROXY = ''; // адрес своего Worker'а, чтобы не вводить на каждом устройстве: 'https://….workers.dev'
+const TTG_DEFAULT_PROXY = 'https://ttg-proxy.pavlukda.workers.dev'; // свой Worker — у всех по умолчанию
+const TTG_SITE = 'https://5e14.ttg.club';
+/** Открыть ссылку: в Telegram — встроенным браузером Telegram, иначе новой вкладкой */
+function openExternal(url) { if (TGX.on && TGX.v('6.1')) TGX.wa.openLink(url); else window.open(url, '_blank', 'noopener'); }
+ACT.ttgSite = () => openExternal(TTG_SITE);
+/** «50 зм.», «2 см», «1.0 зм» → монеты {gp: 50}; диапазоны и формулы — null */
+function ttgPrice(it) {
+  const v = (it.blocks || []).find(b => b.type === 'properties')?.rows?.find(r => r.key === 'Цена')?.val || '';
+  const m = String(v).match(/^\s*([\d.,]+)\s*(пм|зм|эм|см|мм)\.?\s*$/i); if (!m) return null;
+  const rate = { 'пм': 1000, 'зм': 100, 'эм': 50, 'см': 10, 'мм': 1 }[m[2].toLowerCase()], cp = Math.round(parseFloat(m[1].replace(',', '.')) * rate);
+  if (!(cp > 0)) return null;
+  const o = { gp: Math.floor(cp / 100), sp: Math.floor(cp % 100 / 10), cp: cp % 10 };
+  Object.keys(o).forEach(k => { if (!o[k]) delete o[k]; }); return o;
+}
 const TTG = {
   KINDS: {
     spell: { label: '✨ Заклинания', list: '/api/v1/spells' },
@@ -5445,6 +5459,14 @@ ACT.ttgLoot = () => { let last = null; TTG.open({ kinds: ITEM_KINDS, title: '�
 ACT.ttgNpc = () => { let last = null; TTG.open({ kinds: ['beast'], title: '🔎 Бестиарий ttg.club → NPC', onPick: n => { STORE.put('npc', n); last = n; npcListRefresh(); toast(`👹 «${n.name}» в библиотеке NPC`, 'ok'); } });
   MODAL_STACK.at(-1).onClose = () => { if (last) { NPCV.id = last.id; _npcObj = null; route(); } }; };
 ACT.ttgFight = () => { const add = FPICK; TTG.open({ kinds: ['beast'], title: '🔎 Бестиарий ttg.club → в бой', onPick: n => { STORE.put('npc', n); add?.(normNPC(clone(n))); toast(`⚔ «${n.name}» в бою и в библиотеке NPC`, 'ok'); } }); };
+/* Торговля: найденная вещь — в «Я получаю», её цена — в «Я плачу» (можно поправить) */
+ACT.ttgTrade = () => TTG.open({ kinds: ITEM_KINDS, title: '🔎 Что покупаешь? (ttg.club)', onPick: it => {
+  TR.getItems.push({ name: it.name, qty: 1, emoji: it.emoji, full: it });
+  const p = ttgPrice(it);
+  if (p) { Object.entries(p).forEach(([k, n]) => { TR.pay[k] = int(TR.pay[k]) + n; }); const c = $('.tr-side.pay .tr-coins'); if (c) c.outerHTML = trCoinsEd('pay'); }
+  $('#tr-get-items').innerHTML = trItemsHTML('get'); trSummary();
+  toast(`🛒 «${it.name}»${p ? ` · цена ${fmtCoins(p, '')} добавлена в «Я плачу»` : ''}`, 'ok', 3500);
+} });
 ACT.ttgProxySave = () => { SETTINGS.ttgProxy = ($('#ttg-proxy')?.value || '').trim(); saveSettings(); TTG.cache.clear(); toast(SETTINGS.ttgProxy ? '✓ Адрес прокси сохранён' : 'Адрес прокси очищен', 'ok'); };
 ACT.ttgProxyTest = async () => {
   ACT.ttgProxySave(); if (!TTG.base()) return;
@@ -5569,7 +5591,7 @@ function renderNav() {
     const n = NAV.find(x => x.id === t); return `<button class="tab ${CUR_VIEW === t ? 'on' : ''}" data-act="go" data-v="${t}"><span class="ti">${n.icon}</span>${n.label}</button>`;
   }).join('');
 }
-ACT.tabMore = el => openMenu(el, [{ hd: 'Мастер' }, ...['npc', 'loot', 'exped', 'wiki'].map(id => { const n = NAV.find(x => x.id === id); return { icon: n.icon, label: n.label, fn: () => go(id) }; }),
+ACT.tabMore = el => openMenu(el, [{ hd: 'Мастер' }, ...['npc', 'loot', 'exped', 'wiki'].map(id => { const n = NAV.find(x => x.id === id); return { icon: n.icon, label: n.label, fn: () => go(id) }; }), { icon: '🌐', label: 'ttg.club ↗', fn: () => ACT.ttgSite() },
   { hd: 'Игрок' }, ...['sheet', 'inv', 'creator'].map(id => { const n = NAV.find(x => x.id === id); return { icon: n.icon, label: n.label, fn: () => go(id) }; }), { sep: 1 }, { icon: '💾', label: 'Сохранения', fn: () => go('saves') }]);
 ACT.setMode = el => {
   SETTINGS.mode = el.dataset.m; saveSettings(); renderNav();
@@ -5647,7 +5669,8 @@ VIEWS.home = {
         ${pc ? `<button class="hexbtn" data-act="pcNew">✨ Новый персонаж</button>` : ''}
         <button class="hexbtn" data-act="shareImport">📥 Вставить код</button>
         ${m ? `<div class="orn"><i>◆</i> Мастерская <i>◆</i></div><div class="home-gm">
-          ${['gm', 'tracker', 'scenes', 'npc', 'loot', 'exped', 'wiki'].map(id => { const n = NAV.find(x => x.id === id); return `<button class="gm-tile" data-act="go" data-v="${id}"><span>${n.icon}</span>${n.label}</button>`; }).join('')}</div>` : ''}
+          ${['gm', 'tracker', 'scenes', 'npc', 'loot', 'exped', 'wiki'].map(id => { const n = NAV.find(x => x.id === id); return `<button class="gm-tile" data-act="go" data-v="${id}"><span>${n.icon}</span>${n.label}</button>`; }).join('')}
+          <button class="gm-tile" data-act="ttgSite" title="Открыть 5e14.ttg.club"><span>🌐</span>ttg.club ↗</button></div>` : ''}
         <button class="hexbtn" data-act="go" data-v="saves">💾 Сохранения и копии</button>
       </div>
       <div class="home-foot">Данные живут в этом браузере. Чтобы перенести персонажа на другое устройство или отдать мастеру — <b>📤 Поделиться</b> на листе.</div>
