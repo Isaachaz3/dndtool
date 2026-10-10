@@ -217,6 +217,11 @@ input::placeholder,textarea::placeholder{color:var(--tx3);opacity:.7;}
 .nav-item .ni{width:24px;text-align:center;font-size:18px;flex-shrink:0;}
 .nav-item:hover{background:rgba(200,168,107,.07);color:var(--tx);}
 .nav-item.on{background:linear-gradient(90deg,rgba(36,96,111,.45),rgba(36,96,111,.08));border-color:rgba(95,168,184,.35);color:#eaf6f8;}
+/* Telegram во весь экран: сверху кнопки Telegram (Закрыть / ⋯) — сдвигаем шапку и меню под них */
+html.in-tg body{padding-top:var(--safe-t,0px);}
+html.in-tg #nav{top:var(--safe-t,0px);height:calc(100vh - var(--safe-t,0px));}
+html.in-tg #top{top:var(--safe-t,0px);}
+html.in-tg #app{min-height:calc(100vh - var(--safe-t,0px));}
 .nav-foot{margin-top:auto;padding:12px 16px;font-family:var(--f-label);font-size:11px;color:var(--tx3);letter-spacing:1px;border-top:1px solid var(--line);}
 
 /* Шапка */
@@ -1146,7 +1151,7 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:grabbing;}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '9.1.0';
+const APP_VERSION = '9.1.1';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -1472,7 +1477,9 @@ const TGX = {
     try { wa.ready(); wa.expand(); } catch (e) { }
     try { if (TGX.v('7.7')) wa.disableVerticalSwipes(); } catch (e) { } // свайп вниз не закрывает приложение во время драга
     try { if (TGX.v('6.1')) { wa.setHeaderColor('#0c0b0a'); wa.setBackgroundColor('#0c0b0a'); } if (TGX.v('7.10')) wa.setBottomBarColor('#0c0b0a'); } catch (e) { }
-    TGX.inset(); wa.onEvent?.('safeAreaChanged', TGX.inset);
+    // Планшет (iPad и т.п.): Telegram открывает мини-приложение маленьким окном — просим весь экран
+    try { if (TGX.v('8.0') && TGX.tablet()) wa.requestFullscreen(); } catch (e) { }
+    TGX.inset(); ['safeAreaChanged', 'contentSafeAreaChanged', 'fullscreenChanged', 'viewportChanged'].forEach(ev => wa.onEvent?.(ev, TGX.inset));
     if (TGX.v('6.1')) {
       wa.BackButton.onClick(TGX.back);
       new MutationObserver(TGX.syncBack).observe($('#modal-root'), { childList: true });
@@ -1480,9 +1487,16 @@ const TGX = {
     }
     TGX.patch();
     if (TGX.v('6.9')) CLOUD.start();
-    renderNav();
+    if (!MODAL_STACK.length) route(); else renderNav(); // первый экран нарисован до Telegram — перерисовать с его кнопками
   },
-  inset() { const b = TGX.wa.safeAreaInset?.bottom || 0; if (b > 0) document.documentElement.style.setProperty('--safe-b', b + 'px'); },
+  tablet() { return ['ios', 'android', 'android_x'].includes(TGX.wa.platform) && Math.min(screen.width, screen.height) >= 600; },
+  /** Отступы: в полноэкранном режиме сверху лежат кнопки Telegram (Закрыть / ⋯) — contentSafeAreaInset */
+  inset() {
+    const wa = TGX.wa, s = wa.safeAreaInset || {}, c = wa.contentSafeAreaInset || {}, st = document.documentElement.style;
+    const top = wa.isFullscreen ? (s.top || 0) + (c.top || 0) : 0, b = (s.bottom || 0) + (wa.isFullscreen ? c.bottom || 0 : 0);
+    st.setProperty('--safe-t', top + 'px');
+    if (b > 0) st.setProperty('--safe-b', b + 'px'); else st.removeProperty('--safe-b');
+  },
   syncBack() { const bb = TGX.wa.BackButton; (MODAL_STACK.length || (CUR_VIEW && CUR_VIEW !== 'home')) ? bb.show() : bb.hide(); },
   back() {
     if (closeMenu()) return;
