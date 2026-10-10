@@ -1474,7 +1474,7 @@ html[data-theme="light"] .mbox::before{background:var(--line3);}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '9.6.0';
+const APP_VERSION = '9.6.1';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -5130,9 +5130,9 @@ function expCheckSupply() {
 /* ── Транспорт: лошади и повозки ── */
 const expMount = e => EXP_MOUNTS.find(m => m.id === (e.mount || 'foot')) || EXP_MOUNTS[0];
 /** Сколько животных/повозок едят из общего запаса (кормление можно выключить — лошади могут быть чужими) */
-const expAnimals = e => e.animalsEat === false ? 0 : int(e.horses) + int(e.carts);
+const expAnimals = e => e.animalsEat === false ? 0 : int(e.horses);
 const expCanGo = (e, tid = e.terrain.id) => { const m = expMount(e); return !m.ok || m.ok.includes(tid); };
-/** Сдвинуть время. В полночь — новый день: отряд ест (×1.5 после тяжёлого марша ≥5 гексов), лошади и повозки — по рациону. */
+/** Сдвинуть время. В полночь — новый день: отряд ест (×1.5 после тяжёлого марша ≥5 гексов), лошади — по рациону. */
 function expAdvance(e, h, travel = false) {
   const d0 = dayOf(e.time);
   e.time = Math.round((e.time + h) * 4) / 4; e.awake = num(e.awake) + h; if (travel) e.march = num(e.march) + h;
@@ -5140,7 +5140,7 @@ function expAdvance(e, h, travel = false) {
   for (let d = d0 + 1; d <= d1; d++) {
     const heavy = e.hexToday >= 5, an = expAnimals(e), cost = (heavy ? Math.ceil(e.party * 1.5) : e.party) + an;
     e.supplies = Math.max(0, e.supplies - cost); e.hexToday = 0; ate = true;
-    expLog(`🌅 Наступил день ${d}. Расход: −${cost} ${plural(cost, 'рацион', 'рациона', 'рационов')}${heavy ? ' (тяжёлый марш ×1.5)' : ''}${an ? ` (из них ${an} — лошади и повозки)` : ''} → ${e.supplies}.`, 'b');
+    expLog(`🌅 Наступил день ${d}. Расход: −${cost} ${plural(cost, 'рацион', 'рациона', 'рационов')}${heavy ? ' (тяжёлый марш ×1.5)' : ''}${an ? ` (из них ${an} — лошади)` : ''} → ${e.supplies}.`, 'b');
   }
   e.day = d1;
   if (ate) expCheckSupply();
@@ -5176,8 +5176,8 @@ function expHTML({ embedded = false } = {}) {
   const sc0 = e.last?.kind === 'enc' && e.last.ev && !e.last.scouted;
   const stepper = (k, ic, l) => `<div class="row exp-anim"><span class="grow">${ic} ${l}</span><div class="stepper"><button data-act="expAnimal" data-k="${k}" data-d="-1">−</button><b>${int(e[k])}</b><button data-act="expAnimal" data-k="${k}" data-d="1">+</button></div></div>`;
   const ride = `<div class="exp-sec"><div class="lbl">Передвижение</div><div class="seg wide">${EXP_MOUNTS.map(m => `<button class="${mt.id === m.id ? 'on' : ''}" data-act="expMount" data-v="${m.id}">${m.icon} ${m.label}</button>`).join('')}</div>
-    ${mt.id === 'horse' ? '<small class="muted block mt">Тракт, равнина, леса · без штрафа за тяжёлый марш · энкаунтеры вдвое реже · галоп раз в день</small>' : mt.id === 'cart' ? '<small class="muted block mt">Тракт, равнина, редкий лес · энкаунтеры вдвое реже</small>' : ''}
-    ${int(e.horses) || int(e.carts) || mt.id !== 'foot' ? `<div class="mt">${stepper('horses', '🐎', 'Лошадей')}${stepper('carts', '🛒', 'Повозок')}
+    ${mt.id === 'horse' ? '<small class="muted block mt">Тракт, равнина, леса · без тяжёлого и форсированного марша · энкаунтеры вдвое реже · галоп раз в день</small>' : mt.id === 'cart' ? '<small class="muted block mt">Тракт, равнина, редкий лес · без форсированного марша · энкаунтеры вдвое реже</small>' : ''}
+    ${int(e.horses) || mt.id !== 'foot' ? `<div class="mt">${stepper('horses', '🐎', 'Лошадей')}
       <label class="row mt" style="cursor:pointer"><span class="tgl"><input type="checkbox" data-ch="expAnimalsEat" ${e.animalsEat !== false ? 'checked' : ''}><span></span></span><span>Кормим из наших припасов <small class="muted">1 рацион в день на голову</small></span></label></div>` : ''}</div>`;
   const sc = days < 1 ? 'crit' : days < 3 ? 'warn' : '';
   const tired = num(e.awake) >= 16 || num(e.march) > 8;
@@ -5259,8 +5259,8 @@ function expMove(e, hexes = 1) {
   const marchBefore = num(e.march);
   e.hexTotal += hexes; if (mt.id !== 'horse') e.hexToday += hexes; // верхом тяжёлого марша нет
   if (hexes > 1) e.gallopDay = dayOf(e.time);
-  expAdvance(e, tr.spent, true);
-  const over = Math.ceil(num(e.march) - 8), forced = num(e.march) > 8 ? 10 + over : 0;
+  expAdvance(e, tr.spent, mt.id === "foot"); // верхом и на повозке форсированного марша нет — часы в седле не копятся
+  const over = Math.ceil(num(e.march) - 8), forced = mt.id === "foot" && num(e.march) > 8 ? 10 + over : 0;
   e.last = { kind: 'enc', ...r, enc: tr.enc, phases: tr.phases, spent: tr.spent, forced, hexes, quiet: r.ev ? '' : expQuiet() };
   const phLbl = tr.phases.filter(p => p !== 'day').map(p => EXP_PH[p].label).join('/');
   expLog(`${hexes > 1 ? '🐎 Галоп, гексы ' + (e.hexTotal - 1) + '–' + e.hexTotal : 'Гекс ' + e.hexTotal} [${e.terrain.label}${r.nat20 ? ' ★НАТ.20' : ''}${phLbl ? ' · ' + phLbl : ''}, ${fmtH(tr.spent)} ч]: ${expRollTxt(r)}`, r.ev ? 'b' : 'g');
@@ -5277,11 +5277,10 @@ ACT.expGallop = () => expDo(e => {
 ACT.expMount = el => expDo(e => {
   const m = EXP_MOUNTS.find(x => x.id === el.dataset.v) || EXP_MOUNTS[0]; e.mount = m.id;
   if (m.id === 'horse' && !int(e.horses)) e.horses = 1;
-  if (m.id === 'cart' && !int(e.carts)) e.carts = 1;
   expLog(`${m.icon} Передвижение: ${m.label.toLowerCase()}${m.ok && !expCanGo(e) ? ` — по местности «${e.terrain.label}» ${m.no}` : ''}.`);
 });
 ACT.expAnimal = el => expDo(e => { const k = el.dataset.k; e[k] = clamp(int(e[k]) + int(el.dataset.d), 0, 20); });
-CH.expAnimalsEat = el => expDo(e => { e.animalsEat = el.checked; expLog(e.animalsEat ? '🐎 Лошади и повозки кормятся из припасов отряда.' : '🐎 Лошади и повозки едят не из наших припасов.'); });
+CH.expAnimalsEat = el => expDo(e => { e.animalsEat = el.checked; expLog(e.animalsEat ? '🐎 Лошади кормятся из припасов отряда.' : '🐎 Лошади едят не из наших припасов.'); });
 ACT.expPitch = () => expDo(e => {
   if (e.isCamped) return toast('⛺ Лагерь уже стоит');
   expAdvance(e, 0.25); e.isCamped = true;
