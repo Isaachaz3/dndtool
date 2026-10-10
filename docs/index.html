@@ -1472,7 +1472,7 @@ html[data-theme="light"] .mbox::before{background:var(--line3);}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '9.5.0';
+const APP_VERSION = '9.5.1';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -1799,8 +1799,12 @@ const TGX = {
     try { if (TGX.v('7.7')) wa.disableVerticalSwipes(); } catch (e) { } // свайп вниз не закрывает приложение во время драга
     try { const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg0').trim() || '#0c0b0a'; // цвет фона текущей темы
       if (TGX.v('6.1')) { wa.setHeaderColor(bg); wa.setBackgroundColor(bg); } if (TGX.v('7.10')) wa.setBottomBarColor(bg); } catch (e) { }
-    // Планшет (iPad и т.п.): Telegram открывает мини-приложение маленьким окном — просим весь экран
-    try { if (TGX.v('8.0') && TGX.tablet()) wa.requestFullscreen(); } catch (e) { }
+    // Планшет и ПК: Telegram открывает мини-приложение маленьким окном — просим весь экран.
+    // Если клиент отказал без жеста пользователя — повторяем один раз по первому клику.
+    if (TGX.v('8.0') && (TGX.tablet() || TGX.desktop())) {
+      try { wa.requestFullscreen(); } catch (e) { }
+      document.addEventListener('pointerdown', () => { try { if (!wa.isFullscreen) wa.requestFullscreen(); } catch (e) { } }, { once: true, capture: true });
+    }
     TGX.inset(); ['safeAreaChanged', 'contentSafeAreaChanged', 'fullscreenChanged', 'viewportChanged'].forEach(ev => wa.onEvent?.(ev, TGX.inset));
     if (TGX.v('6.1')) {
       wa.BackButton.onClick(TGX.back);
@@ -1811,6 +1815,7 @@ const TGX = {
     if (TGX.v('6.9')) CLOUD.start();
     if (!MODAL_STACK.length) route(); else renderNav(); // первый экран нарисован до Telegram — перерисовать с его кнопками
   },
+  desktop() { return ['tdesktop', 'macos', 'weba', 'webk', 'web', 'unigram'].includes(TGX.wa.platform); },
   tablet() { return ['ios', 'android', 'android_x'].includes(TGX.wa.platform) && Math.min(screen.width, screen.height) >= 600; },
   /** Отступы: в полноэкранном режиме сверху лежат кнопки Telegram (Закрыть / ⋯) — contentSafeAreaInset */
   inset() {
@@ -1924,7 +1929,7 @@ const CLOUD = {
     localStorage.setItem('dnd9c_sync', String(meta.t)); localStorage.removeItem('dnd9c_dirty');
     location.reload();
   },
-  /* Строка состояния в «Сохранениях» */
+  /* Строка состояния в «Настройках» */
   text() {
     if (CLOUD.err) return `<span class="c-red">⚠ ${esc(CLOUD.err)}</span>`;
     if (CLOUD.busy) return '⏳ Сохраняю в облако…';
@@ -3191,7 +3196,8 @@ const SHARE = {
       case 'map': { const l = d.lib || {}; const extra = [l.npc?.length && `NPC ${l.npc.length}`, l.item?.length && `предм. ${l.item.length}`, l.batt?.length && `боёв ${l.batt.length}`, l.wiki?.length && `статей ${l.wiki.length}`].filter(Boolean);
         return `Сюжет «${d.title || 'без названия'}» · ${(d.nodes || []).length} сцен${extra.length ? ' · ' + extra.join(', ') : ''}`; }
       case 'wiki': return `Статей вики: ${arr.length}`;
-      case 'all': return 'Резервная копия всех данных';
+      case 'all': { const n = [['pc', 'перс.'], ['npc', 'NPC'], ['item', 'предм.'], ['batt', 'боёв'], ['map', 'сюжетов'], ['wiki', 'статей']].filter(([k]) => d[k]?.length).map(([k, l]) => `${l} ${d[k].length}`);
+        return 'Набор данных' + (n.length ? ': ' + n.join(', ') : ''); }
     }
     return SHARE.KIND_LABEL[o.k] || o.k;
   },
@@ -5859,7 +5865,7 @@ const TTG = {
       foot: '<span class="muted tiny grow">Данные — 5e14.ttg.club. Карточку потом можно править как свою.</span><button class="btn pri" data-act="modalClose">Готово</button>' });
     const res = $('#ttg-res', m), qi = $('#ttg-q', m), off = $('#ttg-off', m);
     const draw = () => {
-      if (!TTG.base()) { res.innerHTML = `<div class="note warn">Поиск не настроен: нужен адрес своего прокси (бесплатный Cloudflare Worker).<br>Задай его в <b>Сохранения → 🔎 Поиск на ttg.club</b> — инструкция в файле <b>TTG_PROXY.md</b>. А пока — вставь текст ниже.</div>`; $('#ttg-paste-box', m).open = true; return; }
+      if (!TTG.base()) { res.innerHTML = `<div class="note warn">Поиск не настроен: нужен адрес своего прокси (бесплатный Cloudflare Worker).<br>Задай его в <b>Настройки → 🔎 Поиск на ttg.club</b> — инструкция в файле <b>TTG_PROXY.md</b>. А пока — вставь текст ниже.</div>`; $('#ttg-paste-box', m).open = true; return; }
       if (st.busy) { res.innerHTML = '<div class="muted small pad">⏳ Ищу…</div>'; return; }
       if (st.err) { res.innerHTML = `<div class="note warn">⚠ ttg.club: ${esc(st.err)}. Можно вставить текст со страницы ниже.</div>`; return; }
       if (!st.q) { res.innerHTML = '<div class="muted small pad">Начни вводить название…</div>'; return; }
@@ -6447,7 +6453,7 @@ async function cwEqResolve() {
 async function spellPicker(pc, { title = '📚 Заклинания класса', hint = '' } = {}) {
   const k = pcClass(pc);
   if (!k.spellId) return toast('Для этого класса нет списка заклинаний на ttg.club (или класс не распознан)', 'err', 4000);
-  if (!TTG.base()) return toast('Нужен прокси ttg.club — Сохранения → 🔎 Поиск на ttg.club', 'err', 4000);
+  if (!TTG.base()) return toast('Нужен прокси ttg.club — Настройки → 🔎 Поиск на ttg.club', 'err', 4000);
   const maxLv = Math.max(0, ...Object.entries(pc.slots).filter(([, n]) => int(n) > 0).map(([l]) => int(l)));
   const known = new Set(pc.spells.map(s => s.name.toLowerCase()));
   const m = openModal({ title, size: 'wide', body: `<div class="muted pad">⏳ Загружаю список заклинаний…</div>`, foot: `<span class="muted small grow" id="sp-cnt"></span><button class="btn ghost" data-act="modalClose">Закрыть</button><button class="btn pri" id="sp-add" disabled>＋ Добавить</button>` });
@@ -6566,7 +6572,7 @@ ACT.levelUp = async () => {
    СОХРАНЕНИЯ: мои персонажи, коды, резервные копии, перенос из V8
 ═══════════════════════════════════════════════════════ */
 VIEWS.saves = {
-  title: 'Сохранения', icon: '💾',
+  title: 'Настройки', icon: '⚙',
   render(el) {
     const pcs = STORE.list('pc'), act = activePC(), m = isMaster();
     const kb = Math.round(STORE.bytes() / 1024);
@@ -6577,7 +6583,7 @@ VIEWS.saves = {
           <div class="grow" style="min-width:0" data-act="pcPlay" data-id="${p.id}"><b class="ellip">${esc(p.name)}</b><small class="muted ellip">${esc([p.race, p.cls].filter(Boolean).join(' · ') || 'Персонаж')} · ${p.level} ур. · ${fmtDate(p._ts)}</small></div>
           ${act && act.id === p.id ? '<span class="badge gold">играю</span>' : `<button class="btn sm pri" data-act="pcPlay" data-id="${p.id}">Играть</button>`}
           <button class="btn sm icon" data-act="pcMenu" data-id="${p.id}">⋯</button></div>`).join('') || '<div class="empty"><span class="big">🧙</span>Персонажей пока нет</div>'}</div>
-      <div class="btns mt"><button class="btn pri" data-act="pcNew">✨ Новый персонаж</button><button class="btn" data-act="shareImport">📥 Вставить код</button></div>
+      <div class="btns mt"><button class="btn pri" data-act="pcNew">✨ Новый персонаж</button><button class="btn" data-act="shareImport">📥 Вставить код</button>${pcs.length > 1 ? '<button class="btn" data-act="libManager" data-k="pc">🗂 Выбрать несколько</button>' : ''}</div>
 
       ${TGX.on ? `<div class="orn left mt2">☁ Облако Telegram</div>
       <div class="well pad"><p class="small">Все данные автоматически копируются в облако Telegram и доступны с любого твоего устройства, где открыт этот бот.</p>
@@ -6594,7 +6600,8 @@ VIEWS.saves = {
       <p class="muted tiny mt">Старые файлы V8 (memo_, char_, loot_, batt_, scene_ .json) тоже можно открыть через «Восстановить из файла» или «Вставить код» — они переведутся автоматически.</p>
 
       ${m ? `<div class="orn left mt2">🎭 Библиотеки мастера</div><div class="lib-grid">${lib.map(([k, ic, l, v]) => `<button class="lib-tile" data-act="go" data-v="${v}"><span>${ic}</span><b>${STORE.keys(k + '_').length}</b><small>${l}</small></button>`).join('')}
-        <button class="lib-tile" data-act="go" data-v="wiki"><span>📚</span><b>${STORE.get('wiki', []).length}</b><small>Статей вики</small></button></div>` : ''}
+        <button class="lib-tile" data-act="go" data-v="wiki"><span>📚</span><b>${STORE.get('wiki', []).length}</b><small>Статей вики</small></button></div>
+        <div class="btns mt"><button class="btn pri" data-act="libManager">🗂 Управление файлами: отметить, удалить, поделиться</button></div>` : ''}
 
       <div class="orn left mt2">🔎 Поиск на ttg.club</div>
       <p class="small dim mb">Заклинания, предметы, снаряжение и бестиарий с 5e14.ttg.club — прямо в карточки. Нужен свой бесплатный прокси (Cloudflare Worker), инструкция — в файле <b>TTG_PROXY.md</b>.</p>
@@ -6654,6 +6661,76 @@ ACT.backupLoad = async () => {
   if (r.status === 'json') { if (r.json?._dnd9backup) { if (await confirmBox('Восстановить резервную копию? Совпадающие записи перезапишутся.', { ok: 'Восстановить' })) BACKUP.restore(r.json.d); } else SHARE.applyLegacy(r.json); }
   else SHARE.openImport(text);
 };
+/* ═══ Файловый менеджер библиотек: крыжки, массовое удаление и код ═══ */
+const LIBM_KINDS = [['pc', '🧙', 'Персонажи'], ['npc', '👹', 'NPC'], ['item', '📜', 'Лут'], ['batt', '⚔', 'Бои'], ['map', '🗺', 'Сюжеты'], ['wiki', '📚', 'Вики']];
+const LIBM = { kind: 'npc', q: '', sel: new Set() };
+function libmList(k) {
+  if (k === 'wiki') return wikiArts().map(a => ({ id: a.id, name: a.title, ic: WIKI_CATS[a.category]?.icon || '📄', sub: (a.tags || []).join(', '), _ts: a._ts, o: a }));
+  return STORE.list(k).map(o => ({ id: o.id, name: o.name || o.title || 'Без названия', ic: o.emoji || LIBM_KINDS.find(x => x[0] === k)[1],
+    sub: k === 'pc' ? [o.race, o.cls, o.level && o.level + ' ур.'].filter(Boolean).join(' · ') : k === 'map' ? (o.nodes || []).length + ' сцен' : k === 'batt' ? (o.list || []).length + ' участн.' : (o.type || o.cr || ''), _ts: o._ts, o }))
+    .sort((a, b) => (b._ts || 0) - (a._ts || 0));
+}
+const libmKey = (k, id) => k + ':' + id;
+function libmRender(m) {
+  const q = LIBM.q.toLowerCase(), list = libmList(LIBM.kind).filter(x => !q || (x.name + ' ' + x.sub).toLowerCase().includes(q));
+  const allOn = list.length && list.every(x => LIBM.sel.has(libmKey(LIBM.kind, x.id)));
+  $('.libm-tabs', m).innerHTML = LIBM_KINDS.map(([k, ic, l]) => { const n = [...LIBM.sel].filter(s => s.startsWith(k + ':')).length;
+    return `<button class="${LIBM.kind === k ? 'on' : ''}" data-k="${k}">${ic} ${l} <small>${libmList(k).length}</small>${n ? `<span class="badge gold">${n}</span>` : ''}</button>`; }).join('');
+  $('.libm-list', m).innerHTML = (list.length ? `<label class="give-row libm-all"><input type="checkbox" data-all ${allOn ? 'checked' : ''}><b class="grow">Выбрать всё${q ? ' найденное' : ''} (${list.length})</b></label>` : '')
+    + list.map(x => `<label class="give-row"><input type="checkbox" data-id="${x.id}" ${LIBM.sel.has(libmKey(LIBM.kind, x.id)) ? 'checked' : ''}><span>${esc(x.ic)}</span><span class="grow" style="min-width:0"><b class="ellip">${esc(x.name)}</b>${x.sub ? `<small class="muted ellip" style="display:block">${esc(String(x.sub))}</small>` : ''}</span>${x._ts ? `<small class="muted">${fmtDate(x._ts)}</small>` : ''}</label>`).join('')
+    || '<div class="empty"><span class="big">📭</span>Пусто</div>';
+  const n = LIBM.sel.size;
+  $('.libm-n', m).textContent = n ? `Выбрано: ${n}` : 'Ничего не выбрано';
+  $$('.libm-act', m).forEach(b => b.disabled = !n);
+}
+ACT.libManager = el => {
+  if (el?.dataset?.k) LIBM.kind = el.dataset.k;
+  LIBM.sel.clear(); LIBM.q = '';
+  const m = openModal({ title: '🗂 Менеджер библиотек', size: 'wide', cls: 'libm',
+    body: `<div class="seg wrap libm-tabs"></div><input class="libm-q mt" placeholder="🔍 Поиск по названию…" style="width:100%"><div class="libm-list mt"></div>`,
+    foot: `<span class="libm-n muted grow"></span><button class="btn ghost libm-act" data-x="none">Снять</button><button class="btn libm-act" data-x="share">📤 Код</button><button class="btn libm-act" data-x="file">📄 Файл</button><button class="btn danger libm-act" data-x="del">🗑 Удалить</button>`,
+    onClose: () => route() });
+  $('.libm-tabs', m).addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (b) { LIBM.kind = b.dataset.k; libmRender(m); } });
+  $('.libm-q', m).addEventListener('input', e => { LIBM.q = e.target.value; libmRender(m); });
+  $('.libm-list', m).addEventListener('change', e => {
+    const c = e.target; if (c.type !== 'checkbox') return;
+    if (c.hasAttribute('data-all')) $$('[data-id]', m).forEach(x => { x.checked = c.checked; LIBM.sel[c.checked ? 'add' : 'delete'](libmKey(LIBM.kind, x.dataset.id)); });
+    else LIBM.sel[c.checked ? 'add' : 'delete'](libmKey(LIBM.kind, c.dataset.id));
+    libmRender(m);
+  });
+  $('.mfoot', m).addEventListener('click', async e => {
+    const x = e.target.closest('[data-x]')?.dataset.x; if (!x) return;
+    if (x === 'none') { LIBM.sel.clear(); return libmRender(m); }
+    const by = {}; LIBM.sel.forEach(s => { const i = s.indexOf(':'), k = s.slice(0, i); const it = libmList(k).find(o => o.id === s.slice(i + 1)); if (it) (by[k] = by[k] || []).push(it.o); });
+    const kinds = Object.keys(by), total = kinds.reduce((s, k) => s + by[k].length, 0);
+    if (!total) return;
+    if (x === 'del') {
+      const what = kinds.map(k => `${LIBM_KINDS.find(z => z[0] === k)[2]}: ${by[k].length}`).join(', ');
+      if (!await confirmBox(`Удалить ${total} шт. (${what})? Это нельзя отменить.\nСовет: сначала «📄 Файл» — это резервная копия выбранного.`, { ok: 'Удалить', danger: true })) return;
+      kinds.forEach(k => {
+        if (k === 'wiki') { const ids = new Set(by.wiki.map(a => a.id)); WIKI = wikiArts().filter(a => !ids.has(a.id)); wikiSave(); return; }
+        by[k].forEach(o => STORE.drop(k, o.id));
+      });
+      if (by.pc?.some(p => p.id === SETTINGS.pc)) setActivePC(STORE.list('pc')[0]?.id || null);
+      if (by.map?.some(p => p.id === SETTINGS.map)) { SETTINGS.map = null; saveSettings(); }
+      LIBM.sel.clear(); libmRender(m); toast(`🗑 Удалено: ${total}`, 'ok'); return;
+    }
+    const bundle = Object.fromEntries(kinds.map(k => [k, clone(by[k])]));
+    if (x === 'file') { download(`dnd9_выборка_${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify({ _dnd9backup: 1, date: Date.now(), d: bundle }, null, 1)); return toast('📄 Файл скачан', 'ok'); }
+    closeModal();
+    if (kinds.length === 1) {
+      const k = kinds[0], l = by[k];
+      if (k === 'npc') return SHARE.open('npcs', l, `NPC: ${l.length}`);
+      if (k === 'item') return SHARE.open('items', l.map(i => itemCopy(i)), `Лут: ${l.length} шт.`);
+      if (k === 'wiki') return SHARE.open('wiki', l, `Вики: ${l.length}`);
+      if (l.length === 1 && k === 'pc') return SHARE.open('pc', normPC(l[0]), l[0].name);
+      if (l.length === 1 && k === 'batt') return SHARE.open('batt', l[0], l[0].name || 'Бой');
+      if (l.length === 1 && k === 'map') return SHARE.open('map', MAPIO.bundle(l[0]), l[0].title);
+    }
+    SHARE.open('all', bundle, `Выборка: ${total} шт.`);
+  });
+  libmRender(m);
+};
 ACT.wipeAll = async () => {
   if (!await confirmBox('Удалить ВСЕ данные V9 в этом браузере: персонажей, NPC, лут, бои, сцены, вики, экспедицию?', { ok: 'Да, удалить всё', danger: true })) return;
   if (!await confirmBox('Точно? Без резервной копии вернуть будет нельзя.', { ok: 'Удалить навсегда', danger: true })) return;
@@ -6679,7 +6756,7 @@ const NAV = [
   { id: 'exped', icon: '🧭', label: 'Экспедиция', master: true },
   { id: 'wiki', icon: '📚', label: 'Вики', master: true },
   { g: 'Данные' },
-  { id: 'saves', icon: '💾', label: 'Сохранения' },
+  { id: 'saves', icon: '⚙️', label: 'Настройки' },
 ];
 const TABS = { player: ['home', 'sheet', 'inv', 'creator', 'saves'], master: ['home', 'gm', 'tracker', 'scenes', 'more'] };
 let CUR_VIEW = null;
@@ -6688,7 +6765,7 @@ const isMaster = () => SETTINGS.mode === 'master';
 function renderNav() {
   const m = isMaster();
   $('#nav').innerHTML = `<div class="nav-brand" data-act="go" data-v="home"><span class="logo">🎲</span><div><b>DnD Multitool</b><small>by Haze · V${APP_VERSION}</small></div></div>    ${NAV.filter(n => !n.master || m).map(n => n.g ? `<div class="nav-group">${n.g}</div><div class="nav-sep"></div>` : `<div class="nav-item ${CUR_VIEW === n.id ? 'on' : ''}" data-act="go" data-v="${n.id}" title="${n.label}"><span class="ni">${n.icon}</span><span class="nl">${n.label}</span></div>`).join('')}
-    <div class="nav-foot">${TGX.on ? 'Данные копируются в облако Telegram.<br>Состояние — в «Сохранениях».' : 'Всё хранится в этом браузере.<br>Резервная копия — в «Сохранениях».'}</div>`;
+    <div class="nav-foot">${TGX.on ? 'Данные копируются в облако Telegram.<br>Состояние — в «Настройках».' : 'Всё хранится в этом браузере.<br>Резервная копия — в «Настройках».'}</div>`;
   const tabs = TABS[m ? 'master' : 'player'];
   const masterExtra = ['npc', 'loot', 'exped', 'wiki', 'sheet', 'inv', 'creator', 'saves'];
   $('#tabbar').innerHTML = tabs.map(t => {
@@ -6697,7 +6774,7 @@ function renderNav() {
   }).join('');
 }
 ACT.tabMore = el => openMenu(el, [{ hd: 'Мастер' }, ...['npc', 'loot', 'exped', 'wiki'].map(id => { const n = NAV.find(x => x.id === id); return { icon: n.icon, label: n.label, fn: () => go(id) }; }), { icon: '🌐', label: 'ttg.club ↗', fn: () => ACT.ttgSite() },
-  { hd: 'Игрок' }, ...['sheet', 'inv', 'creator'].map(id => { const n = NAV.find(x => x.id === id); return { icon: n.icon, label: n.label, fn: () => go(id) }; }), { sep: 1 }, { icon: '💾', label: 'Сохранения', fn: () => go('saves') }]);
+  { hd: 'Игрок' }, ...['sheet', 'inv', 'creator'].map(id => { const n = NAV.find(x => x.id === id); return { icon: n.icon, label: n.label, fn: () => go(id) }; }), { sep: 1 }, { icon: '⚙️', label: 'Настройки', fn: () => go('saves') }]);
 ACT.setMode = el => {
   SETTINGS.mode = el.dataset.m; saveSettings(); renderNav();
   toast(isMaster() ? '🎭 Режим мастера: открыты ширма, бой, сцены, NPC, лут, экспедиция и вики' : '🎮 Режим игрока', 'ok', 3000);
@@ -6776,7 +6853,7 @@ VIEWS.home = {
         ${m ? `<div class="orn"><i>◆</i> Мастерская <i>◆</i></div><div class="home-gm">
           ${['gm', 'tracker', 'scenes', 'npc', 'loot', 'exped', 'wiki'].map(id => { const n = NAV.find(x => x.id === id); return `<button class="gm-tile" data-act="go" data-v="${id}"><span>${n.icon}</span>${n.label}</button>`; }).join('')}
           <button class="gm-tile" data-act="ttgSite" title="Открыть 5e14.ttg.club"><span>🌐</span>ttg.club ↗</button></div>` : ''}
-        <button class="hexbtn" data-act="go" data-v="saves">💾 Сохранения и копии</button>
+        <button class="hexbtn" data-act="go" data-v="saves">⚙ Настройки и копии</button>
       </div>
       <div class="home-foot">Данные живут в этом браузере. Чтобы перенести персонажа на другое устройство или отдать мастеру — <b>📤 Поделиться</b> на листе.</div>
     </div>`;
