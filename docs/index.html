@@ -1166,6 +1166,77 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:grabbing;}
   .gm-card{padding:12px;} .gm-title{font-size:27px;}
 }
 
+/* ── fx.css ── */
+/* ═══ FX: пружинящие кнопки и контекстные частицы (см. fx.js) ═══ */
+#fx{position:fixed;inset:0;pointer-events:none;z-index:2600;overflow:hidden;}
+@media (prefers-reduced-motion:no-preference){
+/* ── Пружина: быстро вдавливается, отпускается с перелётом ── */
+html:not(.fx-off) :is(.btn,.hexbtn,.gm-tile,.lib-tile,.seg button,.tab,.exp-terr button,.stepper button,.exp-go,.theme-pick button,.font-pick button,.pc-card .btn){
+  transition:transform .42s cubic-bezier(.3,1.9,.45,1),border-color .15s,box-shadow .15s,background .15s,color .15s,filter .15s;}
+html:not(.fx-off) :is(.btn,.hexbtn,.gm-tile,.lib-tile,.seg button,.tab,.exp-terr button,.stepper button,.exp-go,.theme-pick button,.font-pick button):active:not(:disabled){
+  transform:scale(.94);transition:transform .07s ease-out,border-color .15s,box-shadow .15s,background .15s,color .15s,filter .15s;}
+html:not(.fx-off) .hexbtn:active{transform:scale(.97);}
+html:not(.fx-off) .nav-item .ni,html:not(.fx-off) .tab .ti{display:inline-block;transition:transform .42s cubic-bezier(.3,1.9,.45,1);}
+html:not(.fx-off) .nav-item:active .ni,html:not(.fx-off) .tab:active .ti{transform:scale(.8);transition-duration:.07s;}
+/* тумблер: шарик тянется, как жвачка, и пружинит на место */
+html:not(.fx-off) .tgl span::before{transition:transform .38s cubic-bezier(.3,1.8,.45,1),width .2s cubic-bezier(.3,1.8,.45,1),background .2s;}
+html:not(.fx-off) .tgl span:active::before{width:24px;}
+html:not(.fx-off) .tgl input:checked+span:active::before{transform:translateX(12px);}
+html:not(.fx-off) input[type=checkbox]:not(.tgl input){transition:transform .3s cubic-bezier(.3,1.9,.45,1);}
+html:not(.fx-off) input[type=checkbox]:not(.tgl input):active{transform:scale(.8);}
+
+/* ── Тело кнопки после нажатия — по смыслу ── */
+.fx-b-dice{animation:fxWobble .55s cubic-bezier(.3,1.5,.5,1);}
+.fx-b-hit{animation:fxShake .4s ease-out;}
+.fx-b-del{animation:fxShakeSm .35s ease-out;}
+.fx-b-heal{animation:fxBreath .6s ease-out;}
+.fx-b-magic{animation:fxGlow .6s ease-out;}
+.fx-b-coin,.fx-b-add,.fx-b-ok,.fx-b-tap{animation:fxPop .45s cubic-bezier(.3,1.9,.45,1);}
+.fx-b-lvl{animation:fxLvl .7s cubic-bezier(.3,1.7,.45,1);}
+.fx-b-go{animation:fxNudge .45s cubic-bezier(.3,1.7,.45,1);}
+.fx-b-nav :is(.ni,.ti),.fx-b-nav>span:first-child{animation:fxHop .45s cubic-bezier(.3,1.9,.45,1);display:inline-block;}
+@keyframes fxPop{0%{transform:scale(.92)}55%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes fxWobble{0%{transform:rotate(0)}20%{transform:rotate(-7deg) scale(1.04)}40%{transform:rotate(6deg)}60%{transform:rotate(-4deg)}80%{transform:rotate(2deg)}100%{transform:rotate(0)}}
+@keyframes fxShake{0%,100%{transform:translateX(0)}15%{transform:translateX(-7px) rotate(-1.5deg)}30%{transform:translateX(6px) rotate(1deg)}45%{transform:translateX(-4px)}60%{transform:translateX(3px)}80%{transform:translateX(-1px)}}
+@keyframes fxShakeSm{0%,100%{transform:translateX(0)}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-2px)}80%{transform:translateX(1px)}}
+@keyframes fxBreath{0%{box-shadow:0 0 0 0 rgba(120,200,110,.55)}100%{box-shadow:0 0 0 14px rgba(120,200,110,0)}}
+@keyframes fxGlow{0%{box-shadow:0 0 0 0 rgba(180,140,255,.6);filter:brightness(1.4)}100%{box-shadow:0 0 18px 6px rgba(180,140,255,0);filter:none}}
+@keyframes fxLvl{0%{transform:scale(.9)}40%{transform:scale(1.08);filter:brightness(1.5)}100%{transform:scale(1);filter:none}}
+@keyframes fxNudge{0%{transform:translateX(0)}35%{transform:translateX(7px)}100%{transform:translateX(0)}}
+@keyframes fxHop{0%{transform:translateY(0)}40%{transform:translateY(-5px) scale(1.15)}100%{transform:translateY(0)}}
+
+/* ── Рябь от точки касания ── */
+.fx-rip{position:fixed;overflow:hidden;pointer-events:none;}
+.fx-rip i{position:absolute;border-radius:50%;opacity:.28;transform:scale(0);animation:fxRip .55s cubic-bezier(.2,.7,.3,1) forwards;}
+@keyframes fxRip{to{transform:scale(1);opacity:0}}
+
+/* ── Частицы ── */
+.fx-p{position:fixed;left:0;top:0;pointer-events:none;font-style:normal;will-change:transform,opacity;animation-delay:var(--w,0ms);animation-fill-mode:both;}
+.fx-ring{width:var(--s);height:var(--s);margin:calc(var(--s) / -2) 0 0 calc(var(--s) / -2);border-radius:50%;border:3px solid var(--c);box-shadow:0 0 10px var(--c);animation:fxRing .5s ease-out both;}
+@keyframes fxRing{0%{transform:scale(.3);opacity:.9}100%{transform:scale(1.25);opacity:0;border-width:.5px}}
+.fx-dot{width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:var(--c);box-shadow:0 0 6px var(--c);animation:fxBurst .55s cubic-bezier(.15,.8,.3,1) both;}
+@keyframes fxBurst{0%{transform:translate(0,0) scale(1.2)}100%{transform:translate(var(--dx),var(--dy)) scale(0);opacity:.2}}
+.fx-die{width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:3px;background:#f3ead6;box-shadow:inset -2px -2px 0 rgba(0,0,0,.25),0 1px 3px rgba(0,0,0,.5);
+  background-image:radial-gradient(circle,#2a1d10 1.3px,transparent 1.6px);background-size:7px 7px;background-position:0 0;animation:fxToss .75s cubic-bezier(.3,.6,.5,1) both;}
+@keyframes fxToss{0%{transform:translate(0,0) rotate(0) scale(.4)}45%{transform:translate(calc(var(--dx) * .6),var(--up)) rotate(calc(var(--r) * .6)) scale(1)}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--r)) scale(.9);opacity:0}}
+.fx-coin{width:15px;height:15px;margin:-7.5px 0 0 -7.5px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff3c0,#e0b040 45%,#8a6418);box-shadow:0 0 6px rgba(240,190,70,.6);animation:fxCoin .8s cubic-bezier(.3,.6,.5,1) both;}
+@keyframes fxCoin{0%{transform:translate(0,0) scaleX(1) scale(.4)}20%{transform:translate(calc(var(--dx) * .25),calc(var(--up) * .7)) scaleX(.15)}40%{transform:translate(calc(var(--dx) * .55),var(--up)) scaleX(1)}60%{transform:translate(calc(var(--dx) * .75),calc(var(--up) * .6)) scaleX(.15)}100%{transform:translate(var(--dx),var(--dy)) scaleX(1);opacity:0}}
+.fx-slash{width:86px;height:4px;margin:-2px 0 0 -43px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--red2),#fff,var(--red2),transparent);transform:rotate(var(--r)) scaleX(0);animation:fxSlash .35s ease-out both;}
+@keyframes fxSlash{0%{transform:rotate(var(--r)) scaleX(0);opacity:1}50%{transform:rotate(var(--r)) scaleX(1.1);opacity:1}100%{transform:rotate(var(--r)) scaleX(1.2);opacity:0}}
+.fx-shard{width:7px;height:12px;margin:-6px 0 0 -3.5px;background:var(--c);clip-path:polygon(50% 0,100% 100%,0 100%);animation:fxShard .5s cubic-bezier(.15,.8,.3,1) both;}
+@keyframes fxShard{0%{transform:translate(0,0) rotate(var(--r))}100%{transform:translate(var(--dx),var(--dy)) rotate(calc(var(--r) + 180deg)) scale(.3);opacity:0}}
+.fx-float{margin:-9px 0 0 -5px;font-weight:800;font-size:calc(19px * var(--z,1));color:var(--c);text-shadow:0 0 6px var(--c);animation:fxFloat .85s ease-out both;}
+@keyframes fxFloat{0%{transform:translate(0,4px) scale(.4);opacity:0}25%{transform:translate(calc(var(--dx) * .3),-8px) scale(1.1);opacity:1}100%{transform:translate(var(--dx),-42px) scale(.8);opacity:0}}
+.fx-crumb{width:7px;height:7px;margin:-3.5px 0 0 -3.5px;background:var(--c);border-radius:1px;animation:fxCrumb .7s cubic-bezier(.5,0,.8,.6) both;}
+@keyframes fxCrumb{0%{transform:translate(0,0) rotate(0)}15%{transform:translate(calc(var(--dx) * .2),-6px) rotate(calc(var(--r) * .2))}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--r)) scale(.5);opacity:0}}
+.fx-spark{margin:-9px 0 0 -6px;font-size:16px;color:var(--c);text-shadow:0 0 8px var(--c);animation:fxSpiral .7s ease-out both;}
+@keyframes fxSpiral{0%{transform:rotate(var(--a0)) translateX(4px) rotate(0) scale(.3);opacity:0}30%{opacity:1}100%{transform:rotate(calc(var(--a0) + 140deg)) translateX(var(--d)) rotate(-140deg) scale(1);opacity:0}}
+.fx-dust{width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:radial-gradient(circle,rgba(190,170,140,.55),transparent 70%);animation:fxDust .7s ease-out both;}
+@keyframes fxDust{0%{transform:translate(0,0) scale(calc(.5 * var(--z,1)));opacity:.9}100%{transform:translate(var(--dx),var(--dy)) scale(calc(2.4 * var(--z,1)));opacity:0}}
+.fx-ray{width:3px;height:22px;margin:-11px 0 0 -1.5px;border-radius:2px;background:linear-gradient(var(--gold2),transparent);animation:fxRay .6s ease-out both;}
+@keyframes fxRay{0%{transform:rotate(calc(var(--r) + 90deg)) translateY(0) scaleY(.3);opacity:1}100%{transform:rotate(calc(var(--r) + 90deg)) translateY(-60px) scaleY(1.4);opacity:0}}
+}
+
 /* ── theme.css ── */
 /* ═══════════════════════════════════════════════════════
    ТЕМА «БАГРОВЫЕ СУМЕРКИ» — html[data-theme="crimson"]
@@ -1474,7 +1545,7 @@ html[data-theme="light"] .mbox::before{background:var(--line3);}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '9.6.1';
+const APP_VERSION = '9.7.0';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -1947,6 +2018,125 @@ ACT.cloudLoad = async () => {
   if (!await confirmBox(`Заменить данные на этом устройстве копией из облака от ${fmtDate(meta.t)}?`, { ok: 'Загрузить' })) return;
   try { await CLOUD.restore(meta); } catch (e) { toast('⚠ ' + e.message, 'err', 5000); }
 };
+
+// ── fx.js ──
+/* ═══════════════════════════════════════════════════════
+   FX: контекстные анимации кнопок — пружина при нажатии, рябь и частицы по смыслу действия
+   (кубики кувыркаются, урон рубит, лечение поднимает «+», удаление осыпается, монеты подлетают).
+   Частицы рисуются в слое #fx поверх всего, поэтому переживают перерисовку экрана после действия.
+   Выключается в «Настройках» и при prefers-reduced-motion. В Telegram — ещё и вибро-отклик.
+═══════════════════════════════════════════════════════ */
+const FX_SEL = 'button, .btn, .nav-item, .lib-row, .gm-tile, .lib-tile, .pc-card [data-act]';
+// порядок важен: первое совпадение по data-act выигрывает
+const FX_RULES = [
+  ['dice', /Roll|^btInit$|^gmRoll$/],
+  ['hit', /HpDmg$|^tbDmg$/],
+  ['heal', /Heal$|^pcHD$|Rest$|^expCamp$/],
+  ['del', /Del$|Del[A-Z]|^wipeAll$|Clear$/],
+  ['magic', /^pcCast$|^pcSlot$|^pcConc$|^ttgSpell$|^classSpells$|^pcPrep|^pcInsp$/],
+  ['coin', /[Cc]oin|^trade$|^ttgTrade$|^isGive$|^lootPick$/],
+  ['go', /^expEnter$|^expGallop$|^expQbGo$|^gmStartCombat$|^btNext$|^npcToBattle$|^expScout$/],
+  ['lvl', /^levelUp$|^charWizard$|^newViaWizard$/],
+  ['add', /Add$|Add[A-Z]|New$|New[A-Z]|^expPitch$|^expHunt$|^shareImport$/],
+  ['ok', /Save$|^cloudLoad$|^backupDl$|Sync$|^ttgProxyTest$|^setTheme$|^setFont$|^setMode$/],
+  ['nav', /^go$|Tab$|^anchor$|^gmCenter$|^tabMore$|^expMount$|^expTerrain$|^expSeason$|^pcPlay$/],
+];
+const FX_HAPTIC = { dice: ['impact', 'medium'], hit: ['impact', 'heavy'], heal: ['notify', 'success'], del: ['notify', 'warning'], magic: ['impact', 'soft'],
+  coin: ['impact', 'rigid'], go: ['impact', 'medium'], lvl: ['notify', 'success'], add: ['impact', 'light'], ok: ['notify', 'success'] };
+const FX = {
+  off() { return SETTINGS.fx === false || matchMedia('(prefers-reduced-motion: reduce)').matches; },
+  apply() { document.documentElement.classList.toggle('fx-off', SETTINGS.fx === false); },
+  layer() { let l = document.getElementById('fx'); if (!l) { l = document.createElement('div'); l.id = 'fx'; document.body.appendChild(l); } return l; },
+  kind(el) {
+    const a = el.dataset.act || '', r = FX_RULES.find(([, re]) => re.test(a));
+    if (r) return r[0];
+    if (el.classList.contains('danger')) return 'del';
+    if (el.classList.contains('good')) return 'add';
+    if (el.classList.contains('pri')) return 'ok';
+    return 'tap';
+  },
+  /** Частица: класс задаёт анимацию, vars — её параметры (--dx, --dy, --r, --c, задержка) */
+  p(x, y, cls, vars = {}, html = '') {
+    const s = document.createElement('i'); s.className = 'fx-p ' + cls; if (html) s.textContent = html;
+    s.style.left = x + 'px'; s.style.top = y + 'px';
+    for (const k in vars) s.style.setProperty('--' + k, vars[k]);
+    s.addEventListener('animationend', () => s.remove(), { once: true });
+    FX.layer().appendChild(s); setTimeout(() => s.remove(), 2000);
+  },
+  rnd: (a, b) => a + Math.random() * (b - a),
+  ripple(el, r, x, y) {
+    const cs = getComputedStyle(el), w = document.createElement('div');
+    w.className = 'fx-rip'; Object.assign(w.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', borderRadius: cs.borderRadius, clipPath: cs.clipPath });
+    const d = Math.hypot(Math.max(x - r.left, r.right - x), Math.max(y - r.top, r.bottom - y)) * 2, c = document.createElement('i');
+    Object.assign(c.style, { left: x - r.left - d / 2 + 'px', top: y - r.top - d / 2 + 'px', width: d + 'px', height: d + 'px', background: cs.color });
+    w.appendChild(c); FX.layer().appendChild(w); c.addEventListener('animationend', () => w.remove(), { once: true }); setTimeout(() => w.remove(), 1200);
+  },
+  burst(cx, cy, n, cls, dist, extra = () => ({})) {
+    const o = FX.rnd(0, Math.PI * 2);
+    for (let i = 0; i < n; i++) { const a = o + i / n * Math.PI * 2 + FX.rnd(-.25, .25), d = dist * FX.rnd(.7, 1.15);
+      FX.p(cx, cy, cls, { dx: Math.cos(a) * d + 'px', dy: Math.sin(a) * d + 'px', ...extra(i, a) }); }
+  },
+  /** Эффект по смыслу кнопки (координаты — экранные) */
+  play(kind, r, x, y) {
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2, R = FX.rnd;
+    switch (kind) {
+      case 'dice': FX.p(cx, cy, 'fx-ring', { c: 'var(--gold2)', s: Math.max(r.width, 60) + 'px' });
+        for (let i = 0; i < 4; i++) FX.p(x, y, 'fx-die', { dx: R(-70, 70) + 'px', up: R(-60, -30) + 'px', dy: R(10, 40) + 'px', r: R(-540, 540) + 'deg', w: i * 30 + 'ms' });
+        break;
+      case 'hit': FX.p(cx, cy, 'fx-slash', { r: '-28deg' }); FX.p(cx, cy, 'fx-slash', { r: '32deg', w: '70ms' });
+        FX.burst(cx, cy, 7, 'fx-shard', 46, () => ({ c: 'var(--red2)', r: R(0, 360) + 'deg' })); break;
+      case 'heal': for (let i = 0; i < 6; i++) FX.p(R(r.left + 8, r.right - 8), R(cy - 4, r.bottom), 'fx-float', { c: 'var(--green2)', dx: R(-12, 12) + 'px', w: i * 55 + 'ms', z: R(.8, 1.3) }, '+');
+        FX.p(cx, cy, 'fx-ring', { c: 'var(--green2)', s: Math.max(r.width, 60) * .8 + 'px' }); break;
+      case 'del': for (let i = 0; i < 10; i++) FX.p(R(r.left, r.right), R(r.top, r.bottom), 'fx-crumb', { c: i % 3 ? 'var(--tx3)' : 'var(--red2)', dx: R(-30, 30) + 'px', dy: R(40, 90) + 'px', r: R(-200, 200) + 'deg', w: R(0, 80) + 'ms' }); break;
+      case 'magic': for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; FX.p(cx, cy, 'fx-spark', { a0: a + 'rad', c: i % 2 ? 'var(--teal3)' : '#b48cff', d: R(26, 44) + 'px', w: i * 25 + 'ms' }, '✦'); }
+        FX.p(cx, cy, 'fx-ring', { c: '#b48cff', s: Math.max(r.width, 60) * .9 + 'px' }); break;
+      case 'coin': for (let i = 0; i < 4; i++) FX.p(x, y, 'fx-coin', { dx: R(-50, 50) + 'px', up: R(-80, -45) + 'px', dy: R(20, 50) + 'px', w: i * 45 + 'ms' }); break;
+      case 'go': for (let i = 0; i < 6; i++) FX.p(r.left + R(0, 14), R(r.top + r.height * .4, r.bottom - 4), 'fx-dust', { dx: R(-60, -25) + 'px', dy: R(-14, 4) + 'px', w: i * 40 + 'ms', z: R(.7, 1.4) }); break;
+      case 'lvl': FX.burst(cx, cy, 14, 'fx-ray', Math.max(r.width, 90) * .7, (i, a) => ({ r: a + 'rad' }));
+        FX.burst(cx, cy, 10, 'fx-dot', 70, () => ({ c: 'var(--gold2)' })); FX.p(cx, cy, 'fx-ring', { c: 'var(--gold2)', s: Math.max(r.width, 90) * 1.2 + 'px' }); break;
+      case 'add': FX.burst(x, y, 8, 'fx-dot', 38, () => ({ c: 'var(--gold2)' })); break;
+      case 'ok': FX.p(cx, cy, 'fx-ring', { c: 'var(--teal3)', s: Math.max(r.width, 60) + 'px' }); FX.p(r.right - 10, r.top + 4, 'fx-float', { c: 'var(--teal3)', dx: '4px', z: 1.1 }, '✓'); break;
+    }
+  },
+  /** Перерисованный экран заменяет кнопку — ищем «двойника» по data-атрибутам, чтобы дотанцевать анимацию тела */
+  twin(el) {
+    const sel = `[data-act="${el.dataset.act}"]` + ['v', 'id', 'k', 'd', 'i', 'm', 'c', 'x'].filter(k => el.dataset[k] != null).map(k => `[data-${k}="${CSS.escape(el.dataset[k])}"]`).join('');
+    try { return document.querySelector(sel); } catch (e) { return null; }
+  },
+  haptic(kind) {
+    const h = FX_HAPTIC[kind]; if (typeof TGX === 'undefined' || !TGX.on || !TGX.v('6.1')) return;
+    try { const hf = TGX.wa.HapticFeedback; if (!h) hf.selectionChanged(); else if (h[0] === 'impact') hf.impactOccurred(h[1]); else hf.notificationOccurred(h[1]); } catch (e) { }
+  },
+  fire(el, x, y) {
+    const r = el.getBoundingClientRect(); if (!r.width) return;
+    if (!x && !y) { x = r.left + r.width / 2; y = r.top + r.height / 2; }
+    const kind = FX.kind(el), cls = 'fx-b-' + kind;
+    FX.haptic(kind); FX.ripple(el, r, x, y); FX.play(kind, r, x, y);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const t = el.isConnected ? el : FX.twin(el); if (!t) return;
+      t.classList.remove(cls); void t.offsetWidth; t.classList.add(cls);
+      setTimeout(() => t.classList.remove(cls), 700);
+    }));
+  },
+};
+FX.apply();
+// захват: срабатывает до ACT, пока кнопка ещё на месте
+document.addEventListener('click', e => {
+  if (FX.off()) return;
+  const el = e.target.closest('[data-act]');
+  if (!el || el.disabled || el.classList.contains('off') || !el.matches(FX_SEL)) return;
+  FX.fire(el, e.clientX, e.clientY);
+}, true);
+// галочки и тумблеры: маленькое колечко
+document.addEventListener('change', e => {
+  const t = e.target; if (FX.off() || t.type !== 'checkbox') return;
+  const r = (t.closest('.tgl')?.querySelector('span') || t).getBoundingClientRect(); if (!r.width) return;
+  const on = t.checked, x = t.closest('.tgl') ? (on ? r.right - 12 : r.left + 12) : r.left + r.width / 2;
+  FX.p(x, r.top + r.height / 2, 'fx-ring', { c: on ? 'var(--teal3)' : 'var(--tx3)', s: '34px' });
+  if (on) FX.burst(x, r.top + r.height / 2, 5, 'fx-dot', 20, () => ({ c: 'var(--teal3)' }));
+  FX.haptic(null);
+}, true);
+CH.setFx = el => { SETTINGS.fx = el.checked; saveSettings(); FX.apply(); };
 
 // ── data.js ──
 /* ═══════════════════════════════════════════════════════
@@ -6683,6 +6873,9 @@ VIEWS.saves = {
 
       <div class="orn left mt2">🔤 Шрифт</div>
       <div class="font-pick">${FONTS.map(f => `<button class="${(SETTINGS.font || 'inter') === f.id ? 'on' : ''}" data-act="setFont" data-v="${f.id}" style="font-family:'${f.css}',sans-serif"><b>${f.label}</b><small>Астарион · 27/31 HP · +7 · 1d4+4</small></button>`).join('')}</div>
+
+      <div class="orn left mt2">✨ Анимации</div>
+      <label class="row" style="cursor:pointer"><span class="tgl"><input type="checkbox" data-ch="setFx" ${SETTINGS.fx !== false ? 'checked' : ''}><span></span></span><span>Живые кнопки <small class="muted">— пружинят, а кубики, урон, лечение, монеты и магия отвечают своим эффектом${TGX.on ? ' и вибрацией' : ''}</small></span></label>
 
       <div class="orn left mt2">⚙ Хранилище</div>
       <div class="row wrap"><span class="muted">Занято: <b>${kb} КБ</b> из ~5000 КБ</span><span class="sp"></span><button class="btn danger sm" data-act="wipeAll">🗑 Удалить все данные V9</button></div>
