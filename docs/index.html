@@ -1220,21 +1220,95 @@ html:not(.fx-off) input[type=checkbox]:not(.tgl input):active{transform:scale(.8
   background-image:radial-gradient(circle,#2a1d10 1.3px,transparent 1.6px);background-size:7px 7px;background-position:0 0;animation:fxToss .75s cubic-bezier(.3,.6,.5,1) both;}
 @keyframes fxToss{0%{transform:translate(0,0) rotate(0) scale(.4)}45%{transform:translate(calc(var(--dx) * .6),var(--up)) rotate(calc(var(--r) * .6)) scale(1)}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--r)) scale(.9);opacity:0}}
 .fx-coin{width:15px;height:15px;margin:-7.5px 0 0 -7.5px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff3c0,#e0b040 45%,#8a6418);box-shadow:0 0 6px rgba(240,190,70,.6);animation:fxCoin .8s cubic-bezier(.3,.6,.5,1) both;}
-@keyframes fxCoin{0%{transform:translate(0,0) scaleX(1) scale(.4)}20%{transform:translate(calc(var(--dx) * .25),calc(var(--up) * .7)) scaleX(.15)}40%{transform:translate(calc(var(--dx) * .55),var(--up)) scaleX(1)}60%{transform:translate(calc(var(--dx) * .75),calc(var(--up) * .6)) scaleX(.15)}100%{transform:translate(var(--dx),var(--dy)) scaleX(1);opacity:0}}
+@keyframes fxCoin{0%{transform:translate(0,0) scaleX(1) scale(.4)}20%{transform:translate(calc(var(--dx) * .25),calc(var(--up) * .7)) scaleX(.15) scale(1)}40%{transform:translate(calc(var(--dx) * .55),var(--up)) scaleX(1) scale(1)}60%{transform:translate(calc(var(--dx) * .75),calc(var(--up) * .6)) scaleX(.15) scale(1)}100%{transform:translate(var(--dx),var(--dy)) scaleX(1) scale(1);opacity:0}}
 .fx-slash{width:86px;height:4px;margin:-2px 0 0 -43px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--red2),#fff,var(--red2),transparent);transform:rotate(var(--r)) scaleX(0);animation:fxSlash .35s ease-out both;}
 @keyframes fxSlash{0%{transform:rotate(var(--r)) scaleX(0);opacity:1}50%{transform:rotate(var(--r)) scaleX(1.1);opacity:1}100%{transform:rotate(var(--r)) scaleX(1.2);opacity:0}}
 .fx-shard{width:7px;height:12px;margin:-6px 0 0 -3.5px;background:var(--c);clip-path:polygon(50% 0,100% 100%,0 100%);animation:fxShard .5s cubic-bezier(.15,.8,.3,1) both;}
-@keyframes fxShard{0%{transform:translate(0,0) rotate(var(--r))}100%{transform:translate(var(--dx),var(--dy)) rotate(calc(var(--r) + 180deg)) scale(.3);opacity:0}}
+@keyframes fxShard{0%{transform:translate(0,0) rotate(var(--r)) scale(1)}100%{transform:translate(var(--dx),var(--dy)) rotate(calc(var(--r) + 180deg)) scale(.3);opacity:0}}
 .fx-float{margin:-9px 0 0 -5px;font-weight:800;font-size:calc(19px * var(--z,1));color:var(--c);text-shadow:0 0 6px var(--c);animation:fxFloat .85s ease-out both;}
 @keyframes fxFloat{0%{transform:translate(0,4px) scale(.4);opacity:0}25%{transform:translate(calc(var(--dx) * .3),-8px) scale(1.1);opacity:1}100%{transform:translate(var(--dx),-42px) scale(.8);opacity:0}}
 .fx-crumb{width:7px;height:7px;margin:-3.5px 0 0 -3.5px;background:var(--c);border-radius:1px;animation:fxCrumb .7s cubic-bezier(.5,0,.8,.6) both;}
-@keyframes fxCrumb{0%{transform:translate(0,0) rotate(0)}15%{transform:translate(calc(var(--dx) * .2),-6px) rotate(calc(var(--r) * .2))}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--r)) scale(.5);opacity:0}}
+@keyframes fxCrumb{0%{transform:translate(0,0) rotate(0) scale(1)}15%{transform:translate(calc(var(--dx) * .2),-6px) rotate(calc(var(--r) * .2)) scale(1)}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--r)) scale(.5);opacity:0}}
 .fx-spark{margin:-9px 0 0 -6px;font-size:16px;color:var(--c);text-shadow:0 0 8px var(--c);animation:fxSpiral .7s ease-out both;}
 @keyframes fxSpiral{0%{transform:rotate(var(--a0)) translateX(4px) rotate(0) scale(.3);opacity:0}30%{opacity:1}100%{transform:rotate(calc(var(--a0) + 140deg)) translateX(var(--d)) rotate(-140deg) scale(1);opacity:0}}
 .fx-dust{width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:radial-gradient(circle,rgba(190,170,140,.55),transparent 70%);animation:fxDust .7s ease-out both;}
 @keyframes fxDust{0%{transform:translate(0,0) scale(calc(.5 * var(--z,1)));opacity:.9}100%{transform:translate(var(--dx),var(--dy)) scale(calc(2.4 * var(--z,1)));opacity:0}}
-.fx-ray{width:3px;height:22px;margin:-11px 0 0 -1.5px;border-radius:2px;background:linear-gradient(var(--gold2),transparent);animation:fxRay .6s ease-out both;}
+.fx-ray{width:3px;height:22px;margin:-11px 0 0 -1.5px;border-radius:2px;background:linear-gradient(var(--c,var(--gold2)),transparent);animation:fxRay .6s ease-out both;}
 @keyframes fxRay{0%{transform:rotate(calc(var(--r) + 90deg)) translateY(0) scaleY(.3);opacity:1}100%{transform:rotate(calc(var(--r) + 90deg)) translateY(-60px) scaleY(1.4);opacity:0}}
+
+/* ── Искры действий: ● ▲ ◆ ── */
+.fx-sh{width:calc(12px * var(--z,1));height:calc(12px * var(--z,1));margin:-6px 0 0 -6px;background:var(--c);filter:drop-shadow(0 0 5px var(--c)) brightness(1.25);animation:fxFly .8s linear both;}
+@keyframes fxFly{0%{transform:translate(0,0) rotate(var(--r)) scale(1.4);opacity:1;animation-timing-function:cubic-bezier(.1,.7,.3,1)}
+  65%{transform:translate(calc(var(--dx) * .9),calc(var(--dy) * .9)) rotate(calc(var(--r) + 140deg)) scale(1);opacity:1;animation-timing-function:ease-in}
+  100%{transform:translate(var(--dx),calc(var(--dy) + 14px)) rotate(calc(var(--r) + 200deg)) scale(.2);opacity:0}}
+.fx-circ{border-radius:50%;}
+.fx-tri{clip-path:polygon(50% 0,100% 100%,0 100%);}
+.fx-dia{clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);}
+.fx-ring.fx-in{animation:fxRingIn .4s ease-in both;}
+@keyframes fxRingIn{0%{transform:scale(1.2);opacity:0}40%{opacity:.8}100%{transform:scale(.3);opacity:0}}
+.fx-b-act svg,.fx-b-act .ni{animation:fxIcon .55s cubic-bezier(.3,1.9,.45,1);}
+.fx-b-act{animation:fxPop .45s cubic-bezier(.3,1.9,.45,1);}
+.fx-b-actOff{animation:fxShakeSm .3s ease-out;}
+@keyframes fxIcon{0%{transform:scale(.6) rotate(-20deg)}50%{transform:scale(1.35) rotate(8deg)}100%{transform:scale(1) rotate(0)}}
+
+/* ── Хиты на листе ── */
+.hp-cur.fx-hp-hit{animation:fxHpHit .6s cubic-bezier(.3,.7,.4,1);display:inline-block;}
+@keyframes fxHpHit{0%{transform:translate(0,0) scale(1);color:#fff;text-shadow:0 0 18px #ff3b2f}
+  10%{transform:translate(-9px,3px) rotate(-5deg) scale(1.12);color:#ff5a48}
+  22%{transform:translate(8px,-3px) rotate(4deg) scale(1.06)}34%{transform:translate(-6px,2px) rotate(-3deg)}
+  46%{transform:translate(4px,-1px) rotate(2deg)}60%{transform:translate(-2px,0) rotate(-1deg)}100%{transform:none;text-shadow:none}}
+.hp-cur.fx-hp-heal{animation:fxHpHeal .8s cubic-bezier(.3,1.6,.5,1);display:inline-block;}
+@keyframes fxHpHeal{0%{transform:scale(.92);text-shadow:0 0 0 rgba(140,255,150,0)}35%{transform:scale(1.14);text-shadow:0 0 22px rgba(140,255,150,.95);color:#e6ffe2}100%{transform:scale(1);text-shadow:none}}
+.fx-wound{position:fixed;overflow:visible;pointer-events:none;animation:fxWoundFade 1.3s ease-in both;}
+.fx-wound path{fill:none;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:fxCut .16s cubic-bezier(.6,0,.9,.5) forwards;}
+.fx-cut-d{stroke:#5a0c0e;stroke-width:9;opacity:.85;}
+.fx-cut-l{stroke:#ff4a3a;stroke-width:3;filter:drop-shadow(0 0 4px #ff2a1a);}
+@keyframes fxCut{to{stroke-dashoffset:0}}
+@keyframes fxWoundFade{0%,55%{opacity:1}100%{opacity:0;transform:translateY(4px)}}
+.fx-drop{width:calc(6px * var(--z,1));height:calc(8px * var(--z,1));margin:-4px 0 0 -3px;background:radial-gradient(circle at 40% 35%,#ff7a6a,#a3141a 60%,#5a0a0e);border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
+  animation:fxDrip .7s cubic-bezier(.55,0,1,.6) both;}
+@keyframes fxDrip{0%{transform:translate(0,0) scale(.3);opacity:0}15%{transform:translate(0,2px) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(1,1.4);opacity:0}}
+.fx-num{margin:-14px 0 0 0;font-family:var(--f-title);font-weight:800;font-size:28px;color:var(--c);text-shadow:0 2px 0 rgba(0,0,0,.6),0 0 10px var(--c);white-space:nowrap;}
+.fx-num.down{animation:fxNumDown 1s cubic-bezier(.3,.6,.5,1) both;}
+.fx-num.up{animation:fxNumUp 1s cubic-bezier(.2,.8,.3,1) both;}
+.fx-num.big{font-size:44px;margin:-26px 0 0 -18px;}
+@keyframes fxNumDown{0%{transform:translate(0,0) scale(.3);opacity:0}15%{transform:translate(6px,-22px) scale(1.35);opacity:1}35%{transform:translate(12px,-26px) scale(1)}100%{transform:translate(26px,34px) scale(.8);opacity:0}}
+@keyframes fxNumUp{0%{transform:translate(0,8px) scale(.3);opacity:0}20%{transform:translate(0,-10px) scale(1.3);opacity:1}40%{transform:translate(0,-18px) scale(1)}100%{transform:translate(0,-56px) scale(.9);opacity:0}}
+.fx-hp-ghost{position:absolute;top:0;bottom:0;background:linear-gradient(90deg,#fff,#ff6a55)!important;border-radius:0 5px 5px 0;box-shadow:0 0 8px #ff6a55;}
+.fx-vig{position:fixed;inset:0;box-shadow:inset 0 0 140px 30px var(--c);animation:fxVig .7s ease-out both;}
+@keyframes fxVig{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
+.fx-slash-heal{width:150px;height:5px;margin:-2.5px 0 0 -75px;background:linear-gradient(90deg,transparent,#b8ffbe,#fff,#b8ffbe,transparent);box-shadow:0 0 16px #9dffa6;animation-duration:.6s;}
+.fx-sweep{position:fixed;overflow:hidden;pointer-events:none;}
+.fx-sweep i{position:absolute;top:-20%;bottom:-20%;left:0;width:40%;background:linear-gradient(100deg,transparent,var(--c),transparent);transform:translateX(-120%) skewX(-18deg);animation:fxSweep var(--t,.7s) cubic-bezier(.4,0,.2,1) forwards;}
+@keyframes fxSweep{to{transform:translateX(320%) skewX(-18deg)}}
+.fx-orbit{margin:-10px 0 0 -6px;font-weight:900;font-size:calc(17px * var(--z,1));color:var(--c);text-shadow:0 0 8px var(--c);animation:fxOrbit 1.1s cubic-bezier(.3,.6,.4,1) both;}
+@keyframes fxOrbit{0%{transform:translateY(0) rotate(var(--a0)) translateX(calc(var(--rad) * .45)) rotate(calc(var(--a0) * -1)) scale(.3);opacity:0}
+  20%{opacity:1}
+  55%{transform:translateY(-12px) rotate(calc(var(--a0) + 90deg)) translateX(var(--rad)) rotate(calc((var(--a0) + 90deg) * -1)) scale(1.15)}
+  100%{transform:translateY(-34px) rotate(calc(var(--a0) + 170deg)) translateX(calc(var(--rad) * 1.1)) rotate(calc((var(--a0) + 170deg) * -1)) scale(.8);opacity:0}}
+
+/* ── Инвентарь: куда положили ── */
+.irow.fx-z-equip{animation:fxEquip .6s cubic-bezier(.3,1.6,.45,1);}
+@keyframes fxEquip{0%{transform:scale(1.18);box-shadow:0 0 0 0 rgba(232,196,106,.9)}30%{transform:scale(.95);box-shadow:0 0 22px 6px rgba(232,196,106,.6);border-color:var(--gold2)}
+  100%{transform:scale(1);box-shadow:0 0 0 0 rgba(232,196,106,0)}}
+.irow.fx-z-belt{animation:fxBelt .8s cubic-bezier(.3,1.5,.5,1);transform-origin:50% 0;}
+@keyframes fxBelt{0%{transform:translateY(-16px) rotate(0);opacity:.4}25%{transform:translateY(2px) rotate(-5deg);opacity:1}45%{transform:rotate(3.5deg)}62%{transform:rotate(-2deg)}80%{transform:rotate(1deg)}100%{transform:none}}
+.irow.fx-z-pack{animation:fxPack .6s cubic-bezier(.3,1.6,.45,1);transform-origin:50% 100%;}
+@keyframes fxPack{0%{transform:scale(1.15,.55)}35%{transform:scale(.92,1.12)}60%{transform:scale(1.04,.96)}100%{transform:none}}
+.pack-link.fx-z-gulp{animation:fxGulp .65s cubic-bezier(.3,1.6,.45,1);}
+@keyframes fxGulp{0%{transform:scale(1)}20%{transform:scale(1.08,.88)}45%{transform:scale(.96,1.08)}70%{transform:scale(1.02,.98)}100%{transform:none}}
+.irow.fx-new{animation:fxNew 1.5s ease-out;}
+@keyframes fxNew{0%{box-shadow:0 0 0 0 rgba(255,225,140,.9);transform:scale(.9)}15%{transform:scale(1.06)}30%{box-shadow:0 0 26px 6px rgba(255,225,140,.55);transform:scale(1)}100%{box-shadow:0 0 0 0 rgba(255,225,140,0)}}
+
+/* ── Дроп из справочника ── */
+.fx-beam{width:46px;height:220px;margin:-220px 0 0 -23px;transform-origin:50% 100%;border-radius:50% 50% 8px 8px / 20% 20% 8px 8px;
+  background:linear-gradient(0deg,var(--c),transparent);background:linear-gradient(0deg,var(--c),color-mix(in srgb,var(--c) 40%,transparent) 55%,transparent);filter:blur(1.5px);mix-blend-mode:screen;animation:fxBeam .9s cubic-bezier(.2,.8,.3,1) both;}
+@keyframes fxBeam{0%{transform:scaleY(0) scaleX(.3);opacity:0}25%{transform:scaleY(1.05) scaleX(1);opacity:1}100%{transform:scaleY(1) scaleX(.15);opacity:0}}
+.fx-chip{padding:5px 12px;border:1.5px solid var(--c);border-radius:20px;background:rgba(14,12,10,.92);color:#fff;font-family:var(--f-label);font-weight:700;font-size:14px;white-space:nowrap;
+  box-shadow:0 0 18px var(--c);box-shadow:0 0 18px color-mix(in srgb,var(--c) 70%,transparent),inset 0 0 10px color-mix(in srgb,var(--c) 30%,transparent);animation:fxChip 1.6s cubic-bezier(.2,1.4,.4,1) both;}
+@keyframes fxChip{0%{transform:translate(-50%,0) scale(0);opacity:0}18%{transform:translate(-50%,-62px) scale(1.15);opacity:1}30%{transform:translate(-50%,-56px) scale(1)}75%{transform:translate(-50%,-64px) scale(1);opacity:1}100%{transform:translate(-50%,-90px) scale(.9);opacity:0}}
+/* задержка частиц — после всех правил: шорткаты animation выше её сбрасывают */
+#fx .fx-p{animation-delay:var(--w,0ms);}
 }
 
 /* ── theme.css ── */
@@ -1545,7 +1619,7 @@ html[data-theme="light"] .mbox::before{background:var(--line3);}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '9.7.0';
+const APP_VERSION = '9.7.1';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -1872,9 +1946,10 @@ const TGX = {
     try { if (TGX.v('7.7')) wa.disableVerticalSwipes(); } catch (e) { } // свайп вниз не закрывает приложение во время драга
     try { const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg0').trim() || '#0c0b0a'; // цвет фона текущей темы
       if (TGX.v('6.1')) { wa.setHeaderColor(bg); wa.setBackgroundColor(bg); } if (TGX.v('7.10')) wa.setBottomBarColor(bg); } catch (e) { }
-    // Планшет и ПК: Telegram открывает мини-приложение маленьким окном — просим весь экран.
+    // Планшет: Telegram открывает мини-приложение маленьким окном — просим весь экран.
+    // На ПК — нет: полноэкранный режим прячет панель задач, а «развернуть окно» Telegram приложениям не даёт.
     // Если клиент отказал без жеста пользователя — повторяем один раз по первому клику.
-    if (TGX.v('8.0') && (TGX.tablet() || TGX.desktop())) {
+    if (TGX.v('8.0') && TGX.tablet()) {
       try { wa.requestFullscreen(); } catch (e) { }
       document.addEventListener('pointerdown', () => { try { if (!wa.isFullscreen) wa.requestFullscreen(); } catch (e) { } }, { once: true, capture: true });
     }
@@ -1888,7 +1963,6 @@ const TGX = {
     if (TGX.v('6.9')) CLOUD.start();
     if (!MODAL_STACK.length) route(); else renderNav(); // первый экран нарисован до Telegram — перерисовать с его кнопками
   },
-  desktop() { return ['tdesktop', 'macos', 'weba', 'webk', 'web', 'unigram'].includes(TGX.wa.platform); },
   tablet() { return ['ios', 'android', 'android_x'].includes(TGX.wa.platform) && Math.min(screen.width, screen.height) >= 600; },
   /** Отступы: в полноэкранном режиме сверху лежат кнопки Telegram (Закрыть / ⋯) — contentSafeAreaInset */
   inset() {
@@ -2041,14 +2115,19 @@ const FX_RULES = [
   ['ok', /Save$|^cloudLoad$|^backupDl$|Sync$|^ttgProxyTest$|^setTheme$|^setFont$|^setMode$/],
   ['nav', /^go$|Tab$|^anchor$|^gmCenter$|^tabMore$|^expMount$|^expTerrain$|^expSeason$|^pcPlay$/],
 ];
-const FX_HAPTIC = { dice: ['impact', 'medium'], hit: ['impact', 'heavy'], heal: ['notify', 'success'], del: ['notify', 'warning'], magic: ['impact', 'soft'],
+const FX_ACT = { action: { c: '#4fbf62', sh: 'fx-circ' }, bonus: { c: '#e89a2a', sh: 'fx-tri' }, reaction: { c: '#b25ad8', sh: 'fx-dia' }, other: { c: '#e8c46a', sh: 'fx-dia' } };
+const FX_RAR = { common: '#d9d2c3', uncommon: '#62c46e', rare: '#4f95e8', veryrare: '#b25ad8', legendary: '#f0a53a', artifact: '#e8553f' };
+const FX_HAPTIC = { act: ['impact', 'medium'], actOff: ['impact', 'soft'], dice: ['impact', 'medium'], hit: ['impact', 'heavy'], heal: ['notify', 'success'], del: ['notify', 'warning'], magic: ['impact', 'soft'],
   coin: ['impact', 'rigid'], go: ['impact', 'medium'], lvl: ['notify', 'success'], add: ['impact', 'light'], ok: ['notify', 'success'] };
 const FX = {
   off() { return SETTINGS.fx === false || matchMedia('(prefers-reduced-motion: reduce)').matches; },
   apply() { document.documentElement.classList.toggle('fx-off', SETTINGS.fx === false); },
   layer() { let l = document.getElementById('fx'); if (!l) { l = document.createElement('div'); l.id = 'fx'; document.body.appendChild(l); } return l; },
   kind(el) {
-    const a = el.dataset.act || '', r = FX_RULES.find(([, re]) => re.test(a));
+    const a = el.dataset.act || '';
+    if (a === 'pcHp' || a === 'btHp') return el.dataset.d === 'full' || int(el.dataset.d) > 0 ? 'heal' : 'hit';
+    if (a === 'pcAct' || a === 'btExec') return 'act';
+    const r = FX_RULES.find(([, re]) => re.test(a));
     if (r) return r[0];
     if (el.classList.contains('danger')) return 'del';
     if (el.classList.contains('good')) return 'add';
@@ -2077,9 +2156,16 @@ const FX = {
       FX.p(cx, cy, cls, { dx: Math.cos(a) * d + 'px', dy: Math.sin(a) * d + 'px', ...extra(i, a) }); }
   },
   /** Эффект по смыслу кнопки (координаты — экранные) */
-  play(kind, r, x, y) {
+  play(kind, r, x, y, el) {
     const cx = r.left + r.width / 2, cy = r.top + r.height / 2, R = FX.rnd;
     switch (kind) {
+      case 'act': { // искры цвета и формы действия: ● зелёные, ▲ оранжевые, ◆ фиолетовые
+        const t = FX_ACT[el?.dataset.t] || FX_ACT.other, ic = el?.querySelector('svg')?.getBoundingClientRect(), ox = ic ? ic.left + ic.width / 2 : x, oy = ic ? ic.top + ic.height / 2 : y;
+        FX.p(ox, oy, 'fx-ring', { c: t.c, s: Math.max(ic?.width || 40, 40) * 2.2 + 'px' });
+        FX.burst(ox, oy, 14, 'fx-sh ' + t.sh, Math.max(r.width, 80) * .55, () => ({ c: t.c, r: R(0, 360) + 'deg', z: R(.7, 1.3) }));
+        FX.burst(ox, oy, 8, 'fx-dot', 30, () => ({ c: '#fff' }));
+        break; }
+      case 'actOff': { const t = FX_ACT[el?.dataset.t] || FX_ACT.other; FX.p(cx, cy, 'fx-ring fx-in', { c: t.c, s: Math.max(r.width, 60) + 'px' }); break; }
       case 'dice': FX.p(cx, cy, 'fx-ring', { c: 'var(--gold2)', s: Math.max(r.width, 60) + 'px' });
         for (let i = 0; i < 4; i++) FX.p(x, y, 'fx-die', { dx: R(-70, 70) + 'px', up: R(-60, -30) + 'px', dy: R(10, 40) + 'px', r: R(-540, 540) + 'deg', w: i * 30 + 'ms' });
         break;
@@ -2098,22 +2184,129 @@ const FX = {
       case 'ok': FX.p(cx, cy, 'fx-ring', { c: 'var(--teal3)', s: Math.max(r.width, 60) + 'px' }); FX.p(r.right - 10, r.top + 4, 'fx-float', { c: 'var(--teal3)', dx: '4px', z: 1.1 }, '✓'); break;
     }
   },
-  /** Перерисованный экран заменяет кнопку — ищем «двойника» по data-атрибутам, чтобы дотанцевать анимацию тела */
-  twin(el) {
-    const sel = `[data-act="${el.dataset.act}"]` + ['v', 'id', 'k', 'd', 'i', 'm', 'c', 'x'].filter(k => el.dataset[k] != null).map(k => `[data-${k}="${CSS.escape(el.dataset[k])}"]`).join('');
-    try { return document.querySelector(sel); } catch (e) { return null; }
+  /** Перерисованный экран заменяет кнопку — ищем «двойника» с теми же data-атрибутами, БЛИЖАЙШЕГО к старому месту
+   *  (у одинаковых кнопок разных карточек, например «−5» у двух бандитов, атрибуты совпадают — берём ту, что на месте нажатой) */
+  twin(el, r) {
+    const sel = Object.keys(el.dataset).map(k => `[data-${k.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}="${CSS.escape(el.dataset[k])}"]`).join('');
+    let list; try { list = document.querySelectorAll(sel); } catch (e) { return null; }
+    let best = null, bd = 60; const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    list.forEach(t => { const q = t.getBoundingClientRect(), d = Math.hypot(q.left + q.width / 2 - cx, q.top + q.height / 2 - cy); if (d < bd) { bd = d; best = t; } });
+    return best;
   },
   haptic(kind) {
     const h = FX_HAPTIC[kind]; if (typeof TGX === 'undefined' || !TGX.on || !TGX.v('6.1')) return;
     try { const hf = TGX.wa.HapticFeedback; if (!h) hf.selectionChanged(); else if (h[0] === 'impact') hf.impactOccurred(h[1]); else hf.notificationOccurred(h[1]); } catch (e) { }
   },
+  /** Вспышка по краям экрана (сильный урон, падение в 0) */
+  vignette(c) { const v = document.createElement('div'); v.className = 'fx-vig'; v.style.setProperty('--c', c); FX.layer().appendChild(v); v.addEventListener('animationend', () => v.remove(), { once: true }); setTimeout(() => v.remove(), 1500); },
+  /** Блик-полоса, бегущая по прямоугольнику (форма углов как у элемента) */
+  sweep(el, c, dur = 700) {
+    const r = el.getBoundingClientRect(), w = document.createElement('div'); w.className = 'fx-sweep';
+    Object.assign(w.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', borderRadius: getComputedStyle(el).borderRadius });
+    w.style.setProperty('--c', c); w.style.setProperty('--t', dur + 'ms'); w.innerHTML = '<i></i>';
+    FX.layer().appendChild(w); setTimeout(() => w.remove(), dur + 100);
+  },
+  /** Рана: 1–3 рваных следа когтей поперёк цифр (SVG, «прорисовываются» и затягиваются) */
+  wound(r, n) {
+    const NS = 'http://www.w3.org/2000/svg', pad = 18, w = r.width + pad * 2, h = r.height + pad * 2, s = document.createElementNS(NS, 'svg');
+    s.setAttribute('class', 'fx-wound'); s.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    Object.assign(s.style, { left: r.left - pad + 'px', top: r.top - pad + 'px', width: w + 'px', height: h + 'px' });
+    for (let i = 0; i < n; i++) {
+      const o = (i - (n - 1) / 2) * 13, x1 = w * .22 + o, y1 = h * .12, x2 = w * .78 + o, y2 = h * .88, qx = w / 2 + o + FX.rnd(-8, 8), qy = h / 2 + FX.rnd(-6, 6);
+      ['fx-cut-d', 'fx-cut-l'].forEach(c => { const p = document.createElementNS(NS, 'path'); p.setAttribute('d', `M${x1} ${y1} Q${qx} ${qy} ${x2} ${y2}`); p.setAttribute('pathLength', '1'); p.setAttribute('class', c); p.style.animationDelay = i * 70 + 'ms'; s.appendChild(p); });
+    }
+    FX.layer().appendChild(s); setTimeout(() => s.remove(), 1400);
+  },
+  /** Хиты на листе: урон — тряска, рана, кровь, цифра урона, «призрак» полоски; лечение — светлое сечение, плюсики вокруг цифр */
+  hpChange(old, cur, max, absorbed = 0) {
+    if (FX.off()) return;
+    const d = cur - old; if (!d && !absorbed) return;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const num = document.querySelector('#s-hp .hp-cur'); if (!num) return;
+      const r = num.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2, R = FX.rnd;
+      const bar = document.querySelector('#s-hp .hp-bar > div:not(.hp-bar-temp)'), pct = v => clamp(v / Math.max(1, max) * 100, 0, 100);
+      const cls = c => { num.classList.remove('fx-hp-hit', 'fx-hp-heal'); void num.offsetWidth; num.classList.add(c); setTimeout(() => num.classList.remove(c), 900); };
+      if (absorbed) { FX.p(cx, cy, 'fx-ring', { c: '#7fb2ff', s: r.height * 1.8 + 'px' }); FX.p(r.right + 8, r.top + 4, 'fx-num up', { c: '#9cc4ff' }, '🛡−' + absorbed); }
+      if (d < 0) {
+        cls('fx-hp-hit'); FX.haptic('hit');
+        FX.wound(r, clamp(1 + Math.floor(-d / Math.max(1, max) * 6), 1, 3));
+        for (let i = 0; i < 4 + Math.min(6, -d); i++) FX.p(R(r.left + 6, r.right - 6), R(cy, r.bottom), 'fx-drop', { dx: R(-10, 10) + 'px', dy: R(40, 90) + 'px', w: 120 + R(0, 260) + 'ms', z: R(.7, 1.3) });
+        FX.p(r.right + 18, cy, 'fx-num down', { c: 'var(--red2)' }, String(d));
+        if (bar) {
+          bar.animate([{ width: pct(old) + '%' }, { width: pct(cur) + '%' }], { duration: 140, easing: 'ease-out' });
+          const g = document.createElement('div'); g.className = 'fx-hp-ghost'; g.style.left = pct(cur) + '%'; g.style.width = pct(old) - pct(cur) + '%';
+          bar.parentNode.appendChild(g); g.animate([{ width: pct(old) - pct(cur) + '%', opacity: 1 }, { width: pct(old) - pct(cur) + '%', opacity: 1, offset: .35 }, { width: '0%', opacity: .6 }], { duration: 900, easing: 'cubic-bezier(.5,0,.7,1)' }).onfinish = () => g.remove();
+        }
+        if (-d >= max * .25 || cur === 0) FX.vignette('rgba(190,25,25,.55)');
+        if (cur === 0 && old > 0) FX.p(cx, r.top, 'fx-num up big', { c: '#ff8a7a' }, '☠');
+      } else if (d > 0) {
+        cls('fx-hp-heal'); FX.haptic('heal');
+        FX.p(cx, cy, 'fx-slash fx-slash-heal', { r: '-24deg' }); FX.sweep(num, 'rgba(210,255,215,.85)', 650);
+        const rad = Math.max(r.width, r.height) / 2 + 16, n = clamp(6 + d, 8, 14);
+        for (let i = 0; i < n; i++) FX.p(cx, cy, 'fx-orbit', { a0: i / n * 360 + 'deg', rad: rad * R(.85, 1.2) + 'px', c: i % 3 ? 'var(--green2)' : '#d8ffd0', w: i * 35 + 'ms', z: R(.8, 1.3) }, '+');
+        FX.p(r.right + 18, cy, 'fx-num up', { c: 'var(--green2)' }, '+' + d);
+        if (bar) bar.animate([{ width: pct(old) + '%', filter: 'brightness(2)' }, { width: pct(cur) + '%', filter: 'brightness(1)' }], { duration: 650, easing: 'cubic-bezier(.3,1.4,.5,1)' });
+      }
+    }));
+  },
+  /** Перенос вещи между зонами: надеть — «звон» доспеха, на пояс — защёлкнулась и качнулась, в рюкзак — утрамбовалась */
+  zone(id, zone) {
+    if (FX.off()) return;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      let el = [...document.querySelectorAll(`.irow[data-id="${CSS.escape(id)}"]`)].find(x => x.getBoundingClientRect().width);
+      const gulp = !el && zone === 'pack'; if (gulp) el = document.querySelector('.pack-link'); if (!el) return;
+      const r = el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2, R = FX.rnd;
+      const c = gulp ? 'fx-z-gulp' : 'fx-z-' + zone; el.classList.remove(c); void el.offsetWidth; el.classList.add(c); setTimeout(() => el.classList.remove(c), 900);
+      if (zone === 'equip') {
+        FX.haptic('coin'); FX.sweep(el, 'rgba(255,230,160,.8)', 600);
+        FX.p(cx, cy, 'fx-ring', { c: 'var(--gold2)', s: r.width * 1.15 + 'px' });
+        [[r.left, r.top], [r.right, r.top], [r.left, r.bottom], [r.right, r.bottom]].forEach(([x, y]) => FX.burst(x, y, 4, 'fx-dot', 22, () => ({ c: '#fff2c4' })));
+        FX.burst(cx, cy, 12, 'fx-sh fx-dia', r.width * .6, () => ({ c: 'var(--gold2)', r: R(0, 360) + 'deg', z: R(.6, 1) }));
+      } else if (zone === 'belt') {
+        FX.haptic('add'); FX.p(r.left + 14, cy, 'fx-ring', { c: '#c08a4a', s: '40px' });
+        for (let i = 0; i < 5; i++) FX.p(R(r.left, r.right), r.bottom - 2, 'fx-dust', { dx: R(-20, 20) + 'px', dy: R(-6, 6) + 'px', w: 150 + i * 30 + 'ms', z: R(.5, 1) });
+      } else {
+        FX.haptic('go');
+        for (let i = 0; i < 8; i++) FX.p(R(r.left, r.right), gulp ? cy : r.bottom - 4, 'fx-dust', { dx: R(-36, 36) + 'px', dy: R(-22, 6) + 'px', w: 90 + i * 25 + 'ms', z: R(.7, 1.4) });
+        if (gulp) FX.p(cx, r.top, 'fx-num up', { c: 'var(--gold2)' }, '+1');
+      }
+    }));
+  },
+  /** Получен предмет/заклинание/монстр из справочника: столб света цвета редкости, лучи, карточка-«дроп» с именем */
+  loot(btn, obj, kind) {
+    if (FX.off() || !btn) return;
+    const r = btn.getBoundingClientRect(); if (!r.width) return;
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2, R = FX.rnd;
+    const c = kind === 'spell' ? '#a685ff' : kind === 'beast' ? '#e0705a' : FX_RAR[obj?.rarity] || '#e8c46a';
+    FX.haptic('lvl');
+    FX.p(cx, cy, 'fx-beam', { c });
+    FX.burst(cx, cy, 16, 'fx-ray', 90, (i, a) => ({ r: a + 'rad', c }));
+    FX.burst(cx, cy, 14, 'fx-sh fx-dia', 70, () => ({ c, r: R(0, 360) + 'deg', z: R(.6, 1.2) }));
+    FX.p(cx, cy, 'fx-ring', { c, s: '120px' }); FX.p(cx, cy, 'fx-ring', { c: '#fff', s: '70px', w: '90ms' });
+    FX.p(cx, r.top, 'fx-chip', { c }, `${obj?.emoji || (kind === 'spell' ? '✨' : kind === 'beast' ? '👹' : '✦')} ${obj?.name || ''}`);
+    btn.classList.remove('fx-b-lvl'); void btn.offsetWidth; btn.classList.add('fx-b-lvl'); setTimeout(() => btn.classList.remove('fx-b-lvl'), 800);
+  },
+  /** Новая вещь: подсветить её в инвентаре, когда закроется окно справочника */
+  fresh: new Set(),
+  markNew(id) {
+    if (FX.off() || !id) return; FX.fresh.add(id);
+    if (FX._mo) return;
+    FX._mo = new MutationObserver(() => {
+      if ($('#modal-root').children.length) return;
+      FX._mo.disconnect(); FX._mo = null;
+      setTimeout(() => { FX.fresh.forEach(i => { const el = [...document.querySelectorAll(`.irow[data-id="${CSS.escape(i)}"]`)].find(x => x.getBoundingClientRect().width); if (!el) return;
+        el.classList.add('fx-new'); FX.sweep(el, 'rgba(255,240,190,.75)', 900); setTimeout(() => el.classList.remove('fx-new'), 1600); }); FX.fresh.clear(); }, 120);
+    });
+    FX._mo.observe($('#modal-root'), { childList: true });
+  },
   fire(el, x, y) {
     const r = el.getBoundingClientRect(); if (!r.width) return;
     if (!x && !y) { x = r.left + r.width / 2; y = r.top + r.height / 2; }
-    const kind = FX.kind(el), cls = 'fx-b-' + kind;
-    FX.haptic(kind); FX.ripple(el, r, x, y); FX.play(kind, r, x, y);
+    let kind = FX.kind(el); if (kind === 'act' && el.classList.contains('used')) kind = 'actOff';
+    const cls = 'fx-b-' + kind;
+    FX.haptic(kind); FX.ripple(el, r, x, y); FX.play(kind, r, x, y, el);
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      const t = el.isConnected ? el : FX.twin(el); if (!t) return;
+      const t = el.isConnected ? el : FX.twin(el, r); if (!t) return;
       t.classList.remove(cls); void t.offsetWidth; t.classList.add(cls);
       setTimeout(() => t.classList.remove(cls), 700);
     }));
@@ -3965,12 +4158,14 @@ function pcDo(fn, ...secs) { const pc = activePC(); if (!pc) return; fn(pc); sav
 ACT.pcHdr = () => pcDo(pc => { pc.ui.hdr = !pc.ui.hdr; }, 'hdr');
 ACT.pcInsp = el => pcDo(pc => { pc.insp = Math.max(0, pc.insp + int(el.dataset.d)); if (int(el.dataset.d) > 0) toast(`✨ Вдохновение: ${pc.insp}`); }, 'hdr');
 function pcDamage(pc, n) {
+  const old = pc.hp.cur;
   const fromTemp = Math.min(pc.hp.temp || 0, n); pc.hp.temp = (pc.hp.temp || 0) - fromTemp; n -= fromTemp;
   if (n > 0 && pc.hp.cur === 0) { pc.ds.f = Math.min(3, pc.ds.f + 1); toast(pc.ds.f >= 3 ? '☠ Три провала… персонаж погиб' : '☠ Урон без сознания: +1 провал', 'err'); }
   pc.hp.cur = Math.max(0, pc.hp.cur - n);
   if (fromTemp) toast(`🛡 Временные хиты поглотили ${fromTemp}`);
+  FX.hpChange(old, pc.hp.cur, pc.hp.max, fromTemp);
 }
-function pcHeal(pc, n) { if (pc.hp.cur === 0 && n > 0) pc.ds = { s: 0, f: 0 }; pc.hp.cur = Math.min(pc.hp.max, pc.hp.cur + n); }
+function pcHeal(pc, n) { const old = pc.hp.cur; if (pc.hp.cur === 0 && n > 0) pc.ds = { s: 0, f: 0 }; pc.hp.cur = Math.min(pc.hp.max, pc.hp.cur + n); FX.hpChange(old, pc.hp.cur, pc.hp.max); }
 ACT.pcHp = el => pcDo(pc => { const d = int(el.dataset.d); d < 0 ? pcDamage(pc, -d) : pcHeal(pc, d); }, 'hp');
 ACT.pcHpDmg = () => { const v = Math.abs(int($('#pc-hpv')?.value)); if (v) pcDo(pc => pcDamage(pc, v), 'hp'); };
 ACT.pcHpHeal = () => { const v = Math.abs(int($('#pc-hpv')?.value)); if (v) pcDo(pc => pcHeal(pc, v), 'hp'); };
@@ -4409,7 +4604,7 @@ function invMove(pc, id, toZone, beforeId = null) {
   const arr = pc.inv[toZone]; let at = beforeId ? arr.findIndex(x => x.id === beforeId) : -1; if (at < 0) at = arr.length;
   arr.splice(at, 0, f.it);
   savePC(pc);
-  if (f.z !== toZone) toast(`${ZONES[toZone].icon} «${f.it.name}» → ${ZONES[toZone].label}`);
+  if (f.z !== toZone) { toast(`${ZONES[toZone].icon} «${f.it.name}» → ${ZONES[toZone].label}`); FX.zone(id, toZone); }
 }
 DRAG.item = {
   targets: '.irow, .izone, .pack-link',
@@ -6146,7 +6341,7 @@ const TTG = {
     const pick = async url => {
       const kind = TTG.kindOfUrl(url) || st.kind;
       if (!kinds.includes(kind)) return toast(`Здесь нужен раздел: ${kinds.map(k => TTG.KINDS[k].label).join(', ')}`, 'err');
-      try { const obj = TTG.convert(kind, await TTG.detail(url)); onPick(obj, kind); const b = $(`[data-cnt="${CSS.escape(url)}"]`, m); if (b) { b.hidden = false; b.textContent = int(b.textContent) + 1; } }
+      try { const obj = TTG.convert(kind, await TTG.detail(url)); onPick(obj, kind); FX.loot($(`[data-ttg="${CSS.escape(url)}"]`, m), obj, kind); const b = $(`[data-cnt="${CSS.escape(url)}"]`, m); if (b) { b.hidden = false; b.textContent = int(b.textContent) + 1; } }
       catch (e) { toast('⚠ Не получилось загрузить: ' + (e.message === 'Failed to fetch' ? 'нет связи с прокси' : e.message), 'err', 4000); }
     };
     qi.addEventListener('input', run); off.addEventListener('change', () => { SETTINGS.ttgAll = !off.checked; saveSettings(); draw(); });
@@ -6160,7 +6355,7 @@ const TTG = {
 /* ── Точки входа ── */
 const ITEM_KINDS = ['magic', 'weapon', 'armor', 'item'];
 ACT.ttgSpell = () => TTG.open({ kinds: ['spell'], title: '🔎 Заклинание с ttg.club', onPick: s => { const pc = activePC(); pc.hasSpells = true; pc.spells.push(s); savePC(pc); ccRefresh('spellcards'); toast(`✨ «${s.name}» добавлено`, 'ok'); } });
-ACT.ttgInv = el => { const z = el.dataset.z || 'pack'; TTG.open({ kinds: ITEM_KINDS, title: `🔎 Предмет с ttg.club → ${ZONES[z].label}`, onPick: it => { const pc = activePC(); invAdd(pc, it, z); savePC(pc); invRefresh(); toast(`${ZONES[z].icon} «${it.name}» добавлен`, 'ok'); } }); };
+ACT.ttgInv = el => { const z = el.dataset.z || 'pack'; TTG.open({ kinds: ITEM_KINDS, title: `🔎 Предмет с ttg.club → ${ZONES[z].label}`, onPick: it => { const pc = activePC(), got = invAdd(pc, it, z); savePC(pc); invRefresh(); FX.markNew(got.id); toast(`${ZONES[z].icon} «${it.name}» добавлен`, 'ok'); } }); };
 ACT.ttgLoot = () => { let last = null; TTG.open({ kinds: ITEM_KINDS, title: '🔎 Предмет с ttg.club → библиотека лута', onPick: it => { STORE.put('item', it); last = it; lootListRefresh(); toast(`📜 «${it.name}» в библиотеке`, 'ok'); } });
   MODAL_STACK.at(-1).onClose = () => { if (last) { LOOT.id = last.id; _lootObj = null; route(); } }; };
 ACT.ttgNpc = () => { let last = null; TTG.open({ kinds: ['beast'], title: '🔎 Бестиарий ttg.club → NPC', onPick: n => { STORE.put('npc', n); last = n; npcListRefresh(); toast(`👹 «${n.name}» в библиотеке NPC`, 'ok'); } });
