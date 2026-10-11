@@ -1619,7 +1619,7 @@ html[data-theme="light"] .mbox::before{background:var(--line3);}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '9.7.1';
+const APP_VERSION = '9.7.2';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -1946,10 +1946,9 @@ const TGX = {
     try { if (TGX.v('7.7')) wa.disableVerticalSwipes(); } catch (e) { } // свайп вниз не закрывает приложение во время драга
     try { const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg0').trim() || '#0c0b0a'; // цвет фона текущей темы
       if (TGX.v('6.1')) { wa.setHeaderColor(bg); wa.setBackgroundColor(bg); } if (TGX.v('7.10')) wa.setBottomBarColor(bg); } catch (e) { }
-    // Планшет: Telegram открывает мини-приложение маленьким окном — просим весь экран.
-    // На ПК — нет: полноэкранный режим прячет панель задач, а «развернуть окно» Telegram приложениям не даёт.
+    // Планшет и ПК: Telegram открывает мини-приложение маленьким окном — просим весь экран.
     // Если клиент отказал без жеста пользователя — повторяем один раз по первому клику.
-    if (TGX.v('8.0') && TGX.tablet()) {
+    if (TGX.v('8.0') && (TGX.tablet() || TGX.desktop())) {
       try { wa.requestFullscreen(); } catch (e) { }
       document.addEventListener('pointerdown', () => { try { if (!wa.isFullscreen) wa.requestFullscreen(); } catch (e) { } }, { once: true, capture: true });
     }
@@ -1963,6 +1962,7 @@ const TGX = {
     if (TGX.v('6.9')) CLOUD.start();
     if (!MODAL_STACK.length) route(); else renderNav(); // первый экран нарисован до Telegram — перерисовать с его кнопками
   },
+  desktop() { return ['tdesktop', 'macos', 'weba', 'webk', 'web', 'unigram'].includes(TGX.wa.platform); },
   tablet() { return ['ios', 'android', 'android_x'].includes(TGX.wa.platform) && Math.min(screen.width, screen.height) >= 600; },
   /** Отступы: в полноэкранном режиме сверху лежат кнопки Telegram (Закрыть / ⋯) — contentSafeAreaInset */
   inset() {
