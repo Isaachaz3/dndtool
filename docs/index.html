@@ -436,12 +436,29 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:grabbing;}
 .sec-tabs button.on{color:var(--gold2);border-bottom-color:var(--gold);}
 
 /* Якоря */
-.anchors{position:sticky;top:var(--top-h);z-index:40;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:8px 2px;margin:0 -2px 10px;
+/* Закреплённая полоса листа: хиты + КБ (всегда на виду) и якоря секций */
+.sheet-bar{position:sticky;top:var(--top-h);z-index:40;display:flex;align-items:center;gap:8px;padding:8px 2px;margin:0 -2px 10px;
   background:linear-gradient(180deg,rgba(11,10,9,.97) 70%,rgba(11,10,9,0));}
+.sheet-bar>[data-sec="vitals"]{flex-shrink:0;}
+.anchors{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:0;margin:0;min-width:0;flex:1;}
+.vitals{display:grid;grid-template-columns:auto auto;grid-template-rows:auto 4px;column-gap:10px;row-gap:4px;align-items:center;
+  padding:5px 12px 6px;border:1px solid var(--line3);border-radius:8px;background:var(--bg1,#14110e);min-height:44px;text-align:left;}
+.vitals .vt-hp{display:flex;align-items:baseline;gap:3px;font-family:var(--f-title);line-height:1;}
+.vitals .vt-hp b{font-size:21px;font-weight:700;}
+.vitals .vt-hp small{font-size:12px;color:var(--tx3);}
+.vitals .vt-hp i{font-style:normal;font-size:12px;font-weight:700;color:var(--blue2);margin-left:3px;}
+.vitals .vt-hp{grid-column:1;grid-row:1;}
+.vitals .vt-ac{grid-column:2;grid-row:1;display:flex;align-items:center;gap:3px;font-size:13px;color:var(--tx3);}
+.vitals .vt-ac b{font-family:var(--f-title);font-size:17px;color:var(--tx);}
+.vitals .vt-bar{grid-column:1/-1;grid-row:2;height:4px;border-radius:2px;background:rgba(255,255,255,.08);overflow:hidden;}
+.vitals .vt-bar i{display:block;height:100%;}
+.vitals{position:relative;}
+.vitals .vt-conc{position:absolute;top:2px;right:4px;font-size:12px;}
+.vitals.down{border-color:var(--red);box-shadow:0 0 10px rgba(200,60,60,.35);}
 .anchors::-webkit-scrollbar{display:none;}
 .anchors button{flex-shrink:0;padding:6px 12px;border:1px solid var(--line2);border-radius:16px;background:rgba(30,26,21,.9);font-family:var(--f-label);font-weight:700;font-size:13.5px;color:var(--tx2);white-space:nowrap;}
 .anchors button:hover{border-color:var(--gold);color:var(--gold2);}
-@media (max-width:639px){ .anchors{top:52px;} .sec{scroll-margin-top:110px;} }
+@media (max-width:639px){ .sheet-bar{top:52px;} .sec{scroll-margin-top:118px;} }
 
 /* Шапка персонажа */
 .pc-hdr{margin-bottom:10px;padding:6px 6px;}
@@ -499,6 +516,8 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:grabbing;}
   background:linear-gradient(180deg,rgba(36,96,111,.35),rgba(17,48,58,.45));border:1px solid var(--teal2);border-radius:5px;}
 .round-btn:active{transform:scale(.99);}
 .act-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+/* «Новый ход» — вторичная кнопка под фишками: главное в секции — сами действия */
+.round-end{margin-top:10px;min-height:42px;font-size:14.5px;}
 .act-chip{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px 9px;border:1px solid var(--line2);border-radius:6px;background:rgba(0,0,0,.28);transition:all .15s;}
 .act-chip svg{width:42px;height:42px;filter:drop-shadow(0 0 6px rgba(0,0,0,.6));transition:opacity .2s;}
 .act-chip span{font-family:var(--f-label);font-weight:700;font-size:13px;color:var(--tx2);}
@@ -532,6 +551,12 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:grabbing;}
 .res-pip{width:24px;height:24px;border-radius:50%;background:var(--rc);box-shadow:0 0 6px color-mix(in srgb,var(--rc) 50%,transparent);}
 .res-pip.used{background:transparent;border:2px solid var(--line2);box-shadow:none;}
 .res-n{font-family:var(--f-title);font-size:18px;color:var(--rc);}
+.res-block.big .res-name{flex:1;}
+.res-step{display:flex;gap:6px;}
+.res-step button{min-width:42px;height:36px;padding:0 8px;border:1px solid var(--line2);border-radius:5px;background:rgba(0,0,0,.3);
+  font-family:var(--f-title);font-weight:700;font-size:15px;color:var(--rc);}
+.res-step button:disabled{opacity:.35;}
+.res-step button:not(:disabled):active{transform:scale(.96);}
 .slots{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
 .slot-lv{flex:1;min-width:76px;text-align:center;padding:8px 6px;border:1px solid var(--line2);border-radius:6px;background:rgba(0,0,0,.25);}
 .slot-lv.wl{border-color:rgba(144,101,198,.5);background:rgba(144,101,198,.08);}
@@ -933,11 +958,22 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:grabbing;}
 .round-box b{font-family:var(--f-title);font-size:26px;color:var(--gold2);}
 .trk-name{max-width:280px;min-width:120px;}
 .trk-strip{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:thin;}
+/* Панель боя и полоса инициативы едут за прокруткой: ход, раунд и порядок всегда под рукой */
+.trk-head{position:sticky;top:var(--top-h);z-index:30;margin:-8px -6px 4px;padding:8px 6px 2px;
+  background:linear-gradient(180deg,var(--bg0) 82%,transparent);}
+.trk-head .trk-bar{margin-bottom:6px;}
+@media (max-width:639px){ .trk-head{top:52px;} }
 .ini{position:relative;flex-shrink:0;display:flex;align-items:center;gap:6px;max-width:200px;padding:6px 10px 8px;border:1px solid var(--line2);border-left:3px solid var(--al);border-radius:5px;background:rgba(0,0,0,.3);overflow:hidden;}
 .ini b{font-family:var(--f-title);font-size:18px;color:var(--al);}
 .ini span{font-family:var(--f-label);font-size:13px;color:var(--tx);}
 .ini i{position:absolute;left:0;bottom:0;height:3px;background:var(--green2);}
 .ini.done{opacity:.45;} .ini.down{opacity:.35;filter:grayscale(1);}
+/* Чей ход: золотая обводка в полосе инициативы и на карточке (outline не спорит с рамками тем) */
+.ini.turn{opacity:1;outline:2px solid var(--gold);outline-offset:-2px;background:rgba(200,168,107,.14);}
+.ini.turn span{color:var(--gold2);font-weight:700;}
+.nc.turn.turn{opacity:1;outline:2px solid var(--gold);outline-offset:3px;}
+.nc-turnmk{color:var(--gold2);font-size:13px;flex-shrink:0;}
+.trk-turn{min-width:120px;}
 .trk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px;align-items:start;}
 @media (max-width:639px){ .trk-grid{grid-template-columns:1fr;} .trk-name{max-width:none;flex-basis:100%;order:10;} }
 .trk-empty{grid-column:1/-1;}
@@ -1388,7 +1424,7 @@ html[data-theme="crimson"] .nc,html[data-theme="crimson"] .smn,html[data-theme="
   background:linear-gradient(180deg,#1d1924,#100d14);}
 html[data-theme="crimson"] .gm-card,html[data-theme="crimson"] .lib-form .ifm,html[data-theme="crimson"] .izone{background:linear-gradient(180deg,rgba(27,22,33,.96),rgba(12,10,15,.96));}
 html[data-theme="crimson"] .izone-h{background:var(--bg3);}
-html[data-theme="crimson"] .anchors{background:linear-gradient(180deg,rgba(11,9,14,.97) 70%,rgba(11,9,14,0));}
+html[data-theme="crimson"] .sheet-bar{background:linear-gradient(180deg,rgba(11,9,14,.97) 70%,rgba(11,9,14,0));}
 html[data-theme="crimson"] .anchors button{background:rgba(22,18,27,.92);}
 html[data-theme="crimson"] .well{background:rgba(5,4,8,.4);}
 html[data-theme="crimson"] .chk-row:hover,html[data-theme="crimson"] .menu .mi:hover{background:rgba(194,41,60,.1);}
@@ -1524,7 +1560,7 @@ html[data-theme="light"] .panel{background:linear-gradient(180deg,#fcf7ea,#f3e9d
 html[data-theme="light"] .sec{background:linear-gradient(180deg,rgba(255,252,243,.95),rgba(247,239,221,.95));border-color:var(--line2);box-shadow:inset 0 1px 0 #fff,0 4px 18px rgba(120,90,40,.12);}
 html[data-theme="light"] .gm-card,html[data-theme="light"] .lib-form .ifm,html[data-theme="light"] .izone{background:linear-gradient(180deg,rgba(255,252,243,.95),rgba(245,236,214,.95));}
 html[data-theme="light"] .izone-h{background:var(--bg2);}
-html[data-theme="light"] .anchors{background:linear-gradient(180deg,rgba(242,233,214,.96) 70%,rgba(242,233,214,0));}
+html[data-theme="light"] .sheet-bar{background:linear-gradient(180deg,rgba(242,233,214,.96) 70%,rgba(242,233,214,0));}
 html[data-theme="light"] .anchors button{background:rgba(252,247,234,.94);}
 html[data-theme="light"] .well,html[data-theme="light"] .chip,html[data-theme="light"] .seg,html[data-theme="light"] .tagb-opt,html[data-theme="light"] .shp,html[data-theme="light"] .ed-item,
 html[data-theme="light"] .lib-row,html[data-theme="light"] .np-stats div,html[data-theme="light"] .nc-stats div,html[data-theme="light"] .round-box,html[data-theme="light"] .ini,
@@ -1958,6 +1994,12 @@ html[data-theme="astral"] .tab.on{color:var(--gold2);}
 :root[data-theme="astral"] .act-chip svg{width:34px;height:34px;}
 :root[data-theme="astral"] :is(.exp-go,.round-btn):is(.exp-go,.round-btn){border-image:var(--fr-big-gold) 12 28 fill / 12px 28px stretch;}
 :root[data-theme="astral"] .nav-item .ni{margin-right:0;font-size:inherit;}
+/* Планшет: рельс из иконок с подписью снизу. Ромб 34 px внутри ячейки иконки 36 px — подпись под ним, без наложения */
+@media (min-width:640px) and (max-width:1023px){
+  :root:is([data-theme="forge"],[data-theme="astral"]) .nav-item .ni{display:grid;place-items:center;width:36px;height:36px;margin:0 auto 3px;font-size:17px;}
+  :root:is([data-theme="forge"],[data-theme="astral"]) .nav-item .ni::before{width:34px;height:34px;}
+  :root:is([data-theme="forge"],[data-theme="astral"]) .nav-item{padding:6px 2px;}
+}
 
 /* ═══ «Солнечная баллада»: сказочная книга — заголовки без капса, тени текста светлые (токены — theme_light.css) ═══ */
 :root[data-theme="light"] :is(.sec-h,.sec-h[class*="t-"],.sec-tabs button,.mhead h3){text-transform:none;letter-spacing:.02em;}
@@ -1989,7 +2031,7 @@ html[data-theme="astral"] .tab.on{color:var(--gold2);}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '9.9.1';
+const APP_VERSION = '10.0.0';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -3505,8 +3547,10 @@ function normNPC(d) {
 }
 
 /* ── Бой ── */
-const SECTION_ORDER = ['hp', 'stats', 'conditions', 'actions', 'ammo', 'custom'];
-function newBattle(name = '') { return { id: uid('b'), name, round: 1, notes: '', drawing: '', list: [] }; }
+// в бою важнее всего хиты и действия; характеристики нужны реже (спасброски) — ниже. Сохранённый порядок участников не трогаем
+const SECTION_ORDER = ['hp', 'actions', 'conditions', 'stats', 'ammo', 'custom'];
+// turn — uid участника, который сейчас ходит (null — первый, кто ещё не ходил)
+function newBattle(name = '') { return { id: uid('b'), name, round: 1, notes: '', drawing: '', list: [], turn: null }; }
 function actStates(arr) {
   return (arr || []).map((a, i) => ({ ...a, _idx: i, usedThisRound: !!a.usedThisRound,
     _limitStates: a._limitStates || (a.limits || []).map(l => l.type === 'charges' ? { ...l, remaining: l.amount } : l.type === 'cooldown' ? { ...l, cdRemaining: 0 } : { ...l }) }));
@@ -4366,13 +4410,35 @@ SEC.hp = pc => {
       <button class="btn sm mt" data-act="pcDSRoll">🎲 Бросить спасбросок</button></div>` : ''}
   </div></section>`;
 };
+/** Закреплённая полоса: хиты и КБ видны всегда, пока листаешь лист. Нажатие — быстрый урон / лечение */
+SEC.vitals = pc => {
+  const { cur, max, temp } = pc.hp, pct = clamp(cur / Math.max(1, max) * 100, 0, 100), col = hpColor(pct);
+  return `<button class="vitals ${cur === 0 ? 'down' : ''}" data-act="pcHpQuick" title="Урон и лечение">
+    <span class="vt-hp"><b style="color:${col}">${cur === 0 ? '☠ ' : ''}${cur}</b><small>/${max}</small>${temp ? `<i title="Временные хиты">+${temp}</i>` : ''}</span>
+    <span class="vt-bar"><i style="width:${pct}%;background:${col}"></i></span>
+    <span class="vt-ac" title="Класс брони">🛡<b>${pc.ac}</b></span>${pc.conc ? `<span class="vt-conc" title="Концентрация: ${esc(pc.conc)}">⚡</span>` : ''}
+  </button>`;
+};
+/** Классовые ресурсы (ярость, ци, наложение рук…) — в бою, а не в магии: они есть и у не-заклинателей.
+    До 10 зарядов — кружки, больше — счётчик, чтобы 25 очков не превращались в колонну кружков */
+function resHTML(pc) {
+  const res = pc.resources.map((r, ri) => { if (!r.max) return ''; const used = int(pc.usedRes[ri]); const rt = RES_TYPES.find(t => t.value === r.type) || RES_TYPES[RES_TYPES.length - 1];
+    const tot = Math.min(r.max, 30), left = Math.max(0, r.max - used);
+    const ctl = tot > 10
+      ? `<div class="res-step"><button data-act="pcResStep" data-r="${ri}" data-d="5" ${left < 1 ? 'disabled' : ''}>−5</button><button data-act="pcResStep" data-r="${ri}" data-d="1" ${left < 1 ? 'disabled' : ''}>−1</button><button data-act="pcResStep" data-r="${ri}" data-d="-1" ${used < 1 ? 'disabled' : ''}>+1</button></div>`
+      : `<div class="res-pips">${pipMap(pc, 'r' + ri, used, tot).map((u, i) => `<button class="res-pip ${u ? 'used' : ''}" data-act="pcRes" data-r="${ri}" data-i="${i}"></button>`).join('')}</div>`;
+    return `<div class="res-block ${tot > 10 ? 'big' : ''}" style="--rc:${rt.color}"><div class="res-name">${esc(r.name || rt.label)}<small>${r.rest === 'short' ? 'кор. отдых' : 'длин. отдых'}</small></div>
+      ${ctl}<b class="res-n">${left}/${r.max}</b></div>`; }).join('');
+  return res ? `<div class="res-grid mt">${res}</div>` : '';
+}
 SEC.combat = pc => `<section class="sec" id="s-combat"><div class="sec-h t-blue">⚔ Боевые действия</div><div class="sec-b">
-    <button class="round-btn" data-act="pcEndRound">✓ Прошёл раунд — сбросить действия</button>
     <div class="act-chips">
       <button class="act-chip ${pc.act.action ? 'used' : ''}" data-act="pcAct" data-t="action"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#4fbf62"/></svg><span>Действие</span></button>
       <button class="act-chip ${pc.act.bonus ? 'used' : ''}" data-act="pcAct" data-t="bonus"><svg viewBox="0 0 24 24"><polygon points="12,2 23,21 1,21" fill="#e89a2a"/></svg><span>Бонусное</span></button>
       <button class="act-chip ${pc.act.reaction ? 'used' : ''}" data-act="pcAct" data-t="reaction"><svg viewBox="0 0 24 24"><polygon points="12,1.5 22.5,12 12,22.5 1.5,12" fill="#b25ad8"/></svg><span>Реакция</span></button>
-    </div></div></section>`;
+    </div>
+    <button class="btn block round-end" data-act="pcEndRound" title="Вернуть действия и убавить длительность состояний">↻ Новый ход</button>
+    ${resHTML(pc)}</div></section>`;
 SEC.pins = (pc, slot) => {
   const cards = pc.cards.map((c, i) => ({ c, i })).filter(x => x.c.pin === slot);
   if (!cards.length) return '';
@@ -4404,13 +4470,7 @@ SEC.spells = pc => {
     ${pc.spellPrep ? '<button class="btn xs" data-act="pcPrep">📋 Подготовка</button>' : ''}<span class="chev ${pc.ui.spells ? 'open' : ''}">▾</span></div>`;
   if (!pc.ui.spells) return h + '</section>';
   h += `<div class="sec-b"><div class="spell-stats"><div><small>Хар-ка</small><b>${STAT_NAMES[pc.spellAbility] || '—'}</b></div><div><small>Сл. спасброска</small><b>${8 + pb + m}</b></div><div><small>Бон. атаки</small><b class="tap" data-act="pcRollSpellAtk">${sgn(pb + m)}</b></div></div>`;
-  // классовые ресурсы
-  const res = pc.resources.map((r, ri) => { if (!r.max) return ''; const used = int(pc.usedRes[ri]); const rt = RES_TYPES.find(t => t.value === r.type) || RES_TYPES[RES_TYPES.length - 1];
-    const on = pipMap(pc, 'r' + ri, used, Math.min(r.max, 30));
-    return `<div class="res-block" style="--rc:${rt.color}"><div class="res-name">${esc(r.name || rt.label)}<small>${r.rest === 'short' ? 'кор. отдых' : 'длин. отдых'}</small></div>
-      <div class="res-pips">${on.map((u, i) => `<button class="res-pip ${u ? 'used' : ''}" data-act="pcRes" data-r="${ri}" data-i="${i}"></button>`).join('')}</div><b class="res-n">${r.max - used}/${r.max}</b></div>`; }).join('');
-  if (res) h += `<div class="res-grid">${res}</div>`;
-  // ячейки
+  // ячейки (классовые ресурсы — в секции «Бой», resHTML)
   let slots = '';
   for (let lv = 1; lv <= 9; lv++) {
     const tot = int(pc.slots[lv]); if (!tot) continue;
@@ -4492,7 +4552,8 @@ function sheetHTML(pc) {
   const anchors = [['s-hp', '❤', 'Хиты'], ['s-combat', '⚔', 'Бой'], pc.hasSpells && ['s-spells', '✨', 'Магия'], ['s-abil', '💪', 'Навыки'], ['s-conds', '🌀', 'Состояния'], ['s-money', '💰', 'Деньги'], ['s-items', '🎒', 'Вещи'], pc.cards.length && ['s-cards', '📋', 'Черты'], ['s-bio', '📖', 'Био']].filter(Boolean);
   return `<div class="sheet">
     <div data-sec="hdr">${SEC.hdr(pc)}</div>
-    <nav class="anchors">${anchors.map(([id, ic, l]) => `<button data-act="anchor" data-to="${id}">${ic} ${l}</button>`).join('')}</nav>
+    <div class="sheet-bar"><div data-sec="vitals">${SEC.vitals(pc)}</div>
+      <nav class="anchors">${anchors.map(([id, ic, l]) => `<button data-act="anchor" data-to="${id}">${ic} ${l}</button>`).join('')}</nav></div>
     <div data-sec="pills">${SEC.pills(pc)}</div>
     <div class="sheet-cols">
       <div class="sheet-col">
@@ -4514,6 +4575,8 @@ function sheetHTML(pc) {
 function sheetRefresh(...names) {
   const pc = activePC(); const root = $('#view .sheet'); if (!pc || !root) return;
   if (!names.length) { $('#view').innerHTML = `<div class="page">${sheetHTML(pc)}</div>`; autosizeAll($('#view')); return; }
+  // полоса хитов зависит от хитов, КБ и концентрации — обновляется вместе с ними
+  if (!names.includes('vitals') && names.some(n => n === 'hp' || n === 'pills' || n === 'spells')) names.push('vitals');
   names.forEach(n => {
     const el = $(`[data-sec="${n}"]`, root); if (!el) return;
     const html = n.startsWith('pins-') ? SEC.pins(pc, n.slice(5)) : SEC[n](pc);
@@ -4539,7 +4602,22 @@ function pcHeal(pc, n) { const old = pc.hp.cur; if (pc.hp.cur === 0 && n > 0) pc
 ACT.pcHp = el => pcDo(pc => { const d = int(el.dataset.d); d < 0 ? pcDamage(pc, -d) : pcHeal(pc, d); }, 'hp');
 ACT.pcHpDmg = () => { const v = Math.abs(int($('#pc-hpv')?.value)); if (v) pcDo(pc => pcDamage(pc, v), 'hp'); };
 ACT.pcHpHeal = () => { const v = Math.abs(int($('#pc-hpv')?.value)); if (v) pcDo(pc => pcHeal(pc, v), 'hp'); };
-IN.pcTemp = el => { const pc = activePC(); pc.hp.temp = Math.max(0, int(el.value)); savePCSoon(); };
+IN.pcTemp = el => { const pc = activePC(); pc.hp.temp = Math.max(0, int(el.value)); savePCSoon(); sheetRefresh('vitals'); };
+/* ── Быстрые хиты: окно из закреплённой полосы, чтобы не листать к секции «Хиты» посреди боя ── */
+function hpqBody(pc) {
+  const { cur, max, temp } = pc.hp, pct = clamp(cur / Math.max(1, max) * 100, 0, 100);
+  return `<div class="hp-row"><span class="hp-cur" style="color:${hpColor(pct)}">${cur}</span><span class="hp-max">/ ${max} HP</span>${temp ? `<span class="chip">+${temp} врем.</span>` : ''}</div>
+    <div class="hp-bar"><div style="width:${pct}%;background:${hpColor(pct)}"></div></div>
+    <div class="row mt"><input type="number" id="pcq-v" placeholder="Сколько?" inputmode="numeric" class="grow" data-enter="pcQHpDmg"><button class="btn danger" data-act="pcQHpDmg">Урон</button><button class="btn good" data-act="pcQHpHeal">Лечение</button></div>
+    <div class="hp-btns mt">${[-1, -5, -10].map(d => `<button class="hpb dmg" data-act="pcQHp" data-d="${d}">${d}</button>`).join('')}${[1, 5, 10].map(d => `<button class="hpb heal" data-act="pcQHp" data-d="${d}">+${d}</button>`).join('')}</div>
+    ${cur === 0 ? `<div class="note warn mt">☠ Без сознания. Спасброски от смерти — в секции «Хиты». <button class="btn xs" data-act="pcQHpDS">К спасброскам</button></div>` : ''}`;
+}
+function hpqDo(fn) { const pc = activePC(); if (!pc) return; fn(pc); savePC(pc); sheetRefresh('hp'); const b = $('#hpq'); if (b) b.innerHTML = hpqBody(pc); }
+ACT.pcHpQuick = () => { const pc = activePC(); if (pc) openModal({ title: '❤ Хиты', size: 'sm', body: `<div id="hpq">${hpqBody(pc)}</div>` }); };
+ACT.pcQHp = el => hpqDo(pc => { const d = int(el.dataset.d); d < 0 ? pcDamage(pc, -d) : pcHeal(pc, d); });
+ACT.pcQHpDmg = () => { const v = Math.abs(int($('#pcq-v')?.value)); if (v) hpqDo(pc => pcDamage(pc, v)); };
+ACT.pcQHpHeal = () => { const v = Math.abs(int($('#pcq-v')?.value)); if (v) hpqDo(pc => pcHeal(pc, v)); };
+ACT.pcQHpDS = () => { closeModal(); ACT.anchor({ dataset: { to: 's-hp' } }); };
 ACT.pcDS = el => pcDo(pc => { const t = el.dataset.t, i = int(el.dataset.i); pc.ds[t] = pc.ds[t] === i + 1 ? i : i + 1; }, 'hp');
 ACT.pcDSRoll = () => pcDo(pc => {
   const d = roll(20);
@@ -4579,7 +4657,9 @@ ACT.pcTab = el => pcDo(pc => { pc.ui.tab = el.dataset.t; }, 'skills');
 ACT.pcSpellsFold = (el, e) => { if (e.target.closest('button[data-act="pcPrep"]')) return; pcDo(pc => { pc.ui.spells = !pc.ui.spells; }, 'spells'); };
 ACT.pcSpellOpen = el => pcDo(pc => { const k = 'sp' + el.dataset.i; pc.ui[k] = !pc.ui[k]; }, 'spells');
 ACT.pcSlot = el => pcDo(pc => { const lv = el.dataset.lv; pc.usedSlots[lv] = pipToggle(pc, 's' + lv, int(pc.usedSlots[lv]), int(pc.slots[lv]), int(el.dataset.i)); }, 'spells');
-ACT.pcRes = el => pcDo(pc => { const r = el.dataset.r; pc.usedRes[r] = pipToggle(pc, 'r' + r, int(pc.usedRes[r]), Math.min(int(pc.resources[r]?.max), 30), int(el.dataset.i)); }, 'spells');
+ACT.pcRes = el => pcDo(pc => { const r = el.dataset.r; pc.usedRes[r] = pipToggle(pc, 'r' + r, int(pc.usedRes[r]), Math.min(int(pc.resources[r]?.max), 30), int(el.dataset.i)); }, 'combat');
+/** Счётчик большого ресурса: data-d > 0 — потратить, < 0 — вернуть. Главное — usedRes, кружки (pipMap) подстроятся сами */
+ACT.pcResStep = el => pcDo(pc => { const r = el.dataset.r, max = int(pc.resources[r]?.max); pc.usedRes[r] = clamp(int(pc.usedRes[r]) + int(el.dataset.d), 0, max); }, 'combat');
 ACT.pcCast = el => pcDo(pc => {
   const s = pc.spells[int(el.dataset.i)], lv = int(el.dataset.lv);
   if (lv > 0) { if (int(pc.slots[lv]) - int(pc.usedSlots[lv]) <= 0) return toast('🔒 Нет ячеек'); pc.usedSlots[lv] = int(pc.usedSlots[lv]) + 1; }
@@ -4664,14 +4744,15 @@ VIEWS.sheet = {
     el.innerHTML = `<div class="page">${sheetHTML(pc)}</div>`;
     autosizeAll(el);
   },
-  title2: () => activePC()?.name,
+  // имя уже крупно в карточке персонажа — в шапке не дублируем
   actions() {
     const pc = activePC(); if (!pc) return [];
     return [
       { icon: '📝', label: 'Редактор', act: 'go', v: 'creator' },
       { icon: '🎒', label: 'Инвентарь', act: 'go', v: 'inv', phoneHide: true },
       { icon: '📤', label: 'Поделиться', act: 'pcShare' },
-      { menu: [{ icon: '⬆', label: `Повысить уровень (${pc.level} → ${Math.min(20, pc.level + 1)})`, fn: () => ACT.levelUp() },
+      { menu: [{ hd: 'Отдых' }, { icon: '😴', label: 'Короткий отдых', fn: () => ACT.pcShortRest() }, { icon: '🌙', label: 'Длинный отдых', fn: () => ACT.pcLongRest() },
+        { hd: 'Персонаж' }, { icon: '⬆', label: `Повысить уровень (${pc.level} → ${Math.min(20, pc.level + 1)})`, fn: () => ACT.levelUp() },
         pc.hasSpells && { icon: '📚', label: 'Заклинания класса (ttg.club)', fn: () => ACT.classSpells() },
         { icon: '🛡', label: 'КБ по надетому', fn: () => { pcGearSync(pc); savePC(pc); sheetRefresh(); toast(`🛡 КБ ${pc.ac}`, 'ok'); } },
         { sep: 1 },
@@ -5350,10 +5431,20 @@ function battle() { if (!BT) BT = normBattle(STORE.get('battle_cur') || newBattl
 const btSave = debounce(() => STORE.set('battle_cur', BT), 250);
 function btSaveNow() { STORE.set('battle_cur', battle()); }
 const cFind = u => battle().list.find(c => c.uid === u);
-function btSort() { battle().list.sort((a, b) => (+b.initiative || 0) - (+a.initiative || 0)); }
+function btSort() {
+  const b = battle(); b.list.sort((x, y) => (+y.initiative || 0) - (+x.initiative || 0));
+  if (!b.list.some(c => c.actedThisRound)) b.turn = null; // раунд ещё не начался — ход у старшей инициативы
+}
 function nextTag() { const n = battle().list.map(c => +c.tag).filter(Number.isFinite); return (n.length ? Math.max(...n) : 0) + 1; }
 function battleAddNPC(npc, side) { const c = npcToCombatant(npc, nextTag()); if (side) c.align = side; battle().list.push(c); btSort(); btSaveNow(); trkRefresh(); return c; }
 function setBattle(b) { BT = normBattle(b); btSort(); btSaveNow(); trkRefresh(); }
+/** Чей сейчас ход. Указатель закрепляется за участником, чтобы его же действие («ходил») не перекидывало ход раньше времени */
+const btCanAct = c => c.currentHp > 0 || c.align === 'player';
+function btCurTurn() {
+  const b = battle(); let c = b.turn && b.list.find(x => x.uid === b.turn);
+  if (!c) { c = b.list.find(x => !x.actedThisRound && btCanAct(x)) || null; b.turn = c ? c.uid : null; }
+  return c;
+}
 const isAvail = a => !(a._limitStates || []).some(l => (l.type === 'charges' && l.remaining <= 0) || (l.type === 'cooldown' && l.cdRemaining > 0));
 
 /* ── Рендер ── */
@@ -5390,8 +5481,9 @@ CS.custom = c => c.customCards.length ? c.customCards.map((x, i) => `<div class=
 function cardHTML(c) {
   const al = ALIGN[c.align] || ALIGN.neutral;
   const body = (c.sectionOrder || SECTION_ORDER).map(k => { const h = CS[k] ? CS[k](c) : ''; return h ? `<div class="sblock" data-drag-src data-sec="${k}" data-u="${c.uid}"><span class="grip" data-grip="sec" title="Перетащить секцию «${SEC_NAMES[k]}»">⠿</span><div class="sbody">${h}</div></div>` : ''; }).join('');
-  return `<div class="nc al-${c.align} ${c.collapsed ? 'col' : ''} ${c.actedThisRound ? 'acted' : ''} ${c.currentHp <= 0 ? 'down' : ''}" id="nc-${c.uid}" style="--al:${al.color}">
-    <div class="nc-h"><button class="nc-tag" data-act="btTag" data-u="${c.uid}" title="Сменить метку">#${esc(c.tag)}</button><b class="nc-name ellip">${esc(c.name)}</b>
+  const turn = battle().turn === c.uid;
+  return `<div class="nc al-${c.align} ${c.collapsed ? 'col' : ''} ${c.actedThisRound ? 'acted' : ''} ${c.currentHp <= 0 ? 'down' : ''} ${turn ? 'turn' : ''}" id="nc-${c.uid}" style="--al:${al.color}">
+    <div class="nc-h"><button class="nc-tag" data-act="btTag" data-u="${c.uid}" title="Сменить метку">#${esc(c.tag)}</button>${turn ? '<span class="nc-turnmk" title="Сейчас ходит">▶</span>' : ''}<b class="nc-name ellip">${esc(c.name)}</b>
       <label class="nc-acted" title="Уже ходил в этом раунде"><input type="checkbox" data-ch="btActed" data-u="${c.uid}" ${c.actedThisRound ? 'checked' : ''}><span>ходил</span></label>
       <label class="nc-init" title="Инициатива">И<input type="number" value="${c.initiative}" data-ch="btInitSet" data-u="${c.uid}" inputmode="numeric"></label>
       <button class="nc-btn" data-act="btMenu" data-u="${c.uid}">⋯</button><button class="nc-btn" data-act="btFold" data-u="${c.uid}">${c.collapsed ? '▸' : '▾'}</button></div>
@@ -5399,21 +5491,28 @@ function cardHTML(c) {
 }
 function stripHTML() {
   const b = battle(); if (!b.list.length) return '';
-  return b.list.map(c => `<button class="ini al-${c.align} ${c.actedThisRound ? 'done' : ''} ${c.currentHp <= 0 ? 'down' : ''}" data-act="btJump" data-u="${c.uid}" style="--al:${(ALIGN[c.align] || ALIGN.neutral).color}">
+  btCurTurn();
+  return b.list.map(c => `<button class="ini al-${c.align} ${c.actedThisRound ? 'done' : ''} ${c.currentHp <= 0 ? 'down' : ''} ${b.turn === c.uid ? 'turn' : ''}" data-act="btJump" data-u="${c.uid}" style="--al:${(ALIGN[c.align] || ALIGN.neutral).color}">
     <b>${c.initiative}</b><span class="ellip">#${esc(c.tag)} ${esc(c.name)}</span><i style="width:${clamp(c.currentHp / Math.max(1, c.maxHp) * 100, 0, 100)}%"></i></button>`).join('');
 }
 function trkHTML({ embedded = false } = {}) {
-  const b = battle();
+  const b = battle(), cur = b.list.length ? btCurTurn() : null;
+  // главная кнопка — следующий ход; когда походили все — новый раунд. Раунд можно закончить и раньше (⏭)
+  const main = cur ? `<button class="btn pri trk-turn" data-act="btTurnDone" title="Отметить ход #${esc(cur.tag)} ${esc(cur.name)} и перейти к следующему">✓ <span class="tl">Ход сделан</span></button>
+      <button class="btn icon" data-act="btNext" title="Следующий раунд: вернуть действия всем">⏭</button>`
+    : `<button class="btn pri trk-turn" data-act="btNext">▶ <span class="tl">Раунд ${b.round + 1}</span></button>`;
   return `<div class="trk ${embedded ? 'emb' : ''}">
+    <div class="trk-head">
     <div class="trk-bar">
       ${embedded ? '<button class="btn sm" data-act="gmCenter" data-c="scene">‹ Сцена</button>' : ''}
       <div class="round-box"><small>раунд</small><b id="bt-round">${b.round}</b></div>
-      <button class="btn pri" data-act="btNext">▶ <span class="tl">След. раунд</span></button><button class="btn icon" data-act="btResetRound" title="Сбросить раунды, кулдауны и состояния">↺</button>
-      <input class="trk-name grow" value="${esc(b.name)}" placeholder="Название боя" data-in="btName">
+      ${main}
       <button class="btn" data-act="btAdd">＋ <span class="tl">Участник</span></button><button class="btn icon" data-act="btInit" title="Авто-инициатива: d20 + ЛОВ">🎲</button>
-      <button class="btn icon ${STORE.get('trk_notes') ? 'on' : ''}" data-act="btNotes" title="Заметки боя">📝</button>${embedded ? '<button class="btn icon" data-act="btMenuMain">⋯</button>' : ''}
+      <button class="btn icon ${STORE.get('trk_notes') ? 'on' : ''}" data-act="btNotes" title="Заметки боя">📝</button>
+      <button class="btn icon" data-act="btResetRound" title="Сбросить раунды, кулдауны и состояния">↺</button>
+      <input class="trk-name grow" value="${esc(b.name)}" placeholder="Название боя" data-in="btName">${embedded ? '<button class="btn icon" data-act="btMenuMain">⋯</button>' : ''}
     </div>
-    <div class="trk-strip" id="bt-strip">${stripHTML()}</div>
+    <div class="trk-strip" id="bt-strip">${stripHTML()}</div></div>
     ${STORE.get('trk_notes') ? notesHTML() : ''}
     <div class="trk-grid" id="bt-grid">${b.list.length ? b.list.map(cardHTML).join('') : `<div class="empty trk-empty"><span class="big">⚔</span>В бою никого.<br>Нажми <b>＋ Участник</b> — NPC из библиотеки, быстрый противник или игрок.</div>`}</div>
   </div>`;
@@ -5482,8 +5581,15 @@ DRAG.sec = {
 };
 
 /* ── Раунды и общий бой ── */
+ACT.btTurnDone = () => {
+  const b = battle(), cur = btCurTurn(); if (!cur) return ACT.btNext();
+  cur.actedThisRound = true; const i = b.list.indexOf(cur), free = c => !c.actedThisRound && btCanAct(c);
+  const nx = b.list.slice(i + 1).find(free) || b.list.find(free);
+  b.turn = nx ? nx.uid : null; btSaveNow(); trkRefresh();
+  if (nx) { ACT.btJump({ dataset: { u: nx.uid } }); toast(`▶ Ход: #${nx.tag} ${nx.name}`); } else toast('Все походили. Дальше новый раунд');
+};
 ACT.btNext = () => {
-  const b = battle(); b.round++;
+  const b = battle(); b.round++; b.turn = null;
   b.list.forEach(c => {
     c.actionsLeft = c.maxActions; c.bonusLeft = c.maxBonus; c.actedThisRound = false;
     [...c.actions, ...c.bonusActions].forEach(a => { a.usedThisRound = false; (a._limitStates || []).forEach(l => { if (l.type === 'cooldown' && l.cdRemaining > 0) l.cdRemaining--; }); });
@@ -5493,7 +5599,7 @@ ACT.btNext = () => {
 };
 ACT.btResetRound = async () => {
   if (!await confirmBox('Сбросить счётчик раундов до 1? Состояния, кулдауны, заряды «за бой» и отметки «ходил» сбросятся.', { ok: 'Сбросить' })) return;
-  const b = battle(); b.round = 1;
+  const b = battle(); b.round = 1; b.turn = null;
   b.list.forEach(c => { c.actionsLeft = c.maxActions; c.bonusLeft = c.maxBonus; c.actedThisRound = false; c.conditions = [];
     [...c.actions, ...c.bonusActions].forEach(a => { a.usedThisRound = false; (a._limitStates || []).forEach(l => { if (l.type === 'charges' && l.period !== 'day') l.remaining = l.amount; if (l.type === 'cooldown') l.cdRemaining = 0; }); }); });
   btSaveNow(); trkRefresh();
