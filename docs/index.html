@@ -1989,7 +1989,7 @@ html[data-theme="astral"] .tab.on{color:var(--gold2);}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '9.9.0';
+const APP_VERSION = '9.9.1';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -7451,14 +7451,14 @@ VIEWS.saves = {
 const FONTS = [{ id: 'philosopher', css: 'Philosopher', label: 'Фэнтези (Philosopher)' }, { id: 'jost', css: 'Jost', label: 'Тонкий (Jost)' }, { id: 'inter', css: 'Inter', label: 'Обычный (Inter)' }];
 /** Шрифт запоминается для каждой темы отдельно (SETTINGS.fontBy); у темы может быть свой шрифт по умолчанию (THEMES[].font) */
 const curTheme = () => THEMES.find(x => x.id === SETTINGS.theme)?.id || 'astral'; // по умолчанию — «Астральный чертог»
-function curFont() { const f = SETTINGS.fontBy?.[curTheme()] || SETTINGS.font; return FONTS.some(x => x.id === f) ? f : 'philosopher'; } // Rubik убран → Philosopher
+function curFont() { const t = curTheme(), f = SETTINGS.fontBy?.[t] || THEMES.find(x => x.id === t).font; return FONTS.some(x => x.id === f) ? f : 'philosopher'; } // свой шрифт темы; убранный Rubik → Philosopher
 function applyFont() { document.documentElement.dataset.font = curFont(); }
 const THEMES = [
-  { id: 'astral', label: 'Астральный чертог', desc: 'кость и золото, ромбы рун, астролябия', bg: 'radial-gradient(circle at 50% 0,#3a2470,#121019 70%)', sw: ['#cbbfa6', '#47e1e6', '#9a7cf6'] },
-  { id: 'forge', label: 'Ночная кузня', desc: 'ночь, медь и руны в линейных рамках', bg: 'linear-gradient(160deg,#0b1020,#141223 60%,#3a2210)', sw: ['#f6cf86', '#b8743f', '#0b1020'] },
-  { id: 'gold', label: 'Врата Балдура', desc: 'тёплое золото и бирюза', bg: 'linear-gradient(135deg,#221d17,#0d0b09)', sw: ['#c8a86b', '#5fa8b8', '#ebe0c8'] },
-  { id: 'crimson', label: 'Багровые сумерки', desc: 'воронёная сталь, кровавая луна, розы', bg: 'linear-gradient(135deg,#1c1524,#09080b)', sw: ['#c2293c', '#6e5d82', '#e6deec'] },
-  { id: 'light', label: 'Солнечная баллада', desc: 'пергамент, золото, лазурь, маки', bg: 'linear-gradient(135deg,#6b8fae,#8a7a4a)', sw: ['#f2e9d6', '#3f86c4', '#c4a462'] },
+  { id: 'astral', font: 'jost', label: 'Астральный чертог', desc: 'кость и золото, ромбы рун, астролябия', bg: 'radial-gradient(circle at 50% 0,#3a2470,#121019 70%)', sw: ['#cbbfa6', '#47e1e6', '#9a7cf6'] },
+  { id: 'forge', font: 'philosopher', label: 'Ночная кузня', desc: 'ночь, медь и руны в линейных рамках', bg: 'linear-gradient(160deg,#0b1020,#141223 60%,#3a2210)', sw: ['#f6cf86', '#b8743f', '#0b1020'] },
+  { id: 'gold', font: 'philosopher', label: 'Врата Балдура', desc: 'тёплое золото и бирюза', bg: 'linear-gradient(135deg,#221d17,#0d0b09)', sw: ['#c8a86b', '#5fa8b8', '#ebe0c8'] },
+  { id: 'crimson', font: 'jost', label: 'Багровые сумерки', desc: 'воронёная сталь, кровавая луна, розы', bg: 'linear-gradient(135deg,#1c1524,#09080b)', sw: ['#c2293c', '#6e5d82', '#e6deec'] },
+  { id: 'light', font: 'philosopher', label: 'Солнечная баллада', desc: 'пергамент, золото, лазурь, маки', bg: 'linear-gradient(135deg,#6b8fae,#8a7a4a)', sw: ['#f2e9d6', '#3f86c4', '#c4a462'] },
 ];
 /** Тема: атрибут на <html> + цвет шапки браузера/Telegram под фон темы */
 function applyTheme() {
@@ -7681,7 +7681,7 @@ VIEWS.home = {
         ${pc ? `<button class="hexbtn pri" data-act="go" data-v="sheet">Продолжить</button>` : `<button class="hexbtn pri" data-act="charWizard">🧙 Мастер создания персонажа</button><button class="hexbtn" data-act="pcNew">✨ Пустой лист</button>`}
         ${pc ? `<button class="hexbtn" data-act="go" data-v="inv">🎒 Инвентарь</button>` : ''}
         ${pcs.length > (pc ? 1 : 0) ? `<button class="hexbtn" data-act="go" data-v="saves">📂 Мои персонажи <small>${pcs.length}</small></button>` : ''}
-        ${pc ? `<button class="hexbtn" data-act="newViaWizard">🧙 Новый персонаж (мастер)</button>` : ''}
+        ${pc ? `<button class="hexbtn" data-act="newViaWizard">🧙 Новый персонаж</button>` : ''}
         <button class="hexbtn" data-act="shareImport">📥 Вставить код</button>
         ${m ? `<div class="orn"><i>◆</i> Мастерская <i>◆</i></div><div class="home-gm">
           ${['gm', 'tracker', 'scenes', 'npc', 'loot', 'exped', 'wiki'].map(id => { const n = NAV.find(x => x.id === id); return `<button class="gm-tile" data-act="go" data-v="${id}"><span>${n.icon}</span>${n.label}</button>`; }).join('')}
