@@ -437,9 +437,15 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:grabbing;}
 
 /* Якоря */
 /* Закреплённая полоса листа: хиты + КБ (всегда на виду) и якоря секций */
-.sheet-bar{position:sticky;top:var(--top-h);z-index:40;display:flex;align-items:center;gap:8px;padding:8px 2px;margin:0 -2px 10px;
+/* сама полоса — нулевой высоты (место в потоке не занимает); содержимое .sb-in выезжает из-под шапки, когда «Хиты» скрылись (sheetBarSync) */
+.sheet-bar{position:sticky;top:var(--top-h);z-index:40;height:0;margin:0 -2px;
+
   background:linear-gradient(180deg,rgba(11,10,9,.97) 70%,rgba(11,10,9,0));}
-.sheet-bar>[data-sec="vitals"]{flex-shrink:0;}
+.sb-in{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:8px;padding:8px 2px 12px;background:inherit;
+  opacity:0;visibility:hidden;transform:translateY(-10px);transition:opacity .18s ease,transform .18s ease,visibility 0s .18s;}
+.sheet-bar.show .sb-in{opacity:1;visibility:visible;transform:none;transition:opacity .18s ease,transform .2s cubic-bezier(.2,1.2,.4,1),visibility 0s;}
+@media (prefers-reduced-motion:reduce){ .sb-in{transition:none;} }
+.sb-in>[data-sec="vitals"]{flex-shrink:0;}
 .anchors{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:0;margin:0;min-width:0;flex:1;}
 .vitals{display:grid;grid-template-columns:auto auto;grid-template-rows:auto 4px;column-gap:10px;row-gap:4px;align-items:center;
   padding:5px 12px 6px;border:1px solid var(--line3);border-radius:8px;background:var(--bg1,#14110e);min-height:44px;text-align:left;}
@@ -2016,6 +2022,10 @@ html[data-theme="astral"] .tab.on{color:var(--gold2);}
    Цвета — токены тем (--surface, --glow, --line-in, --fr-panel-gold…), своих цветов нет.
 ═══════════════════════════════════════════════════════ */
 
+/* Telegram во весь экран: полоса листа — под шапкой, которая сдвинута на safe-t */
+html.in-tg .sheet-bar{top:calc(var(--top-h) + var(--safe-t,0px));}
+@media (max-width:639px){ html.in-tg .sheet-bar{top:calc(52px + var(--safe-t,0px));} }
+
 /* ── Свиток броска ── */
 #roll-root{position:fixed;z-index:900;right:18px;bottom:18px;width:min(380px,calc(100vw - 24px));pointer-events:none;}
 @media (max-width:639px){ #roll-root{left:8px;right:8px;width:auto;bottom:calc(var(--tab-h) + var(--safe-b) + 6px);} }
@@ -2094,6 +2104,12 @@ body:has(#roll-root .dk-card) #toast-root{bottom:calc(24px + 190px);}
 .dk-pick .dk-die{width:36px;height:36px;}
 .dk-pick .dk-die b{font-size:13px;}
 .dk-pick small{font-family:var(--f-title);font-weight:700;font-size:16px;color:var(--gold2);}
+.dk-pick small{color:var(--tx2);}
+/* выбранный кубик — золотая двойная нить и свечение; бросает только кнопка «Бросить» */
+.dk-pick.on{border-color:var(--gold);box-shadow:inset 0 0 0 3px var(--bg2),inset 0 0 0 4px var(--gold3),0 0 14px -2px var(--glow);}
+.dk-pick.on small{color:var(--gold2);}
+.dk-pick.on .dk-die svg{stroke:var(--gold2);filter:drop-shadow(0 0 5px var(--glow));}
+.dk-go{margin-top:14px;min-height:48px;font-size:16px;}
 .dk-opts{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:12px;}
 .dk-step{display:flex;align-items:center;gap:6px;flex:1 1 150px;}
 .dk-step .lbl{flex:1;}
@@ -2110,7 +2126,7 @@ body:has(#roll-root .dk-card) #toast-root{bottom:calc(24px + 190px);}
 .dk-le.crit b{color:var(--gold2);} .dk-le.fail b{color:var(--red2);}
 
 /* ── Лист: действия хода в закреплённой полосе ── */
-.sheet-bar>[data-sec="actmini"]{flex-shrink:0;}
+.sb-in>[data-sec="actmini"]{flex-shrink:0;}
 .act-mini{display:flex;gap:4px;}
 .am{width:40px;height:44px;display:grid;place-items:center;border:1px solid var(--line2);border-radius:2px;background:var(--bg1);
   box-shadow:inset 0 0 0 2px var(--bg1),inset 0 0 0 3px var(--line-in);transition:border-color .15s;}
@@ -2196,7 +2212,7 @@ button.pill{display:block;width:100%;font:inherit;color:inherit;}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '11.0.0';
+const APP_VERSION = '11.0.1';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -2916,7 +2932,7 @@ CH.setFx = el => { SETTINGS.fx = el.checked; saveSettings(); FX.apply(); };
    (сам крит не считается автоматически — решает игрок). История — в памяти вкладки, не в STORE.
    Механику бросков не меняет: rollToast и урон считают то же, что и раньше, только показывают иначе.
 ═══════════════════════════════════════════════════════ */
-const DK = { last: null, log: [], timer: 0, cnt: 1, mod: 0 };
+const DK = { last: null, log: [], timer: 0, cnt: 1, mod: 0, sel: 20, f: '' };
 const DK_LOG_MAX = 30;
 const DK_MODE = { adv: 'преимущество', dis: 'помеха' };
 
@@ -2998,11 +3014,20 @@ ACT.dkCritRoll = () => {
 function dkTrayBody() {
   return `<div class="dk-tray">
     <div class="dk-res" id="dk-res">${dkResHTML()}</div>
-    <div class="dk-dierow">${[4, 6, 8, 10, 12, 20, 100].map(s => `<button class="dk-pick" data-act="dkRollDie" data-s="${s}">${dkDie(s === 100 ? 10 : s, s === 100 ? '%' : '')}<small>d${s}</small></button>`).join('')}</div>
+    <div class="dk-dierow" role="radiogroup" aria-label="Кубик">${[4, 6, 8, 10, 12, 20, 100].map(s => `<button class="dk-pick ${DK.sel === s ? 'on' : ''}" data-act="dkPick" data-s="${s}" role="radio" aria-checked="${DK.sel === s}">${dkDie(s === 100 ? 10 : s, s === 100 ? '%' : '')}<small>d${s}</small></button>`).join('')}</div>
     <div class="dk-opts"><div class="dk-step"><span class="lbl">Сколько</span><button data-act="dkCnt" data-d="-1" aria-label="Меньше">−</button><b id="dk-cnt">${DK.cnt}</b><button data-act="dkCnt" data-d="1" aria-label="Больше">+</button></div>
       <div class="dk-step"><span class="lbl">Модиф.</span><button data-act="dkMod" data-d="-1" aria-label="Меньше">−</button><b id="dk-mod">${sgn(DK.mod)}</b><button data-act="dkMod" data-d="1" aria-label="Больше">+</button></div></div>
-    <div class="row mt"><input id="dk-f" class="grow" placeholder="Формула: 2d6+3, 1d8+1d4" data-enter="dkRollFormula" autocomplete="off"><button class="btn pri" data-act="dkRollFormula">🎲 Бросить</button></div>
+    <input id="dk-f" class="mt" placeholder="…или своя формула: 2d6+3, 1d8+1d4" data-in="dkF" data-enter="dkRollGo" autocomplete="off" value="${esc(DK.f)}">
+    <button class="btn pri block dk-go" id="dk-go" data-act="dkRollGo">${dkGoLabel()}</button>
     <div class="spc-group">История</div><div id="dk-log" class="dk-log">${dkLogHTML()}</div></div>`;
+}
+/** Что бросит главная кнопка: своя формула, если вписана, иначе выбранный кубик с количеством и модификатором */
+const dkPlan = () => DK.f.trim() || `${DK.cnt > 1 ? DK.cnt : ''}d${DK.sel}${DK.mod ? sgn(DK.mod) : ''}`;
+const dkGoLabel = () => `🎲 Бросить ${esc(dkPlan())}`;
+function dkTraySync() {
+  $$('.dk-pick').forEach(b => { const on = !DK.f.trim() && int(b.dataset.s) === DK.sel; b.classList.toggle('on', on); b.setAttribute('aria-checked', on); });
+  const c = $('#dk-cnt'); if (c) c.textContent = DK.cnt; const m = $('#dk-mod'); if (m) m.textContent = sgn(DK.mod);
+  const g = $('#dk-go'); if (g) g.innerHTML = dkGoLabel();
 }
 function dkLogHTML() {
   return DK.log.length ? DK.log.map(r => `<div class="dk-le ${r.crit ? 'crit' : ''} ${r.fail ? 'fail' : ''}"><small>${new Date(r.at).toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}</small><span class="grow">${esc(r.label)}${r.mode ? ` <i>${DK_MODE[r.mode]}</i>` : ''}<em>${esc(r.sub || '')}</em></span><b>${r.total}</b></div>`).join('')
@@ -3010,15 +3035,16 @@ function dkLogHTML() {
 }
 /** Итог последнего броска — крупно наверху окна (свиток под окном не виден) */
 function dkResHTML() {
-  const r = DK.last; if (!r) return '<span class="muted small">Выбери кубик — итог появится здесь</span>';
+  const r = DK.last; if (!r) return '<span class="muted small">Выбери кубик, настрой и нажми «Бросить»</span>';
   return `<b class="${r.crit ? 'crit' : ''} ${r.fail ? 'fail' : ''}">${r.total}</b><span class="grow">${esc(r.label)}${r.mode ? ` <i>${DK_MODE[r.mode]}</i>` : ''}<em>${esc(r.sub || '')}</em></span>`;
 }
 function dkLogRefresh() { const l = $('#dk-log'); if (l) l.innerHTML = dkLogHTML(); const s = $('#dk-res'); if (s) { s.innerHTML = dkResHTML(); if (!FX.off()) { s.classList.remove('dk-in'); void s.offsetWidth; s.classList.add('dk-in'); } } }
 ACT.dkTray = () => { if ($('#dk-log')) return; openModal({ title: '🎲 Кубики', size: 'sm', body: dkTrayBody() }); };
-ACT.dkCnt = el => { DK.cnt = clamp(DK.cnt + int(el.dataset.d), 1, 30); const b = $('#dk-cnt'); if (b) b.textContent = DK.cnt; };
-ACT.dkMod = el => { DK.mod = clamp(DK.mod + int(el.dataset.d), -30, 30); const b = $('#dk-mod'); if (b) b.textContent = sgn(DK.mod); };
-ACT.dkRollDie = el => { const s = int(el.dataset.s); dkFormula(`${DK.cnt > 1 ? DK.cnt : ''}d${s}${DK.mod ? sgn(DK.mod) : ''}`, `${DK.cnt}d${s}${DK.mod ? sgn(DK.mod) : ''}`, { kind: 'free' }); };
-ACT.dkRollFormula = () => { const f = ($('#dk-f')?.value || '').trim(); if (f) dkFormula(f, f, { kind: 'free' }); };
+ACT.dkPick = el => { DK.sel = int(el.dataset.s, 20); DK.f = ''; const f = $('#dk-f'); if (f) f.value = ''; dkTraySync(); };
+ACT.dkCnt = el => { DK.cnt = clamp(DK.cnt + int(el.dataset.d), 1, 30); DK.f = ''; const f = $('#dk-f'); if (f) f.value = ''; dkTraySync(); };
+ACT.dkMod = el => { DK.mod = clamp(DK.mod + int(el.dataset.d), -30, 30); DK.f = ''; const f = $('#dk-f'); if (f) f.value = ''; dkTraySync(); };
+IN.dkF = el => { DK.f = el.value; dkTraySync(); };
+ACT.dkRollGo = () => { const f = DK.f.trim() || `${DK.cnt}d${DK.sel}${DK.mod ? sgn(DK.mod) : ''}`; dkFormula(dkPlan(), f, { kind: 'free' }); };
 
 // ── data.js ──
 /* ═══════════════════════════════════════════════════════
@@ -4826,8 +4852,8 @@ function sheetHTML(pc) {
   const anchors = [['s-hp', '❤', 'Хиты'], ['s-combat', '⚔', 'Бой'], pc.hasSpells && ['s-spells', '✨', 'Магия'], ['s-abil', '💪', 'Навыки'], ['s-conds', '🌀', 'Состояния'], ['s-money', '💰', 'Деньги'], ['s-items', '🎒', 'Вещи'], pc.cards.length && ['s-cards', '📋', 'Черты'], ['s-bio', '📖', 'Био']].filter(Boolean);
   return `<div class="sheet">
     <div data-sec="hdr">${SEC.hdr(pc)}</div>
-    <div class="sheet-bar"><div data-sec="vitals">${SEC.vitals(pc)}</div><div data-sec="actmini">${SEC.actmini(pc)}</div>
-      <nav class="anchors">${anchors.map(([id, ic, l]) => `<button data-act="anchor" data-to="${id}">${ic} ${l}</button>`).join('')}</nav></div>
+    <div class="sheet-bar"><div class="sb-in"><div data-sec="vitals">${SEC.vitals(pc)}</div><div data-sec="actmini">${SEC.actmini(pc)}</div>
+      <nav class="anchors">${anchors.map(([id, ic, l]) => `<button data-act="anchor" data-to="${id}">${ic} ${l}</button>`).join('')}</nav></div></div>
     <div data-sec="pills">${SEC.pills(pc)}</div>
     <div class="sheet-cols">
       <div class="sheet-col">
@@ -4848,7 +4874,7 @@ function sheetHTML(pc) {
 /** Перерисовать отдельные секции листа (или весь лист без аргументов) */
 function sheetRefresh(...names) {
   const pc = activePC(); const root = $('#view .sheet'); if (!pc || !root) return;
-  if (!names.length) { $('#view').innerHTML = `<div class="page">${sheetHTML(pc)}</div>`; autosizeAll($('#view')); return; }
+  if (!names.length) { $('#view').innerHTML = `<div class="page">${sheetHTML(pc)}</div>`; autosizeAll($('#view')); sheetBarSync(); return; }
   // полоса хитов зависит от хитов, КБ и концентрации — обновляется вместе с ними
   if (!names.includes('vitals') && names.some(n => n === 'hp' || n === 'pills' || n === 'spells')) names.push('vitals');
   if (!names.includes('actmini') && names.includes('combat')) names.push('actmini');
@@ -4858,6 +4884,15 @@ function sheetRefresh(...names) {
     el.innerHTML = html; autosizeAll(el);
   });
 }
+/** Быстрая полоса (хиты, КБ, действия, якоря) появляется, только когда секция «Хиты» ушла под шапку — без второго ряда сверху */
+function sheetBarSync() {
+  const bar = $('#view .sheet-bar'); if (!bar) return;
+  const ref = $('#s-hp .hp-btns') || $('#s-hp'), top = $('#top')?.getBoundingClientRect().bottom || 0;
+  const show = !!ref && ref.getBoundingClientRect().bottom < top + 4;
+  if (bar.classList.contains('show') !== show) { bar.classList.toggle('show', show); bar.querySelector('.sb-in')?.toggleAttribute('inert', !show); }
+}
+window.addEventListener('scroll', sheetBarSync, { passive: true }); // два замера — дёшево, без rAF (в скрытой вкладке он не срабатывает)
+window.addEventListener('resize', debounce(sheetBarSync, 150));
 const SHEET_ALL_PINS = ['pins-combat', 'pins-attacks', 'pins-spells', 'pins-skills', 'pins-inventory'];
 ACT.anchor = el => { const t = document.getElementById(el.dataset.to); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
 
@@ -5017,7 +5052,7 @@ VIEWS.sheet = {
       return;
     }
     el.innerHTML = `<div class="page">${sheetHTML(pc)}</div>`;
-    autosizeAll(el);
+    autosizeAll(el); setTimeout(sheetBarSync, 0);
   },
   // имя уже крупно в карточке персонажа — в шапке не дублируем
   actions() {
