@@ -2008,6 +2008,171 @@ html[data-theme="astral"] .tab.on{color:var(--gold2);}
 :root[data-theme="light"] :is(.btn.pri):not(.xs):not(.icon){border-image-source:var(--fr-btn-on);color:var(--teal3);filter:drop-shadow(0 0 7px var(--on-glow));text-shadow:var(--ts);}
 :root[data-theme="light"] .btn.pri:hover{color:var(--teal);filter:drop-shadow(0 0 12px var(--on-glow));}
 
+/* ── play.css ── */
+/* ═══════════════════════════════════════════════════════
+   v11 — ИГРОВАЯ ПОДАЧА: свиток броска, кубики, действия в закреплённой полосе листа,
+   крупные зоны нажатия для пальца (только сенсорные экраны — на ПК плотность прежняя).
+   Идёт после theme_lineart.css: задаёт только размеры и новые элементы, формы тем не трогает.
+   Цвета — токены тем (--surface, --glow, --line-in, --fr-panel-gold…), своих цветов нет.
+═══════════════════════════════════════════════════════ */
+
+/* ── Свиток броска ── */
+#roll-root{position:fixed;z-index:900;right:18px;bottom:18px;width:min(380px,calc(100vw - 24px));pointer-events:none;}
+@media (max-width:639px){ #roll-root{left:8px;right:8px;width:auto;bottom:calc(var(--tab-h) + var(--safe-b) + 6px);} }
+/* пока свиток открыт, тосты поднимаются над ним */
+body:has(#roll-root .dk-card) #toast-root{bottom:calc(24px + 190px);}
+@media (max-width:639px){ body:has(#roll-root .dk-card) #toast-root{bottom:calc(var(--tab-h) + var(--safe-b) + 200px);} }
+.dk-card{pointer-events:auto;position:relative;padding:8px 10px 10px;border:10px solid transparent;
+  border-image:var(--fr-panel-gold) 26 / 26px stretch;background:var(--surface);background-clip:padding-box;
+  box-shadow:var(--panel-shadow),0 0 50px -20px var(--glow);}
+.dk-card.crit{box-shadow:var(--panel-shadow),0 0 70px -10px var(--glow);}
+.dk-card.fail{box-shadow:var(--panel-shadow),0 0 60px -14px rgba(224,90,70,.55);}
+.dk-head{display:flex;align-items:center;gap:6px;min-height:40px;}
+.dk-lbl{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--f-title);font-weight:700;font-size:16px;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--gold2);text-shadow:var(--ts);}
+.dk-mode{flex-shrink:0;padding:2px 8px;border:1px solid currentColor;border-radius:999px;font-family:var(--f-label);font-size:12px;font-weight:700;}
+.dk-card.adv .dk-mode{color:var(--green2);} .dk-card.dis .dk-mode{color:var(--red2);}
+.dk-x{flex-shrink:0;width:40px;height:40px;display:grid;place-items:center;color:var(--tx3);font-size:16px;border-radius:2px;}
+.dk-x:hover{color:var(--gold2);background:rgba(255,255,255,.04);}
+.dk-main{display:flex;align-items:center;gap:10px;margin:2px 0;}
+.dk-dice{display:flex;flex-wrap:wrap;align-items:center;gap:6px;flex:0 1 auto;min-width:0;}
+.dk-more{font-family:var(--f-label);font-weight:700;font-size:13px;color:var(--tx3);}
+.dk-eq{margin-left:auto;font-family:var(--f-title);font-size:22px;color:var(--tx3);}
+.dk-total{min-width:62px;text-align:right;font-family:var(--f-title);font-weight:700;font-size:58px;line-height:1;color:var(--tx);
+  text-shadow:0 0 18px rgba(255,255,255,.12),var(--ts);font-variant-numeric:tabular-nums;}
+.dk-card.dmg .dk-total{color:var(--red2);}
+.dk-card.crit .dk-total{color:var(--gold2);text-shadow:0 0 24px var(--glow),var(--ts);}
+.dk-card.fail .dk-total{color:var(--red2);}
+.dk-sub{font-family:var(--f-label);font-size:13px;line-height:1.35;color:var(--tx2);overflow-wrap:anywhere;}
+.dk-flag{margin-top:6px;font-family:var(--f-label);font-weight:700;font-size:14.5px;letter-spacing:.03em;color:var(--gold2);text-shadow:0 0 10px var(--glow);}
+.dk-card.fail .dk-flag{color:var(--red2);text-shadow:none;}
+.dk-flag.note{color:var(--tx);text-shadow:none;}
+.dk-acts{display:flex;gap:6px;margin-top:8px;}
+.dk-b{flex:1 1 0;min-width:0;min-height:42px;padding:6px 6px;overflow:hidden;text-overflow:ellipsis;border:1px solid var(--line2);border-radius:2px;background:var(--bg1);
+  box-shadow:inset 0 0 0 2px var(--bg1),inset 0 0 0 3px var(--line-in);font-family:var(--f-label);font-weight:700;font-size:13.5px;color:var(--tx2);white-space:nowrap;}
+.dk-b:hover{border-color:var(--gold);color:var(--gold2);}
+.dk-b.adv{color:var(--green2);} .dk-b.dis{color:var(--red2);}
+.dk-b.crit{color:var(--gold2);border-color:var(--gold3);box-shadow:inset 0 0 0 2px var(--bg1),inset 0 0 0 3px var(--gold3),0 0 12px -4px var(--glow);}
+
+/* грань кубика */
+.dk-die{position:relative;flex-shrink:0;width:44px;height:44px;display:grid;place-items:center;}
+.dk-die svg{position:absolute;inset:0;width:100%;height:100%;fill:var(--bg1);stroke:var(--gold3);stroke-width:1.6;stroke-linejoin:round;}
+.dk-die svg .in{fill:none;stroke:var(--line3);stroke-width:1;}
+.dk-die b{position:relative;font-family:var(--f-title);font-weight:700;font-size:17px;color:var(--tx);text-shadow:0 1px 2px #000;}
+.dk-die.off{opacity:.32;}
+.dk-die.nat20 svg{stroke:var(--gold2);filter:drop-shadow(0 0 6px var(--glow));} .dk-die.nat20 b{color:var(--gold2);}
+.dk-die.nat1 svg{stroke:var(--red2);} .dk-die.nat1 b{color:var(--red2);}
+
+/* появление: кубики докатываются, итог «впечатывается»; крит — пульс свечения. Без анимаций — сразу итог */
+@media (prefers-reduced-motion:no-preference){
+  html:not(.fx-off) .dk-card.dk-in{animation:dkIn .26s cubic-bezier(.2,1.25,.4,1) both;}
+  html:not(.fx-off) .dk-in .dk-die{animation:dkRoll .5s cubic-bezier(.2,.9,.3,1.15) both;}
+  html:not(.fx-off) .dk-in .dk-die:nth-child(2){animation-delay:.06s;} html:not(.fx-off) .dk-in .dk-die:nth-child(3){animation-delay:.12s;}
+  html:not(.fx-off) .dk-in .dk-die:nth-child(n+4){animation-delay:.16s;}
+  html:not(.fx-off) .dk-in .dk-total{animation:dkStamp .34s .2s cubic-bezier(.2,1.4,.4,1) both;}
+  html:not(.fx-off) .dk-in.crit .dk-total{animation:dkStamp .34s .2s cubic-bezier(.2,1.4,.4,1) both,dkGlow 1.2s .55s ease-in-out 2;}
+  html:not(.fx-off) .dk-card.dk-out{animation:dkOut .18s ease forwards;}
+}
+@keyframes dkIn{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes dkRoll{from{opacity:0;transform:rotate(-200deg) scale(.4)}to{opacity:1;transform:rotate(0deg) scale(1)}}
+@keyframes dkStamp{from{opacity:0;transform:scale(1.7)}to{opacity:1;transform:scale(1)}}
+@keyframes dkGlow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.45)}}
+@keyframes dkOut{to{opacity:0;transform:translateY(12px) scale(.97)}}
+
+/* ── Окно «Кубики» ── */
+.dk-res{display:flex;align-items:center;gap:12px;min-height:64px;margin-bottom:12px;padding:8px 12px;border:1px solid var(--line2);border-radius:2px;background:var(--bg1);
+  box-shadow:inset 0 0 0 2px var(--bg1),inset 0 0 0 3px var(--line-in);}
+.dk-res b{min-width:56px;text-align:center;font-family:var(--f-title);font-weight:700;font-size:44px;line-height:1;color:var(--tx);font-variant-numeric:tabular-nums;}
+.dk-res b.crit{color:var(--gold2);text-shadow:0 0 18px var(--glow);} .dk-res b.fail{color:var(--red2);}
+.dk-res span{min-width:0;font-size:15px;color:var(--tx);} .dk-res i{font-style:normal;font-size:12px;color:var(--tx3);}
+.dk-res em{display:block;font-style:normal;font-family:var(--f-label);font-size:12.5px;color:var(--tx3);overflow-wrap:anywhere;}
+@media (prefers-reduced-motion:no-preference){ html:not(.fx-off) .dk-res.dk-in b{animation:dkStamp .3s cubic-bezier(.2,1.4,.4,1) both;} }
+.dk-dierow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.dk-pick{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:78px;padding:8px 2px;
+  border:1px solid var(--line2);border-radius:2px;background:var(--bg2);box-shadow:inset 0 0 0 3px var(--bg2),inset 0 0 0 4px var(--line-in);}
+.dk-pick:hover{border-color:var(--gold);box-shadow:inset 0 0 0 3px var(--bg2),inset 0 0 0 4px var(--line-in),0 0 12px -2px var(--glow);}
+.dk-pick .dk-die{width:36px;height:36px;}
+.dk-pick .dk-die b{font-size:13px;}
+.dk-pick small{font-family:var(--f-title);font-weight:700;font-size:16px;color:var(--gold2);}
+.dk-opts{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:12px;}
+.dk-step{display:flex;align-items:center;gap:6px;flex:1 1 150px;}
+.dk-step .lbl{flex:1;}
+.dk-step button{width:44px;height:44px;border:1px solid var(--line2);border-radius:2px;background:var(--bg1);
+  box-shadow:inset 0 0 0 2px var(--bg1),inset 0 0 0 3px var(--line-in);font-family:var(--f-title);font-size:20px;color:var(--gold2);}
+.dk-step b{min-width:42px;text-align:center;font-family:var(--f-title);font-size:22px;}
+.dk-log{display:flex;flex-direction:column;max-height:260px;overflow-y:auto;}
+.dk-le{display:flex;align-items:center;gap:8px;padding:6px 2px;border-bottom:1px solid var(--line);}
+.dk-le small{flex-shrink:0;width:40px;font-family:var(--f-label);font-size:12px;color:var(--tx3);}
+.dk-le span{min-width:0;font-size:14px;color:var(--tx);}
+.dk-le i{font-style:normal;font-size:12px;color:var(--tx3);}
+.dk-le em{display:block;font-style:normal;font-family:var(--f-label);font-size:12px;color:var(--tx3);overflow-wrap:anywhere;}
+.dk-le b{font-family:var(--f-title);font-size:22px;font-variant-numeric:tabular-nums;}
+.dk-le.crit b{color:var(--gold2);} .dk-le.fail b{color:var(--red2);}
+
+/* ── Лист: действия хода в закреплённой полосе ── */
+.sheet-bar>[data-sec="actmini"]{flex-shrink:0;}
+.act-mini{display:flex;gap:4px;}
+.am{width:40px;height:44px;display:grid;place-items:center;border:1px solid var(--line2);border-radius:2px;background:var(--bg1);
+  box-shadow:inset 0 0 0 2px var(--bg1),inset 0 0 0 3px var(--line-in);transition:border-color .15s;}
+.am svg{width:22px;height:22px;filter:drop-shadow(0 0 4px rgba(0,0,0,.6));transition:opacity .2s,transform .2s;}
+.am:hover{border-color:var(--gold);}
+.am.used{border-color:var(--line);}
+.am.used svg{opacity:.18;transform:scale(.78);}
+@media (max-width:359px){ .am{width:34px;} }
+
+/* шапка персонажа: длинное имя — в две строки, а не «Тестовая Ир…» */
+.pc-name.ellip{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere;}
+@media (max-width:479px){ .pc-name{font-size:23px;} }
+/* плашки КБ / мастерство / инициатива: на узком экране — короткие подписи без переноса */
+.pill .sh{display:none;}
+@media (max-width:479px){ .pill .lg{display:none;} .pill .sh{display:inline;} .pill small{white-space:nowrap;} }
+button.pill{display:block;width:100%;font:inherit;color:inherit;}
+/* крестик у состояния — настоящая кнопка */
+.cond .x{display:inline-grid;place-items:center;width:28px;height:28px;margin:-4px -4px -4px -2px;border-radius:50%;}
+
+/* ── Мастер: полоса инициативы с хитами ── */
+.ini small{font-family:var(--f-label);font-size:12px;font-weight:700;color:var(--tx3);font-variant-numeric:tabular-nums;}
+.ini{min-height:40px;}
+.chip.hit{color:var(--gold2);}
+
+/* ── Нижняя панель: подписи не обрезаются краем экрана ── */
+@media (max-width:639px){
+  .tab{min-width:0;padding:0 1px;font-size:10.5px;letter-spacing:0;white-space:nowrap;}
+  .tab .tl2{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;}
+}
+
+/* ── Палец, а не мышь: зоны нажатия не меньше 40–44 px (iOS 44pt / Android 48dp) ── */
+@media (pointer:coarse){
+  .btn.xs{min-height:34px;padding:4px 10px;font-size:13px;}
+  .btn.sm{min-height:38px;}
+  .btn.sm.icon{width:38px;}
+  #top-actions .btn{min-height:40px;}
+  #top-actions .btn.icon{width:42px;}
+  .top-back{width:42px;height:44px;}
+  .chev{width:40px;height:40px;line-height:40px;}
+  .insp button{width:40px;height:44px;}
+  .anchors button{min-height:40px;}
+  .res-pips{gap:8px;} .res-pip{width:32px;height:32px;}
+  .slot-pip{width:40px;height:40px;}
+  .atk-roll{min-height:42px;min-width:52px;}
+  .chk-row{min-height:44px;}
+  .cond{min-height:36px;} .cond-dur{min-width:34px;height:30px;}
+  .cond .x{width:34px;height:34px;}
+  .ds-pip{width:44px;height:44px;}
+  .chip.btnlike{min-height:36px;}
+  .mclose{width:44px;height:44px;}
+  .ic-pin{padding:7px 10px;}
+  .nc-btn{width:40px;height:40px;}
+  .nc-acted input{width:24px;height:24px;}
+  .nc-init input{min-height:40px;}
+  .nc-hpb .hpb{min-height:42px;}
+  .nact-go{min-height:42px;}
+  .stepper.sm button{min-width:40px;height:38px;}
+  .smn-x{width:36px;height:36px;}
+  .gm-coll{height:40px;}
+  .die{min-height:46px;}
+}
+
 </style>
 </head>
 <body>
@@ -2031,7 +2196,7 @@ html[data-theme="astral"] .tab.on{color:var(--gold2);}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '10.0.0';
+const APP_VERSION = '11.0.0';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -2742,6 +2907,118 @@ document.addEventListener('change', e => {
   FX.haptic(null);
 }, true);
 CH.setFx = el => { SETTINGS.fx = el.checked; saveSettings(); FX.apply(); };
+
+// ── dice.js ──
+/* ═══════════════════════════════════════════════════════
+   СВИТОК БРОСКА: результат броска — крупно, с гранями кубиков, критом и провалом.
+   Не модалка: висит над нижней панелью (на ПК — в правом нижнем углу), лист под ним работает.
+   d20-проверку можно перебросить с преимуществом / помехой, урон — удвоить кости на крите
+   (сам крит не считается автоматически — решает игрок). История — в памяти вкладки, не в STORE.
+   Механику бросков не меняет: rollToast и урон считают то же, что и раньше, только показывают иначе.
+═══════════════════════════════════════════════════════ */
+const DK = { last: null, log: [], timer: 0, cnt: 1, mod: 0 };
+const DK_LOG_MAX = 30;
+const DK_MODE = { adv: 'преимущество', dis: 'помеха' };
+
+/** Грань кубика: d20 — шестиугольник с треугольником внутри, d6 — квадрат, остальные — ромб */
+function dkDie(sides, v, cls = '') {
+  const shape = sides === 20 ? '<path d="M24 2 44 13.5v21L24 46 4 34.5v-21Z"/><path class="in" d="M24 9 39 33H9Z"/>'
+    : sides === 6 ? '<rect x="6" y="6" width="36" height="36" rx="3"/>'
+    : sides === 4 ? '<path d="M24 4 45 42H3Z"/>'
+    : '<path d="M24 2 46 24 24 46 2 24Z"/>';
+  return `<span class="dk-die ${cls}" title="d${sides}"><svg viewBox="0 0 48 48" aria-hidden="true">${shape}</svg><b>${v}</b></span>`;
+}
+
+/** Показать результат. r = {label, total, kind:'d20'|'dmg'|'free', dice:[{s,v,off}], sub, mode, crit, fail, note} */
+function dkShow(r) {
+  r.at = Date.now(); DK.last = r;
+  DK.log.unshift(r); if (DK.log.length > DK_LOG_MAX) DK.log.length = DK_LOG_MAX;
+  let root = $('#roll-root');
+  if (!root) { root = document.createElement('div'); root.id = 'roll-root'; root.setAttribute('aria-live', 'polite'); document.body.appendChild(root); }
+  const dice = r.dice.length > 8 ? r.dice.slice(0, 8) : r.dice;
+  const acts = r.kind === 'd20'
+    ? `<button class="dk-b" data-act="dkReRoll" data-m="">↻ Ещё раз</button><button class="dk-b adv" data-act="dkReRoll" data-m="adv">▲ С преим.</button><button class="dk-b dis" data-act="dkReRoll" data-m="dis">▼ С помехой</button>`
+    : r.kind === 'dmg' && !r.critDone && r.parts?.length ? `<button class="dk-b crit" data-act="dkCritRoll" title="Крит: бросить кости урона ещё раз и прибавить">⚔ Крит · ×2 кости</button><button class="dk-b" data-act="dkReRoll">↻ Ещё раз</button>`
+    : r.redo ? `<button class="dk-b" data-act="dkReRoll">↻ Ещё раз</button>` : '';
+  root.innerHTML = `<div class="dk-card ${r.kind} ${r.crit ? 'crit' : ''} ${r.fail ? 'fail' : ''} ${r.mode || ''}" role="status">
+    <div class="dk-head"><span class="dk-lbl">${esc(r.label)}</span>${r.mode ? `<span class="dk-mode">${DK_MODE[r.mode]}</span>` : ''}
+      <button class="dk-x" data-act="dkTray" title="Кубики и история бросков" aria-label="Кубики и история бросков">🎲</button><button class="dk-x" data-act="dkClose" aria-label="Закрыть">✕</button></div>
+    <div class="dk-main"><div class="dk-dice">${dice.map(d => dkDie(d.s, d.v, d.off ? 'off' : d.s === 20 && d.v === 20 ? 'nat20' : d.s === 20 && d.v === 1 ? 'nat1' : '')).join('')}${r.dice.length > dice.length ? `<span class="dk-more">+${r.dice.length - dice.length}</span>` : ''}</div>
+      <span class="dk-eq">=</span><b class="dk-total">${r.total}</b></div>
+    <div class="dk-sub">${esc(r.sub || '')}</div>
+    ${r.kind === 'ds' && r.note ? `<div class="dk-flag ${r.crit || r.fail ? '' : 'note'}">${esc(r.note)}</div>`
+      : r.crit ? `<div class="dk-flag">${r.kind === 'd20' ? '★ Естественная 20 — крит!' : '⚔ Критическое попадание — кости удвоены'}</div>` : r.fail ? '<div class="dk-flag">✗ Естественная 1 — провал</div>' : r.note ? `<div class="dk-flag note">${esc(r.note)}</div>` : ''}
+    ${acts ? `<div class="dk-acts">${acts}</div>` : ''}</div>`;
+  const card = root.firstElementChild;
+  if (!FX.off()) { card.classList.add('dk-in'); FX.haptic(r.crit ? 'lvl' : r.fail ? 'del' : 'dice'); }
+  clearTimeout(DK.timer); DK.timer = setTimeout(dkClose, r.crit || r.fail ? 12000 : 9000);
+  card.addEventListener('pointerenter', () => clearTimeout(DK.timer));
+  card.addEventListener('pointerdown', () => clearTimeout(DK.timer));
+  dkLogRefresh();
+}
+function dkClose() { clearTimeout(DK.timer); const c = $('#roll-root .dk-card'); if (!c) return; c.classList.add('dk-out'); setTimeout(() => { if (c.isConnected) c.remove(); }, FX.off() ? 0 : 180); }
+ACT.dkClose = () => dkClose();
+
+/** d20-проверка: те же правила, что были у rollToast (преимущество и помеха гасят друг друга). force — принудительный режим из свитка */
+function dkD20(label, mod, tb = { bonus: 0, adv: false, dis: false }, force = '') {
+  const adv = force === 'adv' || (!force && tb.adv), dis = force === 'dis' || (!force && tb.dis);
+  const a = roll(20), b = roll(20), mode = adv && !dis ? 'adv' : dis && !adv ? 'dis' : '';
+  const d = mode === 'adv' ? Math.max(a, b) : mode === 'dis' ? Math.min(a, b) : a;
+  const m = mod + (tb.bonus || 0), t = d + m;
+  const dice = mode ? [{ s: 20, v: a, off: a !== d }, { s: 20, v: b, off: a === d }] : [{ s: 20, v: d }];
+  const sub = `d20 ${d}${mod ? ' ' + sgn(mod) : ''}${tb.bonus ? ' · вещи ' + sgn(tb.bonus) : ''}${force && (tb.adv || tb.dis) ? ' · свой режим вместо вещей' : ''}`;
+  dkShow({ label, total: t, kind: 'd20', dice, sub, mode, crit: d === 20, fail: d === 1, redo: { t: 'd20', label, mod, tb } });
+}
+/** Урон / свободная формула. tag — подпись про вещи */
+function dkFormula(label, f, opt = {}) {
+  const r = rollFormula(f); if (!r) { toast('Формула не распознана', 'err'); return null; }
+  const dice = r.parts.flatMap(p => p.rolls.map(v => ({ s: int(p.d.split('d')[1]), v })));
+  const sub = r.parts.map(p => (p.sign < 0 ? '−' : '') + p.d + ' [' + p.rolls.join(', ') + ']').join(' ') + (r.mod ? ' ' + sgn(r.mod) : '') + (opt.tag ? ' · ' + opt.tag : '');
+  dkShow({ label, total: r.total, kind: opt.kind || 'dmg', dice, sub, parts: r.parts, note: opt.note, redo: { t: 'f', label, f, opt } });
+  return r;
+}
+ACT.dkReRoll = el => {
+  const r = DK.last?.redo; if (!r) return;
+  if (r.t === 'd20') dkD20(r.label, r.mod, r.tb, el.dataset.m || '');
+  else dkFormula(r.label, r.f, r.opt);
+};
+/** Крит: ещё раз те же кости (без модификатора) и прибавить к уже выпавшему */
+ACT.dkCritRoll = () => {
+  const L = DK.last; if (!L || L.kind !== 'dmg' || L.critDone || !L.parts) return;
+  const extra = L.parts.map(p => { const [c, s] = p.d.split('d').map(x => int(x)); return { p, rolls: Array.from({ length: c }, () => roll(s)), s }; });
+  const add = extra.reduce((a, x) => a + (x.p.sign < 0 ? -1 : 1) * x.rolls.reduce((u, v) => u + v, 0), 0);
+  dkShow({ ...L, total: L.total + add, critDone: true, crit: true, mode: '',
+    dice: [...L.dice, ...extra.flatMap(x => x.rolls.map(v => ({ s: x.s, v })))],
+    sub: L.sub + ' · крит: ' + extra.map(x => '[' + x.rolls.join(', ') + ']').join(' ') + ' = ' + sgn(add), label: L.label + ' · крит' });
+  DK.log.splice(1, 1); // в истории — один итоговый бросок вместо двух
+  dkLogRefresh();
+};
+
+/* ── Кубики: свой бросок (d4…d100, количество, модификатор, формула) и история ── */
+function dkTrayBody() {
+  return `<div class="dk-tray">
+    <div class="dk-res" id="dk-res">${dkResHTML()}</div>
+    <div class="dk-dierow">${[4, 6, 8, 10, 12, 20, 100].map(s => `<button class="dk-pick" data-act="dkRollDie" data-s="${s}">${dkDie(s === 100 ? 10 : s, s === 100 ? '%' : '')}<small>d${s}</small></button>`).join('')}</div>
+    <div class="dk-opts"><div class="dk-step"><span class="lbl">Сколько</span><button data-act="dkCnt" data-d="-1" aria-label="Меньше">−</button><b id="dk-cnt">${DK.cnt}</b><button data-act="dkCnt" data-d="1" aria-label="Больше">+</button></div>
+      <div class="dk-step"><span class="lbl">Модиф.</span><button data-act="dkMod" data-d="-1" aria-label="Меньше">−</button><b id="dk-mod">${sgn(DK.mod)}</b><button data-act="dkMod" data-d="1" aria-label="Больше">+</button></div></div>
+    <div class="row mt"><input id="dk-f" class="grow" placeholder="Формула: 2d6+3, 1d8+1d4" data-enter="dkRollFormula" autocomplete="off"><button class="btn pri" data-act="dkRollFormula">🎲 Бросить</button></div>
+    <div class="spc-group">История</div><div id="dk-log" class="dk-log">${dkLogHTML()}</div></div>`;
+}
+function dkLogHTML() {
+  return DK.log.length ? DK.log.map(r => `<div class="dk-le ${r.crit ? 'crit' : ''} ${r.fail ? 'fail' : ''}"><small>${new Date(r.at).toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' })}</small><span class="grow">${esc(r.label)}${r.mode ? ` <i>${DK_MODE[r.mode]}</i>` : ''}<em>${esc(r.sub || '')}</em></span><b>${r.total}</b></div>`).join('')
+    : '<div class="muted small">Пока пусто — брось что-нибудь</div>';
+}
+/** Итог последнего броска — крупно наверху окна (свиток под окном не виден) */
+function dkResHTML() {
+  const r = DK.last; if (!r) return '<span class="muted small">Выбери кубик — итог появится здесь</span>';
+  return `<b class="${r.crit ? 'crit' : ''} ${r.fail ? 'fail' : ''}">${r.total}</b><span class="grow">${esc(r.label)}${r.mode ? ` <i>${DK_MODE[r.mode]}</i>` : ''}<em>${esc(r.sub || '')}</em></span>`;
+}
+function dkLogRefresh() { const l = $('#dk-log'); if (l) l.innerHTML = dkLogHTML(); const s = $('#dk-res'); if (s) { s.innerHTML = dkResHTML(); if (!FX.off()) { s.classList.remove('dk-in'); void s.offsetWidth; s.classList.add('dk-in'); } } }
+ACT.dkTray = () => { if ($('#dk-log')) return; openModal({ title: '🎲 Кубики', size: 'sm', body: dkTrayBody() }); };
+ACT.dkCnt = el => { DK.cnt = clamp(DK.cnt + int(el.dataset.d), 1, 30); const b = $('#dk-cnt'); if (b) b.textContent = DK.cnt; };
+ACT.dkMod = el => { DK.mod = clamp(DK.mod + int(el.dataset.d), -30, 30); const b = $('#dk-mod'); if (b) b.textContent = sgn(DK.mod); };
+ACT.dkRollDie = el => { const s = int(el.dataset.s); dkFormula(`${DK.cnt > 1 ? DK.cnt : ''}d${s}${DK.mod ? sgn(DK.mod) : ''}`, `${DK.cnt}d${s}${DK.mod ? sgn(DK.mod) : ''}`, { kind: 'free' }); };
+ACT.dkRollFormula = () => { const f = ($('#dk-f')?.value || '').trim(); if (f) dkFormula(f, f, { kind: 'free' }); };
 
 // ── data.js ──
 /* ═══════════════════════════════════════════════════════
@@ -4352,14 +4629,8 @@ function tagBonus(pc, cat, target) {
   });
   return r;
 }
-/** Бросок d20 с учётом бонусов, преимущества и помехи */
-function rollToast(label, mod, tb = { bonus: 0, adv: false, dis: false }) {
-  const a = roll(20), b = roll(20), mode = tb.adv && !tb.dis ? 'adv' : tb.dis && !tb.adv ? 'dis' : '';
-  const d = mode === 'adv' ? Math.max(a, b) : mode === 'dis' ? Math.min(a, b) : a;
-  const m = mod + (tb.bonus || 0), t = d + m;
-  const detail = mode ? `${mode === 'adv' ? 'преим.' : 'помеха'} ${a}/${b}` : `d20=${d}`;
-  toast(`🎲 ${label}: ${t}  (${detail}${m ? ' ' + sgn(m) : ''}${tb.bonus ? ', вещи ' + sgn(tb.bonus) : ''})${d === 20 ? ' ★ КРИТ' : d === 1 ? ' ✗ провал' : ''}`, d === 20 ? 'ok' : d === 1 ? 'err' : '', 4000);
-}
+/** Бросок d20 с учётом бонусов, преимущества и помехи — результат в свитке броска (dice.js), там же переброс */
+function rollToast(label, mod, tb = { bonus: 0, adv: false, dis: false }) { dkD20(label, mod, tb); }
 
 /* ═══ Секции ═══ */
 const SEC = {};
@@ -4373,7 +4644,7 @@ SEC.hdr = pc => {
         <div class="pc-sub ellip">${esc([pc.race, pc.cls].filter(Boolean).join(' · ') || 'Персонаж')} · ${pc.level} ур.</div>
       </div>
       <div class="insp ${pc.insp ? 'on' : ''}" title="Вдохновение">
-        <button data-act="pcInsp" data-d="-1">−</button><span><small>вдохн.</small><b>${pc.insp}</b></span><button data-act="pcInsp" data-d="1">+</button>
+        <button data-act="pcInsp" data-d="-1" aria-label="Вдохновение −1">−</button><span><small>вдохн.</small><b>${pc.insp}</b></span><button data-act="pcInsp" data-d="1" aria-label="Вдохновение +1">+</button>
       </div>
       <button class="chev ${pc.ui.hdr ? 'open' : ''}" data-act="pcHdr" aria-label="Детали">▾</button>
     </div>
@@ -4387,9 +4658,9 @@ SEC.hdr = pc => {
 SEC.pills = pc => {
   const init = pcMod(pc, 'dex'), spd = int(pc.speed, 30);
   return `<div class="pc-pills">
-    <div class="pill"><b>${pc.ac}</b><small>Класс брони</small></div>
-    <div class="pill"><b class="c-green">${sgn(pcPB(pc))}</b><small>Мастерство</small></div>
-    <div class="pill tap" data-act="pcRollInit"><b>${sgn(init)}</b><small>Инициатива</small></div>
+    <div class="pill"><b>${pc.ac}</b><small><span class="lg">Класс брони</span><span class="sh">КБ</span></small></div>
+    <div class="pill"><b class="c-green">${sgn(pcPB(pc))}</b><small><span class="lg">Мастерство</span><span class="sh">Мастер.</span></small></div>
+    <button class="pill tap" data-act="pcRollInit" title="Бросить инициативу"><b>${sgn(init)}</b><small><span class="lg">Инициатива</span><span class="sh">Иниц. 🎲</span></small></button>
     <div class="pill"><b>${spd}<i>фт</i></b><small>${Math.round(spd / 5)} клеток</small></div>
   </div>${tagStrip(pc, 'initiative')}
   ${pc.conc ? `<div class="conc-bar"><span class="lbl c-purple">⚡ концентрация</span><b class="grow ellip">${esc(pc.conc)}</b><button class="btn xs" data-act="pcConcClear">✕ сбросить</button></div>` : ''}
@@ -4419,6 +4690,9 @@ SEC.vitals = pc => {
     <span class="vt-ac" title="Класс брони">🛡<b>${pc.ac}</b></span>${pc.conc ? `<span class="vt-conc" title="Концентрация: ${esc(pc.conc)}">⚡</span>` : ''}
   </button>`;
 };
+/** Действия хода в закреплённой полосе: ● ▲ ◆ видны и нажимаются, где бы ни был лист (те же pcAct) */
+const ACT_MINI = [['action', 'Действие', '<circle cx="12" cy="12" r="9" fill="#4fbf62"/>'], ['bonus', 'Бонусное', '<polygon points="12,3 22,20 2,20" fill="#e89a2a"/>'], ['reaction', 'Реакция', '<polygon points="12,2 22,12 12,22 2,12" fill="#b25ad8"/>']];
+SEC.actmini = pc => `<div class="act-mini" role="group" aria-label="Действия хода">${ACT_MINI.map(([t, l, svg]) => `<button class="am ${pc.act[t] ? 'used' : ''}" data-act="pcAct" data-t="${t}" aria-pressed="${pc.act[t] ? 'true' : 'false'}" title="${l}${pc.act[t] ? ' — потрачено' : ''}"><svg viewBox="0 0 24 24" aria-hidden="true">${svg}</svg></button>`).join('')}</div>`;
 /** Классовые ресурсы (ярость, ци, наложение рук…) — в бою, а не в магии: они есть и у не-заклинателей.
     До 10 зарядов — кружки, больше — счётчик, чтобы 25 очков не превращались в колонну кружков */
 function resHTML(pc) {
@@ -4426,16 +4700,16 @@ function resHTML(pc) {
     const tot = Math.min(r.max, 30), left = Math.max(0, r.max - used);
     const ctl = tot > 10
       ? `<div class="res-step"><button data-act="pcResStep" data-r="${ri}" data-d="5" ${left < 1 ? 'disabled' : ''}>−5</button><button data-act="pcResStep" data-r="${ri}" data-d="1" ${left < 1 ? 'disabled' : ''}>−1</button><button data-act="pcResStep" data-r="${ri}" data-d="-1" ${used < 1 ? 'disabled' : ''}>+1</button></div>`
-      : `<div class="res-pips">${pipMap(pc, 'r' + ri, used, tot).map((u, i) => `<button class="res-pip ${u ? 'used' : ''}" data-act="pcRes" data-r="${ri}" data-i="${i}"></button>`).join('')}</div>`;
+      : `<div class="res-pips">${pipMap(pc, 'r' + ri, used, tot).map((u, i) => `<button class="res-pip ${u ? 'used' : ''}" data-act="pcRes" data-r="${ri}" data-i="${i}" aria-label="${esc(r.name || rt.label)}${u ? ', потрачено' : ''}"></button>`).join('')}</div>`;
     return `<div class="res-block ${tot > 10 ? 'big' : ''}" style="--rc:${rt.color}"><div class="res-name">${esc(r.name || rt.label)}<small>${r.rest === 'short' ? 'кор. отдых' : 'длин. отдых'}</small></div>
       ${ctl}<b class="res-n">${left}/${r.max}</b></div>`; }).join('');
   return res ? `<div class="res-grid mt">${res}</div>` : '';
 }
 SEC.combat = pc => `<section class="sec" id="s-combat"><div class="sec-h t-blue">⚔ Боевые действия</div><div class="sec-b">
     <div class="act-chips">
-      <button class="act-chip ${pc.act.action ? 'used' : ''}" data-act="pcAct" data-t="action"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#4fbf62"/></svg><span>Действие</span></button>
-      <button class="act-chip ${pc.act.bonus ? 'used' : ''}" data-act="pcAct" data-t="bonus"><svg viewBox="0 0 24 24"><polygon points="12,2 23,21 1,21" fill="#e89a2a"/></svg><span>Бонусное</span></button>
-      <button class="act-chip ${pc.act.reaction ? 'used' : ''}" data-act="pcAct" data-t="reaction"><svg viewBox="0 0 24 24"><polygon points="12,1.5 22.5,12 12,22.5 1.5,12" fill="#b25ad8"/></svg><span>Реакция</span></button>
+      <button class="act-chip ${pc.act.action ? 'used' : ''}" data-act="pcAct" data-t="action" aria-pressed="${pc.act.action ? 'true' : 'false'}"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#4fbf62"/></svg><span>Действие</span></button>
+      <button class="act-chip ${pc.act.bonus ? 'used' : ''}" data-act="pcAct" data-t="bonus" aria-pressed="${pc.act.bonus ? 'true' : 'false'}"><svg viewBox="0 0 24 24"><polygon points="12,2 23,21 1,21" fill="#e89a2a"/></svg><span>Бонусное</span></button>
+      <button class="act-chip ${pc.act.reaction ? 'used' : ''}" data-act="pcAct" data-t="reaction" aria-pressed="${pc.act.reaction ? 'true' : 'false'}"><svg viewBox="0 0 24 24"><polygon points="12,1.5 22.5,12 12,22.5 1.5,12" fill="#b25ad8"/></svg><span>Реакция</span></button>
     </div>
     <button class="btn block round-end" data-act="pcEndRound" title="Вернуть действия и убавить длительность состояний">↻ Новый ход</button>
     ${resHTML(pc)}</div></section>`;
@@ -4476,7 +4750,7 @@ SEC.spells = pc => {
     const tot = int(pc.slots[lv]); if (!tot) continue;
     const used = int(pc.usedSlots[lv]), wl = pc.warlockLv.includes(lv), on = pipMap(pc, 's' + lv, used, tot);
     slots += `<div class="slot-lv ${wl ? 'wl' : ''}"><div class="slot-h">${lv}-й ${wl ? '⚡' : ''}</div><b>${tot - used}/${tot}</b>
-      <div class="slot-pips">${on.map((u, i) => `<button class="slot-pip ${u ? 'used' : ''}" data-act="pcSlot" data-lv="${lv}" data-i="${i}">${u ? '' : '✦'}</button>`).join('')}</div></div>`;
+      <div class="slot-pips">${on.map((u, i) => `<button class="slot-pip ${u ? 'used' : ''}" data-act="pcSlot" data-lv="${lv}" data-i="${i}" aria-label="Ячейка ${lv}-го${u ? ', потрачена' : ''}">${u ? '' : '✦'}</button>`).join('')}</div></div>`;
   }
   if (slots) h += `<div class="slots">${slots}</div>`;
   // карточки
@@ -4519,7 +4793,7 @@ SEC.skills = pc => {
   </div></section>`;
 };
 SEC.conds = pc => `<section class="sec" id="s-conds"><div class="sec-h">🌀 Состояния</div><div class="sec-b">
-    <div class="chips">${pc.conds.length ? pc.conds.map((c, i) => `<span class="cond ${c.dur != null ? 'timed' : ''}">${esc(c.name)}${c.dur != null ? `<button class="cond-dur" data-act="pcCondTick" data-i="${i}" title="Ходов осталось · нажми −1">${c.dur}</button>` : '<span class="muted">∞</span>'}<span class="x" data-act="pcCondDel" data-i="${i}">✕</span></span>`).join('') : '<span class="muted small">Нет состояний</span>'}</div>
+    <div class="chips">${pc.conds.length ? pc.conds.map((c, i) => `<span class="cond ${c.dur != null ? 'timed' : ''}">${esc(c.name)}${c.dur != null ? `<button class="cond-dur" data-act="pcCondTick" data-i="${i}" title="Ходов осталось · нажми −1">${c.dur}</button>` : '<span class="muted">∞</span>'}<button class="x" data-act="pcCondDel" data-i="${i}" aria-label="Снять «${esc(c.name)}»">✕</button></span>`).join('') : '<span class="muted small">Нет состояний</span>'}</div>
     <div class="row wrap mt"><select id="pc-cond-sel" class="grow" style="min-width:130px"><option value="">— выбрать —</option>${PC_CONDITIONS.map(c => `<option>${c}</option>`).join('')}</select>
       <input id="pc-cond-own" placeholder="Своё…" style="width:110px" data-enter="pcCondAdd"><input id="pc-cond-dur" type="number" min="1" placeholder="∞" title="Ходов (пусто = бессрочно)" style="width:64px" inputmode="numeric">
       <button class="btn pri icon" data-act="pcCondAdd">+</button></div>
@@ -4552,7 +4826,7 @@ function sheetHTML(pc) {
   const anchors = [['s-hp', '❤', 'Хиты'], ['s-combat', '⚔', 'Бой'], pc.hasSpells && ['s-spells', '✨', 'Магия'], ['s-abil', '💪', 'Навыки'], ['s-conds', '🌀', 'Состояния'], ['s-money', '💰', 'Деньги'], ['s-items', '🎒', 'Вещи'], pc.cards.length && ['s-cards', '📋', 'Черты'], ['s-bio', '📖', 'Био']].filter(Boolean);
   return `<div class="sheet">
     <div data-sec="hdr">${SEC.hdr(pc)}</div>
-    <div class="sheet-bar"><div data-sec="vitals">${SEC.vitals(pc)}</div>
+    <div class="sheet-bar"><div data-sec="vitals">${SEC.vitals(pc)}</div><div data-sec="actmini">${SEC.actmini(pc)}</div>
       <nav class="anchors">${anchors.map(([id, ic, l]) => `<button data-act="anchor" data-to="${id}">${ic} ${l}</button>`).join('')}</nav></div>
     <div data-sec="pills">${SEC.pills(pc)}</div>
     <div class="sheet-cols">
@@ -4577,6 +4851,7 @@ function sheetRefresh(...names) {
   if (!names.length) { $('#view').innerHTML = `<div class="page">${sheetHTML(pc)}</div>`; autosizeAll($('#view')); return; }
   // полоса хитов зависит от хитов, КБ и концентрации — обновляется вместе с ними
   if (!names.includes('vitals') && names.some(n => n === 'hp' || n === 'pills' || n === 'spells')) names.push('vitals');
+  if (!names.includes('actmini') && names.includes('combat')) names.push('actmini');
   names.forEach(n => {
     const el = $(`[data-sec="${n}"]`, root); if (!el) return;
     const html = n.startsWith('pins-') ? SEC.pins(pc, n.slice(5)) : SEC[n](pc);
@@ -4620,11 +4895,12 @@ ACT.pcQHpHeal = () => { const v = Math.abs(int($('#pcq-v')?.value)); if (v) hpqD
 ACT.pcQHpDS = () => { closeModal(); ACT.anchor({ dataset: { to: 's-hp' } }); };
 ACT.pcDS = el => pcDo(pc => { const t = el.dataset.t, i = int(el.dataset.i); pc.ds[t] = pc.ds[t] === i + 1 ? i : i + 1; }, 'hp');
 ACT.pcDSRoll = () => pcDo(pc => {
-  const d = roll(20);
-  if (d === 20) { pc.hp.cur = 1; pc.ds = { s: 0, f: 0 }; toast('🎲 20! Встаёшь с 1 HP', 'ok', 4000); }
-  else if (d === 1) { pc.ds.f = Math.min(3, pc.ds.f + 2); toast('🎲 1 — два провала', 'err', 4000); }
-  else if (d >= 10) { pc.ds.s = Math.min(3, pc.ds.s + 1); toast(`🎲 ${d} — успех${pc.ds.s >= 3 ? ' · стабилизирован' : ''}`, 'ok'); }
-  else { pc.ds.f = Math.min(3, pc.ds.f + 1); toast(`🎲 ${d} — провал${pc.ds.f >= 3 ? ' · смерть' : ''}`, 'err'); }
+  const d = roll(20); let msg;
+  if (d === 20) { pc.hp.cur = 1; pc.ds = { s: 0, f: 0 }; msg = 'Встаёшь с 1 HP'; }
+  else if (d === 1) { pc.ds.f = Math.min(3, pc.ds.f + 2); msg = 'Два провала'; }
+  else if (d >= 10) { pc.ds.s = Math.min(3, pc.ds.s + 1); msg = 'Успех' + (pc.ds.s >= 3 ? ' · стабилизирован' : ''); }
+  else { pc.ds.f = Math.min(3, pc.ds.f + 1); msg = 'Провал' + (pc.ds.f >= 3 ? ' · смерть' : ''); }
+  dkShow({ label: '☠ Спасбросок от смерти', total: d, kind: 'ds', dice: [{ s: 20, v: d }], sub: `успехи ${pc.ds.s}/3 · провалы ${pc.ds.f}/3`, crit: d === 20, fail: d === 1, note: msg });
 }, 'hp');
 ACT.pcAct = el => pcDo(pc => { pc.act[el.dataset.t] = !pc.act[el.dataset.t]; }, 'combat');
 ACT.pcEndRound = () => pcDo(pc => {
@@ -4644,8 +4920,7 @@ function tagBonusAny(pc, cat, targets) { // объединение по неск
 ACT.pcRollAtk = el => { const pc = activePC(), a = atkOf(pc, el); if (!a) return; rollToast(a.name || 'Атака', int(String(a.atkBonus).replace(/\s/g, '')), tagBonusAny(pc, 'attack', atkTargets(a))); };
 ACT.pcRollDmg = el => {
   const pc = activePC(), a = atkOf(pc, el), tb = tagBonusAny(pc, 'damage', ['Оружием']); if (!a) return;
-  const r = rollFormula([a.damage, ...tb.dice].join('+') + (tb.bonus ? sgn(tb.bonus) : '')); if (!r) return toast('Формула урона не распознана');
-  toast(`💥 ${a.name || 'Урон'}: ${r.total}  (${r.parts.map(p => p.d + '[' + p.rolls.join(',') + ']').join(' ')}${r.mod ? ' ' + sgn(r.mod) : ''})${tb.dice.length || tb.bonus ? ' · с вещами' : ''}`, '', 4500);
+  dkFormula(`💥 ${a.name || 'Урон'}`, [a.damage, ...tb.dice].join('+') + (tb.bonus ? sgn(tb.bonus) : ''), { tag: [a.type, tb.dice.length || tb.bonus ? 'с вещами' : ''].filter(Boolean).join(' · ') });
 };
 ACT.pcRollInit = () => { const pc = activePC(); rollToast('Инициатива', pcMod(pc, 'dex'), tagBonus(pc, 'initiative', null)); };
 ACT.pcRollAbil = el => { const pc = activePC(), s = el.dataset.s; rollToast(STAT_NAMES[s], pcMod(pc, s), tagBonus(pc, 'check', STAT_SHORT[s])); };
@@ -4748,9 +5023,10 @@ VIEWS.sheet = {
   actions() {
     const pc = activePC(); if (!pc) return [];
     return [
+      { icon: '🎲', label: 'Кубики', act: 'dkTray' },
       { icon: '📝', label: 'Редактор', act: 'go', v: 'creator' },
       { icon: '🎒', label: 'Инвентарь', act: 'go', v: 'inv', phoneHide: true },
-      { icon: '📤', label: 'Поделиться', act: 'pcShare' },
+      { icon: '📤', label: 'Поделиться', act: 'pcShare', phoneHide: true },
       { menu: [{ hd: 'Отдых' }, { icon: '😴', label: 'Короткий отдых', fn: () => ACT.pcShortRest() }, { icon: '🌙', label: 'Длинный отдых', fn: () => ACT.pcLongRest() },
         { hd: 'Персонаж' }, { icon: '⬆', label: `Повысить уровень (${pc.level} → ${Math.min(20, pc.level + 1)})`, fn: () => ACT.levelUp() },
         pc.hasSpells && { icon: '📚', label: 'Заклинания класса (ttg.club)', fn: () => ACT.classSpells() },
@@ -5469,7 +5745,7 @@ CS.actions = c => {
     return `<div class="nact ${a.usedThisRound ? 'used' : ''} ${!ok && !a.usedThisRound ? 'blocked' : ''}"><div class="nact-h"><b class="grow">${esc(a.name || '—')}</b>
         ${ch ? `<span class="nbadge ch">⚡${ch.remaining}/${ch.amount}</span>` : ''}${cd && cd.cdRemaining > 0 ? `<span class="nbadge cd">⏱${cd.cdRemaining}х</span>` : ''}${a.usedThisRound ? '<span class="nbadge ok">✓</span>' : ''}</div>
       ${a.description ? `<div class="nact-d">${nl2br(a.description)}</div>` : ''}
-      ${a.dice || a.range ? `<div class="chips mt">${a.dice ? `<button class="chip btnlike" data-act="btRollDmg" data-u="${c.uid}" data-t="${type}" data-i="${i}">🎲 ${esc(a.dice + dm)}${a.damagetype ? ' ' + esc(a.damagetype) : ''}</button>` : ''}${a.range ? `<span class="chip">📏 ${esc(a.range)}</span>` : ''}</div>` : ''}
+      ${a.dice || a.range || npcHit(a) != null ? `<div class="chips mt">${npcHit(a) != null ? `<button class="chip btnlike hit" data-act="btRollHit" data-u="${c.uid}" data-t="${type}" data-i="${i}" title="Бросок атаки: d20 ${sgn(npcHit(a))}">🎯 ${sgn(npcHit(a))}</button>` : ''}${a.dice ? `<button class="chip btnlike" data-act="btRollDmg" data-u="${c.uid}" data-t="${type}" data-i="${i}">🎲 ${esc(a.dice + dm)}${a.damagetype ? ' ' + esc(a.damagetype) : ''}</button>` : ''}${a.range ? `<span class="chip">📏 ${esc(a.range)}</span>` : ''}</div>` : ''}
       <button class="nact-go ${type}" data-act="btExec" data-u="${c.uid}" data-t="${type}" data-i="${i}" ${a.usedThisRound || !ok ? 'disabled' : ''}>${a.usedThisRound ? '✓ Использовано' : !ok ? '🔒 Недоступно' : (type === 'action' ? '● Использовать' : '▲ Использовать')}</button></div>`;
   }).join('') : '<div class="muted small">нет</div>';
   const pips = (max, left) => Array.from({ length: max }, (_, i) => `<i class="${i >= left ? 'spent' : ''}"></i>`).join('');
@@ -5493,7 +5769,7 @@ function stripHTML() {
   const b = battle(); if (!b.list.length) return '';
   btCurTurn();
   return b.list.map(c => `<button class="ini al-${c.align} ${c.actedThisRound ? 'done' : ''} ${c.currentHp <= 0 ? 'down' : ''} ${b.turn === c.uid ? 'turn' : ''}" data-act="btJump" data-u="${c.uid}" style="--al:${(ALIGN[c.align] || ALIGN.neutral).color}">
-    <b>${c.initiative}</b><span class="ellip">#${esc(c.tag)} ${esc(c.name)}</span><i style="width:${clamp(c.currentHp / Math.max(1, c.maxHp) * 100, 0, 100)}%"></i></button>`).join('');
+    <b>${c.initiative}</b><span class="ellip">#${esc(c.tag)} ${esc(c.name)}</span><small title="Хиты">${c.currentHp}/${c.maxHp}</small><i style="width:${clamp(c.currentHp / Math.max(1, c.maxHp) * 100, 0, 100)}%"></i></button>`).join('');
 }
 function trkHTML({ embedded = false } = {}) {
   const b = battle(), cur = b.list.length ? btCurTurn() : null;
@@ -5537,7 +5813,11 @@ ACT.btExec = el => withC(el, c => {
   (a._limitStates || []).forEach(l => { if (l.type === 'charges') l.remaining = Math.max(0, l.remaining - 1); if (l.type === 'cooldown') l.cdRemaining = l.cooldown; });
   c.actedThisRound = true;
 });
-ACT.btRollDmg = el => { const c = cFind(el.dataset.u), a = (el.dataset.t === 'action' ? c.actions : c.bonusActions)[int(el.dataset.i)]; const r = rollFormula(a.dice + (a.damagemod ? sgn(int(a.damagemod)) : '')); if (r) toast(`🎲 ${c.name} · ${a.name}: ${r.total}${a.damagetype ? ' ' + a.damagetype : ''}  (${r.parts.map(p => '[' + p.rolls.join(',') + ']').join('')}${r.mod ? sgn(r.mod) : ''})`, '', 4000); };
+const btAct = el => { const c = cFind(el.dataset.u); return c && { c, a: (el.dataset.t === 'action' ? c.actions : c.bonusActions)[int(el.dataset.i)] }; };
+ACT.btRollDmg = el => { const x = btAct(el); if (!x?.a) return; const { c, a } = x; dkFormula(`#${c.tag} ${c.name} · ${a.name}`, a.dice + (a.damagemod ? sgn(int(a.damagemod)) : ''), { tag: a.damagetype || '' }); };
+/** Бонус попадания NPC из описания («+4 к попаданию») — у схемы NPC отдельного поля нет */
+function npcHit(a) { const m = String(a.description || '').match(/([+\-−–])\s?(\d+)\s*к\s*попадани/i); return m ? (m[1] === '+' ? 1 : -1) * int(m[2]) : null; }
+ACT.btRollHit = el => { const x = btAct(el); if (!x?.a) return; const h = npcHit(x.a); if (h == null) return; dkD20(`#${x.c.tag} ${x.c.name} · ${x.a.name}`, h); };
 CH.btCondSel = el => { const own = el.parentNode.querySelector('.nc-cown'); own.hidden = el.value !== '__own'; if (!own.hidden) own.focus(); };
 ACT.btCondAdd = el => {
   const row = el.closest('.nc-cadd'), sel = $('select', row), own = $('.nc-cown', row);
@@ -7708,8 +7988,8 @@ function renderNav() {
   const tabs = TABS[m ? 'master' : 'player'];
   const masterExtra = ['npc', 'loot', 'exped', 'wiki', 'sheet', 'inv', 'creator', 'saves'];
   $('#tabbar').innerHTML = tabs.map(t => {
-    if (t === 'more') { const on = masterExtra.includes(CUR_VIEW); return `<button class="tab ${on ? 'on' : ''}" data-act="tabMore"><span class="ti">☰</span>${on ? NAV.find(n => n.id === CUR_VIEW).label : 'Ещё'}</button>`; }
-    const n = NAV.find(x => x.id === t); return `<button class="tab ${CUR_VIEW === t ? 'on' : ''}" data-act="go" data-v="${t}"><span class="ti">${n.icon}</span>${n.label}</button>`;
+    if (t === 'more') { const on = masterExtra.includes(CUR_VIEW); return `<button class="tab ${on ? 'on' : ''}" data-act="tabMore"><span class="ti">☰</span><span class="tl2">${on ? NAV.find(n => n.id === CUR_VIEW).label : 'Ещё'}</span></button>`; }
+    const n = NAV.find(x => x.id === t); return `<button class="tab ${CUR_VIEW === t ? 'on' : ''}" data-act="go" data-v="${t}"><span class="ti">${n.icon}</span><span class="tl2">${n.label}</span></button>`;
   }).join('');
 }
 ACT.tabMore = el => openMenu(el, [{ hd: 'Мастер' }, ...['npc', 'loot', 'exped', 'wiki'].map(id => { const n = NAV.find(x => x.id === id); return { icon: n.icon, label: n.label, fn: () => go(id) }; }), { icon: '🌐', label: 'ttg.club ↗', fn: () => ACT.ttgSite() },
@@ -7760,9 +8040,9 @@ function renderTop() {
     if (phone && a.phoneHide) { _topMenu.unshift({ icon: a.icon, label: a.label, fn: () => a.fn ? a.fn() : ACT[a.act]?.({ dataset: { v: a.v || '', ...(a.data || {}) } }) }); return; }
     const name = a.fn ? (ACT['_top' + i] = a.fn, '_top' + i) : a.act;
     const data = Object.entries({ v: a.v, ...(a.data || {}) }).filter(([, v]) => v != null).map(([k, v]) => `data-${k}="${esc(v)}"`).join(' ');
-    html += `<button class="btn ${a.pri ? 'pri' : ''} ${a.danger ? 'danger' : ''} ${phone && !a.pri ? 'icon' : ''}" data-act="${name}" ${data} title="${esc(a.label)}">${a.icon || ''}${phone && !a.pri ? '' : ` <span class="tl">${esc(a.label)}</span>`}</button>`;
+    html += `<button class="btn ${a.pri ? 'pri' : ''} ${a.danger ? 'danger' : ''} ${phone && !a.pri ? 'icon' : ''}" data-act="${name}" ${data} title="${esc(a.label)}" aria-label="${esc(a.label)}">${a.icon || ''}${phone && !a.pri ? '' : ` <span class="tl">${esc(a.label)}</span>`}</button>`;
   });
-  if (_topMenu.length) html += `<button class="btn icon" data-act="topMenu" title="Ещё">⋯</button>`;
+  if (_topMenu.length) html += `<button class="btn icon" data-act="topMenu" title="Ещё" aria-label="Ещё действия">⋯</button>`;
   $('#top-actions').innerHTML = html;
 }
 ACT.topMenu = el => openMenu(el, _topMenu);
