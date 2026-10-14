@@ -2360,7 +2360,7 @@ button.pill{display:block;width:100%;font:inherit;color:inherit;}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '11.1.1';
+const APP_VERSION = '11.1.2';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -2436,7 +2436,7 @@ const ACT = {}, IN = {}, CH = {}, MODELS = {};
 const VIEWS = {};
 document.addEventListener('click', e => {
   const el = e.target.closest('[data-act]');
-  if (!el || el.disabled || el.classList.contains('off')) return;
+  if (!el || el.disabled || el.hasAttribute('disabled') || el.classList.contains('off')) return;
   const fn = ACT[el.dataset.act];
   if (fn) { fn(el, e); } else console.warn('нет ACT.' + el.dataset.act);
 });
@@ -2563,7 +2563,7 @@ function pickBox(title, items, { empty = 'Пусто', search = true } = {}) {
   return new Promise(res => {
     let done = false;
     const rows = list => list.length ? list.map(i => `<button class="pick-row" data-id="${esc(i.id)}">
-        <span class="pick-ic">${i.icon || '•'}</span><span class="grow"><b class="ellip" style="display:block">${esc(i.label)}</b>${i.sub ? `<small class="muted">${esc(i.sub)}</small>` : ''}</span></button>`).join('')
+        <span class="pick-ic">${esc(i.icon || '•')}</span><span class="grow"><b class="ellip" style="display:block">${esc(i.label)}</b>${i.sub ? `<small class="muted">${esc(i.sub)}</small>` : ''}</span></button>`).join('')
       : `<div class="empty">${esc(empty)}</div>`;
     const m = openModal({
       title, body: `${search && items.length > 6 ? '<input type="search" id="pk-q" placeholder="Поиск…" class="mb">' : ''}<div id="pk-list" class="pick-list">${rows(items)}</div>`,
@@ -2583,7 +2583,7 @@ function openMenu(anchor, items) {
   const veil = document.createElement('div'); veil.className = 'menu-veil';
   const m = document.createElement('div'); m.className = 'menu';
   m.innerHTML = items.filter(Boolean).map((it, i) => it.sep ? '<div class="msep"></div>' : it.hd ? `<div class="mhd">${esc(it.hd)}</div>`
-    : `<button class="mi ${it.danger ? 'danger' : ''}" data-i="${i}"><span class="mic">${it.icon || ''}</span><span class="grow">${esc(it.label)}</span></button>`).join('');
+    : `<button class="mi ${it.danger ? 'danger' : ''}" data-i="${i}"><span class="mic">${esc(it.icon || '')}</span><span class="grow">${esc(it.label)}</span></button>`).join('');
   document.body.append(veil, m);
   const r = anchor.getBoundingClientRect();
   const mw = m.offsetWidth, mh = m.offsetHeight;
@@ -2757,7 +2757,7 @@ const CLOUD = {
     if (s[0] === 'j') return new TextDecoder().decode(bytes);
     return new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();
   },
-  hasData() { return STORE.keys('').some(k => /^(pc|npc|item|batt|map)_|^(wiki|exp|battle_cur)$/.test(k)); },
+  hasData() { return STORE.keys('').some(k => /^(pc|npc|item|batt|map|shop)_|^(wiki|exp|battle_cur)$/.test(k)); },
   dump() { const o = {}; STORE.keys('').forEach(k => { o[k] = localStorage.getItem(STORE.P + k); }); return o; },
   async meta() { try { const s = await CLOUD.api('getItem', 'm'); return s ? JSON.parse(s) : null; } catch (e) { return null; } },
   synced() { return int(localStorage.getItem('dnd9c_sync'), 0); },
@@ -3024,7 +3024,7 @@ const FX = {
     FX.burst(cx, cy, 16, 'fx-ray', 90, (i, a) => ({ r: a + 'rad', c }));
     FX.burst(cx, cy, 14, 'fx-sh fx-dia', 70, () => ({ c, r: R(0, 360) + 'deg', z: R(.6, 1.2) }));
     FX.p(cx, cy, 'fx-ring', { c, s: '120px' }); FX.p(cx, cy, 'fx-ring', { c: '#fff', s: '70px', w: '90ms' });
-    FX.p(cx, r.top, 'fx-chip', { c }, `${obj?.emoji || (kind === 'spell' ? '✨' : kind === 'beast' ? '👹' : '✦')} ${obj?.name || ''}`);
+    FX.p(cx, r.top, 'fx-chip', { c }, `${esc(obj?.emoji || (kind === 'spell' ? '✨' : kind === 'beast' ? '👹' : '✦'))} ${obj?.name || ''}`);
     btn.classList.remove('fx-b-lvl'); void btn.offsetWidth; btn.classList.add('fx-b-lvl'); setTimeout(() => btn.classList.remove('fx-b-lvl'), 800);
   },
   /** Новая вещь: подсветить её в инвентаре, когда закроется окно справочника */
@@ -4088,6 +4088,16 @@ const coinsDefault = () => ({ cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 });
 const ZONES = { equip: { icon: '⚔', label: 'Надето', hint: 'бонусы активны' }, belt: { icon: '👝', label: 'На поясе', hint: 'под рукой' }, pack: { icon: '🎒', label: 'Рюкзак', hint: 'глубоко' } };
 const ZONE_KEYS = ['equip', 'belt', 'pack'];
 
+/* ── Данные «со стороны» (коды из чатов, файлы, ответы нейросети) попадают в разметку. Нормализаторы — единственный вход,
+      поэтому здесь всё приводится к безопасному виду: id — только [\w.:-], числа — числа, перечисления — из списка,
+      эмодзи и цвета — без кавычек и скобок. Строки экранируются при выводе (esc) ── */
+const cleanId = id => String(id ?? '').replace(/[^\w.:-]/g, '').slice(0, 64);
+const safeId = (id, p) => cleanId(id) || uid(p);
+const safeEmoji = e => String(e ?? '').replace(/[<>&"'`\\=]/g, '').slice(0, 16);
+const safeColor = c => { const s = String(c ?? '').trim(); return /^(#[0-9a-f]{3,8}|(hsla?|rgba?)\([\d\s,.%-]+\)|var\(--[\w-]+\))$/i.test(s) ? s : ''; };
+const oneOf = (v, list, d) => list.includes(v) ? v : d;
+const asStr = v => v == null ? '' : typeof v === 'string' ? v : typeof v === 'object' ? '' : String(v);
+
 /* ── Персонаж ── */
 function newPC(name = 'Новый персонаж') {
   return normPC({ id: uid('pc'), name, level: 1, hp: { cur: 10, max: 10, temp: 0 }, cards: INFO_PRESETS.map(p => ({ ...p, content: '', collapsed: false })) });
@@ -4104,23 +4114,39 @@ function normPC(d) {
     // v11.1: истощение 0–6, уменьшение максимума хитов, сопротивления, чувства, владения, таинственный арканум, естественное восстановление
     exh: 0, hpRed: 0, resist: [], vuln: [], immune: [], senses: '', profArmor: [], tools: [], acNoArmor: '', usedArc: [], natRec: false, notesLog: [], quests: [],
   }, d || {});
-  if (!p.id) p.id = uid('pc');
-  p.stats = Object.assign(statsDefault(), p.stats);
-  p.hp = Object.assign({ cur: 10, max: 10, temp: 0 }, p.hp);
-  p.coins = Object.assign(coinsDefault(), p.coins);
+  p.id = safeId(p.id, 'pc');
+  p.stats = Object.assign(statsDefault(), p.stats); STATS.forEach(k => { p.stats[k] = clamp(int(p.stats[k], 10), 1, 30); });
+  const hp = Object.assign({ cur: 10, max: 10, temp: 0 }, p.hp); p.hp = { cur: Math.max(0, int(hp.cur, 10)), max: Math.max(1, int(hp.max, 10)), temp: Math.max(0, int(hp.temp)) };
+  p.coins = Object.assign(coinsDefault(), p.coins); COINS.forEach(c => { p.coins[c.k] = Math.max(0, int(p.coins[c.k])); });
   p.act = Object.assign({ action: false, bonus: false, reaction: false }, p.act);
-  p.ds = Object.assign({ s: 0, f: 0 }, p.ds);
+  p.ds = { s: clamp(int(p.ds?.s), 0, 3), f: clamp(int(p.ds?.f), 0, 3) };
+  p.level = clamp(int(p.level, 1), 1, 20); p.xp = Math.max(0, int(p.xp)); p.ac = int(p.ac, 10); p.speed = Math.max(0, int(p.speed, 30));
+  p.insp = Math.max(0, int(p.insp)); p.hdUsed = Math.max(0, int(p.hdUsed));
+  p.hitDice = oneOf(p.hitDice, HIT_DICE, 'd8'); p.size = oneOf(p.size, ['', ...SIZES], ''); p.spellAbility = oneOf(p.spellAbility, STATS, 'int');
+  p.prepFormula = oneOf(p.prepFormula, ['full', 'half'], 'full'); p.acNoArmor = oneOf(p.acNoArmor, ['', '13dex', '17'], '');
+  ['name', 'player', 'cls', 'subclass', 'race', 'background', 'alignment', 'notes', 'senses'].forEach(k => { p[k] = asStr(p[k]); });
   ['saveProfs', 'skillProfs', 'skillExp', 'attacks', 'warlockLv', 'spells', 'resources', 'cards', 'conds', 'prepared', 'trades',
     'resist', 'vuln', 'immune', 'profArmor', 'tools', 'usedArc', 'notesLog', 'quests'].forEach(k => { if (!Array.isArray(p[k])) p[k] = []; });
   p.exh = clamp(int(p.exh), 0, 6); p.hpRed = Math.max(0, int(p.hpRed));
-  p.tools = p.tools.map(t => typeof t === 'string' ? { name: t, attr: 'dex', exp: false } : Object.assign({ name: '', attr: 'dex', exp: false }, t));
-  ['slots', 'usedSlots', 'usedRes', 'inv', 'ammoSpent'].forEach(k => { if (!p[k] || typeof p[k] !== 'object') p[k] = {}; });
+  p.tools = p.tools.map(t => typeof t === 'string' ? { name: t, attr: 'dex', exp: false } : Object.assign({ name: '', attr: 'dex', exp: false }, t)).map(t => ({ name: asStr(t.name), attr: oneOf(t.attr, STATS, 'dex'), exp: !!t.exp }));
+  ['slots', 'usedSlots', 'usedRes', 'inv', 'ammoSpent'].forEach(k => { if (!p[k] || typeof p[k] !== 'object' || Array.isArray(p[k])) p[k] = {}; });
+  ['usedSlots', 'usedRes', 'ammoSpent'].forEach(k => Object.keys(p[k]).forEach(x => { p[k][x] = Math.max(0, int(p[k][x])); }));
+  p.warlockLv = p.warlockLv.map(l => clamp(int(l), 1, 9)); p.usedArc = p.usedArc.map(l => clamp(int(l), 1, 9));
+  p.conds = p.conds.filter(c => c && c.name).map(c => ({ ...c, name: asStr(c.name), dur: c.dur == null ? null : Math.max(0, int(c.dur)) }));
+  p.resources = p.resources.filter(Boolean).map(r => ({ ...r, name: asStr(r.name), type: oneOf(r.type, RES_TYPES.map(t => t.value), 'custom'), max: Math.max(0, int(r.max)), rest: r.rest === 'short' ? 'short' : 'long' }));
+  p.spells = p.spells.filter(Boolean).map(x => ({ ...x, name: asStr(x.name), level: clamp(int(x.level), 0, 9) }));
+  p.attacks = p.attacks.filter(Boolean).map(a => Object.fromEntries(['name', 'atkBonus', 'damage', 'type', 'range', 'description'].map(k => [k, asStr(a[k])])));
+  p.prepared = p.prepared.map(asStr); ['resist', 'vuln', 'immune'].forEach(k => { p[k] = p[k].filter(t => DMG_TYPES.includes(t)); });
+  p.profArmor = p.profArmor.filter(k => ['light', 'medium', 'heavy', 'shield', '-'].includes(k));
+  p.notesLog = p.notesLog.filter(n => n && n.text).map(n => ({ t: int(n.t), text: asStr(n.text) }));
+  p.quests = p.quests.filter(q => q && q.text).map(q => ({ t: int(q.t), text: asStr(q.text), kind: oneOf(q.kind, ['quest', 'debtUs', 'debtThem', 'promise'], 'quest'), done: !!q.done }));
   // навыки и спасброски можно задать названиями («Скрытность», «ЛОВ», «Ловкость») — переводим в индексы/ключи
   const skIdx = x => typeof x === 'number' ? x : SKILLS.findIndex(s => s.label.toLowerCase() === String(x).trim().toLowerCase().replace('восприятие', 'внимательность'));
   p.skillProfs = [...new Set(p.skillProfs.map(skIdx).filter(i => i >= 0 && i < SKILLS.length))];
   p.skillExp = [...new Set(p.skillExp.map(skIdx).filter(i => i >= 0 && i < SKILLS.length))];
   p.saveProfs = [...new Set(p.saveProfs.map(x => STATS.includes(x) ? x : STATS.find(s => [STAT_SHORT[s], STAT_NAMES[s]].some(n => n.toLowerCase() === String(x).trim().toLowerCase()))).filter(Boolean))];
-  p.cards = p.cards.map(c => Object.assign({ title: '', color: CARD_COLORS[0], shape: '', content: '', collapsed: false, pin: null, pinCollapsed: false }, c));
+  p.cards = p.cards.filter(Boolean).map(c => { const x = Object.assign({ title: '', color: CARD_COLORS[0], shape: '', content: '', collapsed: false, pin: null, pinCollapsed: false }, c);
+    return { ...x, title: asStr(x.title), content: asStr(x.content), shape: safeEmoji(x.shape), color: safeColor(x.color) || CARD_COLORS[0], pin: PIN_SLOTS[x.pin] ? x.pin : null }; });
   ZONE_KEYS.forEach(z => { p.inv[z] = (p.inv[z] || []).map(normItem); });
   // v11.1: свойства вещей «с настройкой» работают, только если вещь настроена. Старые персонажи: всё надетое считалось настроенным — так и оставляем
   if (!p.attuneMig) { p.inv.equip.forEach(it => { if (it.attune) it.attuned = true; }); p.attuneMig = true; }
@@ -4135,11 +4161,14 @@ function newItem(name = 'Предмет', extra = {}) { return normItem({ name, 
 function normItem(d) {
   const it = Object.assign({ name: 'Предмет', emoji: '', type: 'Прочее', subtype: '', rarity: 'common', attune: false, hue: 30, width: 'narrow',
     blocks: [], tags: [], qty: 1, ammo: null, charges: null, note: '', weight: 0, attuned: false }, d || {});
-  if (!it.id) it.id = uid('it');
+  it.id = safeId(it.id, 'it'); it.name = asStr(it.name) || 'Предмет'; it.type = asStr(it.type) || 'Прочее'; it.subtype = asStr(it.subtype); it.note = asStr(it.note);
+  it.emoji = safeEmoji(it.emoji); it.rarity = oneOf(it.rarity, Object.keys(RARITY), 'common'); it.width = oneOf(it.width, ['narrow', 'medium', 'wide'], 'narrow'); it.hue = int(it.hue, 30);
+  it.blocks = (Array.isArray(it.blocks) ? it.blocks : []).filter(b => b && BLOCK_DEFS[b.type]);
+  it.tags = (Array.isArray(it.tags) ? it.tags : []).filter(t => t && TAG_CATS[t.category]).map(t => ({ ...t, target: asStr(t.target), effect: asStr(t.effect) }));
   it.qty = Math.max(0, int(it.qty, 1));
   it.weight = Math.max(0, num(it.weight)); // фунты за 1 шт. (у снарядов — за 1 снаряд); 0 — не указан, берётся строка «Вес» из свойств
-  if (it.ammo) it.ammo = { name: it.ammo.name || 'Снаряды', cur: Math.max(0, int(it.ammo.cur, 0)) };
-  if (it.charges) { const mx = clamp(int(it.charges.max, 1), 1, 50); it.charges = { max: mx, cur: clamp(int(it.charges.cur, mx), 0, mx), reset: it.charges.reset || 'рассвет', note: it.charges.note || '' }; }
+  if (it.ammo) it.ammo = { name: asStr(it.ammo.name) || 'Снаряды', cur: Math.max(0, int(it.ammo.cur, 0)) };
+  if (it.charges) { const mx = clamp(int(it.charges.max, 1), 1, 50); it.charges = { max: mx, cur: clamp(int(it.charges.cur, mx), 0, mx), reset: oneOf(it.charges.reset, CHARGE_RESETS, 'рассвет'), note: asStr(it.charges.note) }; }
   return it;
 }
 function guessEmoji(name) { for (const [re, e] of AUTO_EMOJI) if (re.test(name)) return e; return ''; }
@@ -4162,14 +4191,22 @@ function normNPC(d) {
     // v11.1: спасброски с владением {str: 5…}, сопротивления/уязвимости/иммунитеты (типы урона), иммунитет к состояниям,
     // легендарные действия (очки за раунд и список), легендарное сопротивление (в день), логово, опасность и опыт
     saves: {}, resist: [], vuln: [], immune: [], condImm: [], legMax: 0, legActs: [], legRes: 0, lair: '', cr: '', xp: 0 }, d || {});
-  if (!n.id) n.id = uid('npc');
-  n.stats = Object.assign(statsDefault(), n.stats);
+  n.id = safeId(n.id, 'npc'); n.name = asStr(n.name) || 'NPC';
+  n.hp = Math.max(1, int(n.hp, 10)); n.ac = int(n.ac, 10); n.speed = Math.max(0, int(n.speed, 6)); n.align = oneOf(n.align, Object.keys(ALIGN), 'neutral');
+  n.maxActions = clamp(int(n.maxActions, 1), 0, 10); n.maxBonus = clamp(int(n.maxBonus, 1), 0, 10);
+  n.stats = Object.assign(statsDefault(), n.stats); STATS.forEach(k => { n.stats[k] = clamp(int(n.stats[k], 10), 1, 30); });
+  n.ammo = (Array.isArray(n.ammo) ? n.ammo : []).filter(Boolean).map(a => ({ ...a, emoji: safeEmoji(a.emoji), name: asStr(a.name), count: Math.max(0, int(a.count)) }));
+  n.customCards = (Array.isArray(n.customCards) ? n.customCards : []).filter(Boolean).map(c => ({ ...c, title: asStr(c.title), content: asStr(c.content), shape: safeEmoji(c.shape), color: safeColor(c.color) || CARD_COLORS[0] }));
   if (!n.saves || typeof n.saves !== 'object') n.saves = {};
   Object.keys(n.saves).forEach(k => { if (!STATS.includes(k) || n.saves[k] === '' || n.saves[k] == null) delete n.saves[k]; else n.saves[k] = int(n.saves[k]); });
   ['resist', 'vuln', 'immune', 'condImm', 'legActs'].forEach(k => { if (!Array.isArray(n[k])) n[k] = []; });
   n.legActs = n.legActs.map(a => Object.assign({ name: '', cost: 1, description: '' }, a, { cost: clamp(int(a.cost, 1), 1, 3) }));
-  n.legMax = clamp(int(n.legMax), 0, 9); n.legRes = clamp(int(n.legRes), 0, 9); n.xp = Math.max(0, int(n.xp));
-  const na = a => Object.assign({ name: '', range: '', description: '', dice: '', damagemod: '', damagetype: '', limits: [] }, a);
+  n.legMax = clamp(int(n.legMax), 0, 9); n.legRes = clamp(int(n.legRes), 0, 9); n.xp = Math.max(0, int(n.xp)); n.cr = asStr(n.cr); n.lair = asStr(n.lair);
+  ['resist', 'vuln', 'immune'].forEach(k => { n[k] = n[k].filter(t => DMG_TYPES.includes(t)); }); n.condImm = n.condImm.map(asStr);
+  n.legActs = n.legActs.map(a => ({ ...a, name: asStr(a.name), description: asStr(a.description) }));
+  const lim = l => l && ['charges', 'cooldown', 'recharge'].includes(l.type) ? { ...l, amount: Math.max(1, int(l.amount, 1)), cooldown: Math.max(1, int(l.cooldown, 2)), min: clamp(int(l.min, 5), 2, 6), period: l.period === 'day' ? 'day' : 'encounter' } : null;
+  const na = a => { const x = Object.assign({ name: '', range: '', description: '', dice: '', damagemod: '', damagetype: '', limits: [] }, a);
+    ['name', 'range', 'description', 'dice', 'damagemod', 'damagetype'].forEach(k => { x[k] = asStr(x[k]); }); x.limits = (Array.isArray(x.limits) ? x.limits : []).map(lim).filter(Boolean); return x; };
   n.actions = (n.actions || []).map(na); n.bonusActions = (n.bonusActions || []).map(na);
   delete n._memKey; delete n._savedAt; delete n._type; delete n._version;
   return n;
@@ -4210,11 +4247,17 @@ function normBattle(d) {
   const b = Object.assign(newBattle(), d || {});
   if (d && Array.isArray(d.npcs)) { b.list = d.npcs; b.name = d.battleName || b.name; }
   delete b.npcs; delete b.battleName; delete b.version; delete b._memKey; delete b._savedAt;
-  b.list = (b.list || []).map(c => ({
-    ...c, uid: c.uid || uid('c'), tag: c.tag ?? c.id ?? 1, sectionOrder: c.sectionOrder || [...SECTION_ORDER],
-    conditions: c.conditions || [], actions: actStates(c.actions), bonusActions: actStates(c.bonusActions),
-    ammo: (c.ammo || []).map(a => ({ ...a, current: a.current ?? a.count ?? 0 })),
-    customCards: (c.customCards || []).map(x => ({ ...x, isOpen: x.isOpen ?? !x.collapsed })),
+  b.id = safeId(b.id, 'b'); b.name = asStr(b.name); b.notes = asStr(b.notes); b.round = Math.max(1, int(b.round, 1)); b.turn = b.turn ? safeId(b.turn, 'c') : null;
+  b.list = (Array.isArray(b.list) ? b.list : []).filter(Boolean).map(c => ({
+    ...c, uid: safeId(c.uid, 'c'), tag: c.tag ?? c.id ?? 1, name: asStr(c.name) || 'NPC', align: oneOf(c.align, Object.keys(ALIGN), 'neutral'),
+    maxHp: Math.max(1, int(c.maxHp, 1)), currentHp: Math.max(0, int(c.currentHp, int(c.maxHp, 1))), ac: int(c.ac, 10), speed: Math.max(0, int(c.speed)), initiative: int(c.initiative),
+    maxActions: clamp(int(c.maxActions, 1), 0, 10), maxBonus: clamp(int(c.maxBonus, 1), 0, 10), actionsLeft: Math.max(0, int(c.actionsLeft, int(c.maxActions, 1))), bonusLeft: Math.max(0, int(c.bonusLeft, int(c.maxBonus, 1))),
+    stats: Object.fromEntries(STATS.map(k => [k, clamp(int(c.stats?.[k], 10), 1, 30)])),
+    sectionOrder: Array.isArray(c.sectionOrder) && c.sectionOrder.every(k => SECTION_ORDER.includes(k)) ? c.sectionOrder : [...SECTION_ORDER],
+    conditions: (Array.isArray(c.conditions) ? c.conditions : []).filter(x => x && x.name).map(x => ({ name: asStr(x.name), duration: Math.max(1, int(x.duration, 1)) })),
+    actions: actStates(c.actions), bonusActions: actStates(c.bonusActions),
+    ammo: (c.ammo || []).map(a => ({ ...a, emoji: safeEmoji(a.emoji), name: asStr(a.name), current: Math.max(0, int(a.current ?? a.count)) })),
+    customCards: (c.customCards || []).map(x => ({ ...x, title: asStr(x.title), content: asStr(x.content), shape: safeEmoji(x.shape), color: safeColor(x.color) || CARD_COLORS[0], isOpen: x.isOpen ?? !x.collapsed })),
     saves: c.saves || {}, resist: c.resist || [], vuln: c.vuln || [], immune: c.immune || [], condImm: c.condImm || [],
     legMax: int(c.legMax), legLeft: int(c.legLeft ?? c.legMax), legActs: c.legActs || [], legRes: int(c.legRes), legResLeft: int(c.legResLeft ?? c.legRes), lair: c.lair || '', tempHp: int(c.tempHp), reacted: !!c.reacted,
   }));
@@ -4232,11 +4275,19 @@ function combatantToNPC(c) {
 
 /* ── Карта сцен ── */
 function newMap(title = 'Без названия') { return { id: uid('map'), title, nodes: [], edges: [] }; }
-function normMap(d) {
+/** raw — связи как есть (импорт сюжета сам найдёт сцены по названию); иначе — только между существующими сценами */
+function normMap(d, { raw = false } = {}) {
   const m = Object.assign(newMap(), d || {});
   delete m._format; delete m._version; delete m._memKey; delete m._savedAt;
-  m.nodes = (m.nodes || []).map(n => Object.assign({ title: 'Сцена', tag: 'explore', color: '', displayId: '', x: 0, y: 0, description: '', triggers: [], checks: [], notes: '', loot: '', lootCards: [], npcs: [], battleKey: null, wikiLinks: [] }, n, { id: String(n.id) }));
-  m.edges = (m.edges || []).map(e => ({ from: String(e.from), to: String(e.to), label: e.label || '' }));
+  m.id = safeId(m.id, 'map'); m.title = asStr(m.title) || 'Без названия';
+  const ref = a => (Array.isArray(a) ? a : []).map(k => raw ? k : cleanId(k)).filter(Boolean);
+  m.nodes = (Array.isArray(m.nodes) ? m.nodes : []).filter(Boolean).map(n => { const x = Object.assign({ title: 'Сцена', tag: 'explore', color: '', displayId: '', x: 0, y: 0, description: '', triggers: [], checks: [], notes: '', loot: '', lootCards: [], npcs: [], battleKey: null, wikiLinks: [] }, n);
+    return { ...x, id: safeId(x.id, 's'), x: Math.round(num(x.x)), y: Math.round(num(x.y)), color: safeColor(x.color), tag: oneOf(x.tag, Object.keys(SM_TAGS), 'explore'),
+      title: asStr(x.title), displayId: asStr(x.displayId), description: asStr(x.description), notes: asStr(x.notes), loot: asStr(x.loot),
+      // ссылки: при импорте (raw) — как есть, их разрешит MAPIO.import (там бывают имена); иначе — только чистые id
+      npcs: ref(x.npcs), lootCards: ref(x.lootCards), wikiLinks: ref(x.wikiLinks), battleKey: x.battleKey ? (raw ? x.battleKey : cleanId(x.battleKey) || null) : null, _oid: raw ? asStr(x.id) : undefined, checks: Array.isArray(x.checks) ? x.checks : [], triggers: Array.isArray(x.triggers) ? x.triggers : [] }; });
+  const ids = new Set(m.nodes.map(n => n.id));
+  m.edges = (Array.isArray(m.edges) ? m.edges : []).filter(Boolean).map(e => ({ from: String(e.from), to: String(e.to), label: asStr(e.label) })).filter(e => raw || (ids.has(e.from) && ids.has(e.to)));
   return m;
 }
 
@@ -4269,7 +4320,7 @@ const MAPIO = {
       const { id: _drop, ...rest } = a;
       const art = old || normArticle({ ...rest, tags: Array.isArray(a.tags) ? a.tags : String(a.tags || '').split(',').map(s => s.trim()).filter(Boolean) });
       if (!old) { if (!WIKI_CATS[art.category]) art.category = 'lore'; wikiNow.push(art); } key.wiki[a.id ?? a.title] = art.id; key.wiki[low(a.title)] = art.id; rep.wiki++; });
-    STORE.set('wiki', wikiNow);
+    STORE.set('wiki', wikiNow); WIKI = null;
     (lib.batt || []).forEach(b => {
       // бой можно описать просто списком NPC: { id, name, npcs: ['goblin', 'goblin', 'boss'] }
       const list = Array.isArray(b.npcs) ? b.npcs.map((r, i) => { const nid = key.npc[r] || key.npc[low(r)] || (STORE.one('npc', r) ? r : null); const n = nid && STORE.one('npc', nid);
@@ -4278,7 +4329,7 @@ const MAPIO = {
       const nb = normBattle({ ...bRest, id: uid('b'), list: list || [] }); STORE.put('batt', nb);
       key.batt[b.id ?? b.name] = nb.id; if (b.name) key.batt[low(b.name)] = nb.id; rep.batt++; });
     // 2) сцены: уникальные id, правильные типы полей
-    const m = normMap({ ...d, id: uid('map') }); delete m.lib;
+    const m = normMap({ ...d, id: uid('map') }, { raw: true }); delete m.lib;
     const seen = new Set();
     m.nodes.forEach((n, i) => {
       if (!n.id || n.id === 'undefined' || seen.has(n.id)) { const nid = 's' + i + Date.now().toString(36); rep.fixed.push(`повтор/пустой id сцены «${n.title}» → ${nid}`); n.id = nid; }
@@ -4299,11 +4350,12 @@ const MAPIO = {
       n.battleKey = n.battleKey ? res('batt', 'batt', n.battleKey, 'бой') : null;
     });
     // 4) связи: ссылки на сцены по id, displayId или названию; дубли и петли — прочь
-    const nodeOf = r => m.nodes.find(n => n.id === r) || m.nodes.find(n => n.displayId && n.displayId === r) || m.nodes.find(n => low(n.title) === low(r));
+    const nodeOf = r => m.nodes.find(n => n._oid === String(r) || n.id === r) || m.nodes.find(n => n.displayId && n.displayId === r) || m.nodes.find(n => low(n.title) === low(r));
     const eseen = new Set();
     m.edges = m.edges.map(e => { const a = nodeOf(e.from), b = nodeOf(e.to);
       if (!a || !b) { rep.lost.push(`связь ${e.from} → ${e.to}: нет такой сцены`); return null; }
       const k = a.id + '>' + b.id; if (a === b || eseen.has(k)) return null; eseen.add(k); return { from: a.id, to: b.id, label: e.label || '' }; }).filter(Boolean);
+    m.nodes.forEach(n => { delete n._oid; });
     // 5) раскладка, если координат нет или все сцены в одной точке
     const pos = m.nodes.map(n => `${num(n.x)},${num(n.y)}`);
     if (m.nodes.length > 1 && new Set(pos).size < m.nodes.length * 0.7) { MAPIO.layout(m); rep.laid = true; }
@@ -4332,7 +4384,9 @@ const EXP_DEFAULT = { day: 1, hoursToday: 0, supplies: 20, party: 4, names: ['П
 
 /* ── Статья вики ── */
 function normArticle(a) {
-  return Object.assign({ id: 'w' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), title: 'Без названия', category: 'lore', tags: [], body: '', gmNotes: '', created: Date.now(), updated: Date.now() }, a);
+  const x = Object.assign({ id: 'w' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), title: 'Без названия', category: 'lore', tags: [], body: '', gmNotes: '', created: Date.now(), updated: Date.now() }, a);
+  return { ...x, id: safeId(x.id, 'w'), title: asStr(x.title) || 'Без названия', category: oneOf(x.category, Object.keys(WIKI_CATS), 'lore'), body: asStr(x.body), gmNotes: asStr(x.gmNotes),
+    tags: (Array.isArray(x.tags) ? x.tags : String(x.tags || '').split(',')).map(t => asStr(t).trim()).filter(Boolean), created: int(x.created, Date.now()), updated: int(x.updated, Date.now()) };
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -4451,7 +4505,7 @@ const LEGACY = {
       if (!WIKI_CATS[art.category]) art.category = 'lore';
       if (!Array.isArray(art.tags)) art.tags = String(art.tags || '').split(',').map(s => s.trim()).filter(Boolean);
       const i = cur.findIndex(x => x.id === art.id); if (i >= 0) cur[i] = art; else { cur.push(art); n++; } });
-    STORE.set('wiki', cur); return n;
+    STORE.set('wiki', cur); WIKI = null; return n;
   },
   hasOld() { for (let i = 0; i < localStorage.length; i++) if (localStorage.key(i)?.startsWith('hdnf_')) return true; return false; },
   fromBrowser() {
@@ -4655,7 +4709,7 @@ const SHARE = {
         if (ch == null) return;
         if (ch === 0) pc.id = same.id; else { pc.id = uid('pc'); pc.name += ' (копия)'; }
       }
-      STORE.put('pc', pc); SETTINGS.pc = pc.id; saveSettings();
+      STORE.put('pc', pc); setActivePC(pc.id); // сбрасывает кэш листа — иначе он покажет старого и затрёт загруженного
       toast(`🧙 «${pc.name}» загружен`, 'ok'); go('sheet'); return;
     }
     if (o.k === 'items') {
@@ -4688,15 +4742,15 @@ const SHARE = {
     toast('Неизвестный тип кода', 'err');
   },
   applyLegacy(j) {
-    if (j && j._format === 'memo_hdnf') { const s = LEGACY.importEntries(j.entries || {}); toast('Перенесено: ' + LEGACY.summary(s), 'ok', 5000); route(); return; }
+    if (j && j._format === 'memo_hdnf') { const s = LEGACY.importEntries(j.entries || {}); cachesReset(); toast('Перенесено: ' + LEGACY.summary(s), 'ok', 5000); route(); return; }
     if (j && j.v === 9 && j.k) return SHARE.apply(j);
     if (j && j._dnd9backup) { BACKUP.restore(j.d); return; }
-    if (j && j._type === 'memcat_export') { const s = LEGACY.importEntries(j.items || {}); toast('Перенесено: ' + LEGACY.summary(s), 'ok', 5000); route(); return; }
+    if (j && j._type === 'memcat_export') { const s = LEGACY.importEntries(j.items || {}); cachesReset(); toast('Перенесено: ' + LEGACY.summary(s), 'ok', 5000); route(); return; }
     if (j && j._type === 'wiki' || Array.isArray(j)) { const n = LEGACY.mergeWiki(j.articles || j); toast(`📚 Статей: ${n}`, 'ok'); go('wiki'); return; }
     const t = LEGACY.detect('', j);
     const map = { pc: 'pers_imp', npc: 'mem_char_imp', loot: 'mem_loot_imp', battle: 'mem_batt_imp', map: 'mem_scene_imp' };
     if (!map[t]) { toast('Не понял, что это за файл', 'err'); return; }
-    const s = LEGACY.importEntries({ [map[t]]: j });
+    const s = LEGACY.importEntries({ [map[t]]: j }); cachesReset();
     toast('Перенесено: ' + LEGACY.summary(s), 'ok', 4000); route();
   },
 };
@@ -4722,13 +4776,14 @@ const BACKUP = {
     download(`dnd9_backup_${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify({ _dnd9backup: 1, date: Date.now(), d }, null, 1));
     toast('💾 Резервная копия скачана', 'ok');
   },
+  /** Резервная копия — тоже данные «со стороны»: каждая запись проходит свой нормализатор */
   restore(d) {
-    let n = 0;
-    ['pc', 'npc', 'item', 'batt', 'map', 'shop'].forEach(k => (d[k] || []).forEach(o => { STORE.set(k + '_' + o.id, o); n++; }));
-    if (d.wiki) n += LEGACY.mergeWiki(d.wiki);
-    if (d.exp) STORE.set('exp', d.exp);
-    if (d.battle_cur) STORE.set('battle_cur', d.battle_cur);
-    toast(`✓ Восстановлено записей: ${n}`, 'ok'); route();
+    let n = 0; const norm = { pc: normPC, npc: normNPC, item: normItem, batt: normBattle, map: normMap, shop: normShop };
+    Object.entries(norm).forEach(([k, f]) => (Array.isArray(d[k]) ? d[k] : []).filter(o => o && typeof o === 'object').forEach(o => { const x = f(o); STORE.set(k + '_' + x.id, x); n++; }));
+    if (Array.isArray(d.wiki)) n += LEGACY.mergeWiki(d.wiki);
+    if (d.exp && typeof d.exp === 'object') STORE.set('exp', d.exp);
+    if (d.battle_cur && typeof d.battle_cur === 'object') STORE.set('battle_cur', normBattle(d.battle_cur));
+    cachesReset(); toast(`✓ Восстановлено записей: ${n}`, 'ok'); route();
   },
 };
 
@@ -4804,7 +4859,7 @@ function lootCardHTML(it, { empty = 'Добавь описание или бло
   if (it.charges) { const c = it.charges; b += `<div class="lc-block" data-span="half"><div class="lc-bt">Заряды</div><div class="lc-ch"><div class="lc-pips">${Array.from({ length: Math.min(c.max, 30) }, (_, i) => `<i class="${i < c.cur ? '' : 'e'}"></i>`).join('')}</div><span class="lc-reset">${esc(c.reset)}</span></div>${c.note ? `<div class="lc-note">${esc(c.note)}</div>` : ''}</div>`; }
   if (it.ammo) b += `<div class="lc-block" data-span="half"><div class="lc-bt">${esc(it.ammo.name || 'Снаряды')}</div><div class="lc-ch"><span class="lc-formula" style="font-size:26px">${it.ammo.cur}</span><span class="lc-reset">в запасе</span></div></div>`;
   return `<div class="loot-card lc-${w}" style="${vars}">
-    <div class="lc-head"><div class="lc-name">${it.emoji ? `<span class="lc-em">${it.emoji}</span>` : ''}${esc(it.name || 'Предмет')}</div>
+    <div class="lc-head"><div class="lc-name">${it.emoji ? `<span class="lc-em">${esc(it.emoji)}</span>` : ''}${esc(it.name || 'Предмет')}</div>
       ${typeLine ? `<div class="lc-type">${esc(typeLine)}</div>` : ''}<div class="lc-rar rar-${rar}">${RARITY[rar] || rar}</div>${it.qty > 1 ? `<div class="lc-qty">×${it.qty}</div>` : ''}
       ${num(it.weight) > 0 && !weightRow(it) ? `<div class="lc-wt">⚖ ${fmtW(it.weight)}${it.ammo ? ' за снаряд' : ''}</div>` : ''}</div>
     <div class="lc-orn">· ◆ ·</div>
@@ -4838,7 +4893,7 @@ function itemFormHTML(it, model, { player = true } = {}) {
   const blocks = (it.blocks || []).map((bl, i) => blockEdHTML(bl, i)).join('');
   return `<div class="ifm">
     <div class="row top">
-      <button class="emoji-btn" data-act="itEmoji" title="Иконка">${it.emoji || '📦'}</button>
+      <button class="emoji-btn" data-act="itEmoji" title="Иконка">${esc(it.emoji || '📦')}</button>
       <div class="fld grow"><label>Название</label><input data-bind="name" value="${esc(it.name)}" placeholder="Меч теней"></div>
       <div class="fld" style="width:96px"><label>Количество</label><div class="qty-ed"><button data-act="itQty" data-d="-1">−</button><input type="number" min="0" data-bind="qty" value="${it.qty}"><button data-act="itQty" data-d="1">+</button></div></div>
     </div>
@@ -6095,7 +6150,7 @@ function irowHTML(it, z) {
   const sub = [it.type !== 'Прочее' ? it.type : '', it.rarity !== 'common' ? `<span class="rar-${it.rarity}">${RARITY[it.rarity]}</span>` : '', (it.tags || []).length ? `🏷${it.tags.length}` : '', it.attune ? (it.attuned ? '<span class="gold" title="Настроен">◈</span>' : '<span class="c-red" title="Не настроен — свойства не действуют">◇</span>') : '', w > 0 ? `<span class="iw">⚖ ${fmtW(w)}</span>` : ''].filter(Boolean).join(' · ');
   return `<div class="irow ${it.ammo || it.charges ? 'wide' : ''}" data-drag-src data-id="${it.id}" data-zone="${z}" style="--h:${it.hue ?? 30}">
     <span class="grip" data-grip="item" title="Перетащить">⠿</span>
-    <button class="irow-main" data-act="invOpen" data-id="${it.id}"><span class="irow-em">${it.emoji || '▪'}</span>
+    <button class="irow-main" data-act="invOpen" data-id="${it.id}"><span class="irow-em">${esc(it.emoji || '▪')}</span>
       <span class="irow-txt"><b class="ellip">${esc(it.name)}</b>${sub ? `<small class="ellip">${sub}</small>` : ''}</span></button>
     ${it.ammo ? `<span class="ctr" title="${esc(it.ammo.name)}"><button data-act="invAmmo" data-id="${it.id}" data-d="-1">−</button><b>${it.ammo.cur}</b><button data-act="invAmmo" data-id="${it.id}" data-d="1">+</button></span>` : ''}
     ${it.charges ? `<span class="ctr ch" title="Заряды · ${esc(it.charges.reset)}"><button data-act="invCh" data-id="${it.id}" data-d="-1">−</button><b>⚡${it.charges.cur}<i>/${it.charges.max}</i></b></span>` : ''}
@@ -6190,7 +6245,7 @@ function itemSheetBody(pc, id) {
 }
 ACT.invOpen = el => {
   const pc = activePC(), id = el.dataset.id, f = invFind(pc, id); if (!f) return;
-  const m = openModal({ title: `${f.it.emoji || '📦'} ${esc(f.it.name)}`, size: 'wide', body: `<div id="is-body">${itemSheetBody(pc, id)}</div>`,
+  const m = openModal({ title: `${esc(f.it.emoji || '📦')} ${esc(f.it.name)}`, size: 'wide', body: `<div id="is-body">${itemSheetBody(pc, id)}</div>`,
     foot: `<button class="btn danger icon" data-act="isDel" data-id="${id}" title="Удалить">🗑</button>${f.it.qty > 1 ? `<button class="btn" data-act="isSplit" data-id="${id}">✂ Разделить</button>` : ''}<button class="btn" data-act="isGive" data-id="${id}">📤 Отдать</button><span class="sp"></span><button class="btn pri" data-act="isEdit" data-id="${id}">📝 Изменить</button>`,
     onClose: () => invRefresh() });
   m.dataset.item = id;
@@ -6239,7 +6294,7 @@ ACT.isGive = async el => {
 ACT.invGiveMany = () => {
   const pc = activePC(); const all = invAll(pc); if (!all.length) return toast('Инвентарь пуст');
   const sel = {};
-  const m = openModal({ title: '📤 Отдать предметы', body: `<p class="dim small mb">Отметь вещи и количество — получится один код.</p>${all.map(({ it, z }) => `<label class="give-row"><input type="checkbox" data-gid="${it.id}"><span>${it.emoji || '▪'}</span><b class="grow ellip">${esc(it.name)}</b><small class="muted">${ZONES[z].icon}</small>
+  const m = openModal({ title: '📤 Отдать предметы', body: `<p class="dim small mb">Отметь вещи и количество — получится один код.</p>${all.map(({ it, z }) => `<label class="give-row"><input type="checkbox" data-gid="${it.id}"><span>${esc(it.emoji || '▪')}</span><b class="grow ellip">${esc(it.name)}</b><small class="muted">${ZONES[z].icon}</small>
       ${it.qty > 1 ? `<input type="number" min="1" max="${it.qty}" value="${it.qty}" data-gq="${it.id}" style="width:70px">` : ''}</label>`).join('')}`,
     foot: `<label class="chk"><input type="checkbox" id="give-rm" checked> убрать у себя</label><span class="sp"></span><button class="btn pri" id="give-go">Сделать код</button>` });
   $('#give-go', m).addEventListener('click', async () => {
@@ -6346,7 +6401,7 @@ function trCoinsEd(side) {
 }
 function trItemsHTML(side) {
   const list = side === 'pay' ? TR.payItems : TR.getItems;
-  return list.map((x, i) => `<div class="tr-item"><span>${x.emoji || '▪'}</span><b class="grow ellip">${esc(x.name)}</b>
+  return list.map((x, i) => `<div class="tr-item"><span>${esc(x.emoji || '▪')}</span><b class="grow ellip">${esc(x.name)}</b>
     ${side === 'pay' && x.price ? `<button class="btn xs gold" data-act="trHalf" data-i="${i}" title="Торговцы обычно покупают снаряжение за полцены (PHB)">½ цены: ${fmtGp(Math.floor(coinsCp(x.price) * x.qty / 2))} ЗЗ</button>` : ''}
     <input type="number" min="1" ${x.max ? `max="${x.max}"` : ''} value="${x.qty}" data-in="trItemQty" data-side="${side}" data-i="${i}"><button class="btn xs ghost" data-act="trItemDel" data-side="${side}" data-i="${i}">✕</button></div>`).join('');
 }
@@ -6460,7 +6515,7 @@ function npcPreviewHTML(n) {
     <div class="np-body"><div class="chips"><span class="chip">❤ ${n.hp} HP</span><span class="chip">🛡 ${n.ac} КБ</span><span class="chip">⚡ ${n.speed} кл.</span></div>
     <div class="np-stats">${STATS.map(s => `<div><small>${STAT_SHORT[s]}</small><b>${sgn(abMod(n.stats[s]))}</b><i>${n.stats[s]}</i></div>`).join('')}</div>
     ${n.actions.length || n.bonusActions.length ? `<div class="np-acts">${acts(n.actions, '●')}${acts(n.bonusActions, '▲')}</div>` : ''}
-    ${n.ammo.length ? `<div class="chips mt">${n.ammo.map(a => `<span class="chip">${a.emoji} ${esc(a.name)} <b>${a.count}</b></span>`).join('')}</div>` : ''}
+    ${n.ammo.length ? `<div class="chips mt">${n.ammo.map(a => `<span class="chip">${esc(a.emoji)} ${esc(a.name)} <b>${a.count}</b></span>`).join('')}</div>` : ''}
     ${n.customCards.map(c => `<div class="ic-h mt" style="background:${esc(c.color)};border-radius:4px">${esc(c.shape || '')} ${esc(c.title || 'Карточка')}</div>`).join('')}</div></div>`;
 }
 function npcActHTML(a, arr, i) {
@@ -7048,7 +7103,7 @@ function smPanelHTML(n) {
     <div class="fld mt"><label>🔒 Заметки мастера</label><textarea class="auto" data-bind="notes">${esc(n.notes)}</textarea></div>
     <div class="fld mt"><label>💰 Лут / награда (текст)</label><textarea class="auto" data-bind="loot">${esc(n.loot)}</textarea></div>
     ${n.loot ? '<button class="btn xs mt" data-act="smLootToLib">📜 Сделать карточку лута из текста</button>' : ''}
-    <div class="smp-sec"><div class="lbl">🃏 Карточки лута</div><div class="chips">${n.lootCards.map(k => { const it = libItem.find(x => x.id === k); return it ? chip(`${it.emoji || '📜'} ${esc(it.name)}`, 'smUnlink', `data-arr="lootCards" data-v="${k}"`) : ''; }).join('')}</div>
+    <div class="smp-sec"><div class="lbl">🃏 Карточки лута</div><div class="chips">${n.lootCards.map(k => { const it = libItem.find(x => x.id === k); return it ? chip(`${esc(it.emoji || '📜')} ${esc(it.name)}`, 'smUnlink', `data-arr="lootCards" data-v="${k}"`) : ''; }).join('')}</div>
       ${libItem.length ? `<select class="mt" data-ch="smLink" data-arr="lootCards"><option value="">＋ Привязать предмет из библиотеки…</option>${libItem.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select>` : '<div class="muted small">Библиотека лута пуста</div>'}</div>
     <div class="smp-sec"><div class="lbl">👤 NPC в сцене</div><div class="chips">${n.npcs.map(k => { const x = libNPC.find(y => y.id === k); return x ? chip(`${ALIGN[x.align]?.icon || ''} ${esc(x.name)}`, 'smUnlink', `data-arr="npcs" data-v="${k}"`) : ''; }).join('')}</div>
       <div class="row mt">${libNPC.length ? `<select class="grow" data-ch="smLink" data-arr="npcs"><option value="">＋ Из библиотеки NPC…</option>${libNPC.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select>` : ''}<button class="btn sm" data-act="smNewNpc">＋ Новый NPC</button></div></div>
@@ -7175,6 +7230,11 @@ function exp() {
       EXP.awake = num(EXP.hoursToday); EXP.march = num(EXP.hoursToday);
     }
     EXP.day = dayOf(EXP.time);
+    ['supplies', 'party', 'hexTotal', 'hexToday', 'horses', 'gallopDay'].forEach(k => { EXP[k] = Math.max(0, int(EXP[k])); }); EXP.party = clamp(EXP.party || 1, 1, 10);
+    ['time', 'awake', 'march', 'meat'].forEach(k => { EXP[k] = Math.max(0, num(EXP[k])); }); EXP.season = oneOf(EXP.season, Object.keys(EXP_SUN), 'winter');
+    EXP.mount = oneOf(EXP.mount, EXP_MOUNTS.map(m => m.id), 'foot'); EXP.names = (Array.isArray(EXP.names) ? EXP.names : []).map(asStr);
+    EXP.status = (Array.isArray(EXP.status) ? EXP.status : []).map(x => oneOf(x, ['ok', 'hungry', 'exhausted'], 'ok')); EXP.log = (Array.isArray(EXP.log) ? EXP.log : []).filter(Boolean);
+    const t = EXP_TERRAINS.find(x => x.id === EXP.terrain?.id) || EXP_TERRAINS[0]; EXP.terrain = { id: t.id, h: t.h, label: t.label, encMod: t.enc };
   }
   return EXP;
 }
@@ -7614,7 +7674,7 @@ function gmSceneHTML() {
     ${sec('🎲 Проверки', n.checks.map(c => `<div class="gm-chk"><div class="gm-chk-h"><b>${esc(c.skill || 'Проверка')}</b>${c.dc ? `<span class="chip">СЛ ${c.dc}${c.dcSuper ? ' / ' + c.dcSuper : ''}</span>` : ''}${c.note ? `<small class="muted">⚠ ${esc(c.note)}</small>` : ''}</div>
       <div class="gm-chk-r fail"><span>Провал</span><div>${c.fail ? nl2br(c.fail) : '—'}</div></div><div class="gm-chk-r ok"><span>Успех</span><div>${c.success ? nl2br(c.success) : '—'}</div></div><div class="gm-chk-r sup"><span>Супер${c.dcSuper ? ' ' + c.dcSuper + '+' : ''}</span><div>${c.super ? nl2br(c.super) : '—'}</div></div></div>`).join(''))}
     ${sec('🔒 Заметки мастера', n.notes ? `<div class="gm-note">${nl2br(n.notes)}</div>` : '')}
-    ${sec('💰 Лут', (n.loot ? `<div class="gm-note">${nl2br(n.loot)}</div>` : '') + (n.lootCards.length ? `<div class="chips mt">${n.lootCards.map(k => { const it = lib.item.find(x => x.id === k); return it ? `<button class="chip btnlike" data-act="gmLoot" data-id="${it.id}">${it.emoji || '📜'} ${esc(it.name)}</button>` : ''; }).join('')}</div>` : ''))}
+    ${sec('💰 Лут', (n.loot ? `<div class="gm-note">${nl2br(n.loot)}</div>` : '') + (n.lootCards.length ? `<div class="chips mt">${n.lootCards.map(k => { const it = lib.item.find(x => x.id === k); return it ? `<button class="chip btnlike" data-act="gmLoot" data-id="${it.id}">${esc(it.emoji || '📜')} ${esc(it.name)}</button>` : ''; }).join('')}</div>` : ''))}
     ${sec('📚 Вики', n.wikiLinks.map(w => { const a = wikiFind(w); return a ? `<button class="chip btnlike" style="border-color:${WIKI_CATS[a.category]?.color}" data-act="gmWiki" data-id="${a.id}">${WIKI_CATS[a.category]?.icon || '📄'} ${esc(a.title)}</button>` : ''; }).join('') && `<div class="chips">${n.wikiLinks.map(w => { const a = wikiFind(w); return a ? `<button class="chip btnlike" style="border-color:${WIKI_CATS[a.category]?.color}" data-act="gmWiki" data-id="${a.id}">${WIKI_CATS[a.category]?.icon || '📄'} ${esc(a.title)}</button>` : ''; }).join('')}</div>`)}
     ${sec('Переходы', (inn.length || out.length) ? `<div class="gm-nav">${inn.map(e => `<button class="btn sm ghost" data-act="gmScene" data-id="${e.from}">← ${esc(smNode(e.from)?.title || '?')}</button>`).join('')}${out.map(e => `<button class="btn sm" style="border-color:${smNode(e.to)?.color || (SM_TAGS[smNode(e.to)?.tag] || SM_TAGS.explore).color}" data-act="gmScene" data-id="${e.to}">→ ${esc(smNode(e.to)?.title || '?')}${e.label ? ` <small class="muted">· ${esc(e.label)}</small>` : ''}</button>`).join('')}</div>` : '')}
   </div>`;
@@ -7639,7 +7699,7 @@ ACT.gmNpc = el => { const n = STORE.one('npc', el.dataset.id); openMenu(el, [{ h
 ACT.gmLoot = el => {
   const it = STORE.one('item', el.dataset.id); if (!it) return;
   const pc = activePC();
-  openModal({ title: `${it.emoji || '📜'} ${esc(it.name)}`, body: `<div class="is-card">${lootCardHTML(normItem(it), { empty: '' })}</div>`,
+  openModal({ title: `${esc(it.emoji || '📜')} ${esc(it.name)}`, body: `<div class="is-card">${lootCardHTML(normItem(it), { empty: '' })}</div>`,
     foot: `${pc ? `<button class="btn" id="gl-pc">🎒 В рюкзак «${esc(pc.name)}»</button>` : ''}<button class="btn pri" id="gl-share">📤 Выдать кодом</button>` });
   $('#gl-share').addEventListener('click', () => { closeModal(); SHARE.open('items', [itemCopy(normItem(it))], it.name); });
   $('#gl-pc')?.addEventListener('click', () => { invAdd(pc, itemCopy(normItem(it)), 'pack'); savePC(pc); closeModal(); toast(`🎒 «${it.name}» → ${pc.name}`, 'ok'); });
@@ -7736,7 +7796,7 @@ function lootListHTML() {
   const q = LOOT.q.toLowerCase();
   const list = STORE.list('item').filter(x => !q || (x.name + ' ' + x.type + ' ' + x.subtype).toLowerCase().includes(q));
   return list.map(x => `<button class="lib-row ${x.id === LOOT.id ? 'on' : ''}" data-act="lootPick" data-id="${x.id}" style="--h:${x.hue ?? 30}">
-    <span class="lib-em">${x.emoji || '📜'}</span><span class="grow" style="min-width:0"><b class="ellip">${esc(x.name)}</b><small class="ellip"><span class="rar-${x.rarity}">${RARITY[x.rarity] || ''}</span> · ${esc(x.type)}</small></span></button>`).join('')
+    <span class="lib-em">${esc(x.emoji || '📜')}</span><span class="grow" style="min-width:0"><b class="ellip">${esc(x.name)}</b><small class="ellip"><span class="rar-${x.rarity}">${RARITY[x.rarity] || ''}</span> · ${esc(x.type)}</small></span></button>`).join('')
     || `<div class="empty small">${q ? 'Ничего не найдено' : 'Библиотека пуста.<br>Создай первую карточку.'}</div>`;
 }
 function lootListRefresh() { const l = $('#loot-list'); if (l) l.innerHTML = lootListHTML(); }
@@ -7785,7 +7845,7 @@ VIEWS.loot = {
 ACT.lootShare = () => { const it = lootObj(); if (it) SHARE.open('items', [itemCopy(it)], it.name); };
 ACT.lootShareMany = () => {
   const lib = STORE.list('item'); if (!lib.length) return;
-  const m = openModal({ title: '📤 Выдать предметы', body: `<p class="dim small mb">Отметь предметы и количество — получится один код для игрока.</p>${lib.map(x => `<label class="give-row"><input type="checkbox" data-lid="${x.id}"><span>${x.emoji || '📜'}</span><b class="grow ellip">${esc(x.name)}</b><input type="number" min="1" value="1" data-lq="${x.id}" style="width:70px"></label>`).join('')}`,
+  const m = openModal({ title: '📤 Выдать предметы', body: `<p class="dim small mb">Отметь предметы и количество — получится один код для игрока.</p>${lib.map(x => `<label class="give-row"><input type="checkbox" data-lid="${x.id}"><span>${esc(x.emoji || '📜')}</span><b class="grow ellip">${esc(x.name)}</b><input type="number" min="1" value="1" data-lq="${x.id}" style="width:70px"></label>`).join('')}`,
     foot: '<button class="btn pri" id="lsm-go">Сделать код</button>' });
   $('#lsm-go', m).addEventListener('click', () => {
     const pick = $$('[data-lid]', m).filter(c => c.checked).map(c => itemCopy(lib.find(x => x.id === c.dataset.lid), Math.max(1, int($(`[data-lq="${c.dataset.lid}"]`, m).value, 1))));
@@ -8057,7 +8117,9 @@ const TTG = {
 
 /* ── Точки входа ── */
 const ITEM_KINDS = ['magic', 'weapon', 'armor', 'item'];
-ACT.ttgSpell = () => TTG.open({ kinds: ['spell'], title: '🔎 Заклинание с ttg.club', onPick: s => { const pc = activePC(); pc.hasSpells = true; pc.spells.push(s); savePC(pc); ccRefresh('spellcards'); toast(`✨ «${s.name}» добавлено`, 'ok'); } });
+ACT.ttgSpell = () => TTG.open({ kinds: ['spell'], title: '🔎 Заклинание с ttg.club', onPick: s => { const pc = activePC();
+  if (pc.spells.some(x => x.name.toLowerCase() === s.name.toLowerCase())) return toast(`«${s.name}» уже есть в карточках`);
+  pc.hasSpells = true; pc.spells.push(s); savePC(pc); ccRefresh('spells', 'spellcards'); toast(`✨ «${s.name}» добавлено`, 'ok'); } });
 ACT.ttgInv = el => { const z = el.dataset.z || 'pack'; TTG.open({ kinds: ITEM_KINDS, title: `🔎 Предмет с ttg.club → ${ZONES[z].label}`, onPick: async (it, kind, d) => {
   const pc = activePC();
   if (isPackItem(it)) { toast(`📦 Раскладываю «${it.name}» на вещи…`); const items = await expandPack(d?.description || itemDesc(it)); items.forEach(x => invAdd(pc, x, z)); savePC(pc); invRefresh(); toast(`📦 «${it.name}»: ${items.length} ${plural(items.length, 'вещь', 'вещи', 'вещей')} в «${ZONES[z].label}»`, 'ok'); return; }
@@ -8179,9 +8241,9 @@ function offlHTML() {
 ═══════════════════════════════════════════════════════ */
 function normShop(d) {
   const s = Object.assign({ name: 'Лавка', keeper: '', note: '', markup: 100, items: [] }, d || {});
-  if (!s.id) s.id = uid('shop');
+  s.id = safeId(s.id, 'shop'); s.name = asStr(s.name) || 'Лавка'; s.keeper = asStr(s.keeper); s.note = asStr(s.note);
   s.markup = clamp(int(s.markup, 100), 10, 1000);
-  s.items = (s.items || []).filter(x => x && x.it).map(x => ({ it: normItem(x.it), price: x.price || {}, stock: x.stock == null || x.stock === '' ? null : Math.max(0, int(x.stock)) }));
+  s.items = (Array.isArray(s.items) ? s.items : []).filter(x => x && x.it).map(x => ({ it: normItem(x.it), price: cpCoins(Math.max(0, coinsCp(x.price))), stock: x.stock == null || x.stock === '' ? null : Math.max(0, int(x.stock)) }));
   return s;
 }
 /* Готовые наборы товаров — цены и вес по PHB (фунты). Оружие и доспехи — с костями и КБ, чтобы на листе сразу считались атака и защита */
@@ -8227,7 +8289,7 @@ function shopHTML(s) {
     <div class="fld mt"><label>Заметка</label><input data-in="shopF" data-k="note" value="${esc(s.note)}" placeholder="Торгуется, если похвалить кошку"></div>
     <div class="btns mt"><button class="btn sm" data-act="shopAddTtg">🔎 ttg.club</button>${STORE.keys('item_').length ? '<button class="btn sm" data-act="shopAddLoot">📜 Из лута</button>' : ''}<button class="btn sm" data-act="shopAddQuick">✎ Вручную</button><button class="btn sm gold" data-act="shopGoods">🎲 Набор товаров</button></div>
     <div class="shop-list mt">${s.items.map((x, i) => { const cp = shopPriceCp(s, x), w = itemUnitLb(x.it);
-      return `<div class="shop-row ${x.stock === 0 ? 'out' : ''}"><span class="irow-em">${x.it.emoji || '▪'}</span><button class="grow shop-n" data-act="shopView" data-i="${i}"><b>${esc(x.it.name)}</b><small class="muted">${[x.it.type !== 'Прочее' ? x.it.type : '', w ? fmtW(w) : ''].filter(Boolean).join(' · ')}</small></button>
+      return `<div class="shop-row ${x.stock === 0 ? 'out' : ''}"><span class="irow-em">${esc(x.it.emoji || '▪')}</span><button class="grow shop-n" data-act="shopView" data-i="${i}"><b>${esc(x.it.name)}</b><small class="muted">${[x.it.type !== 'Прочее' ? x.it.type : '', w ? fmtW(w) : ''].filter(Boolean).join(' · ')}</small></button>
         <input class="shop-p" value="${esc(fmtCoins(x.price, ''))}" placeholder="цена" data-ch="shopPrice" data-i="${i}" title="Базовая цена: 15 ЗЗ, 2 СЗ 5 МЗ…">${s.markup !== 100 ? `<small class="gold">${fmtGp(cp)} ЗЗ</small>` : ''}
         <input class="shop-s" type="number" min="0" value="${x.stock ?? ''}" placeholder="∞" data-ch="shopStock" data-i="${i}" title="Сколько в наличии (пусто — без счёта)">
         <button class="btn sm pri" data-act="shopBuy" data-i="${i}" ${!pc || x.stock === 0 ? 'disabled' : ''} title="${pc ? 'Купить — откроется торговля' : 'Выбери персонажа'}">Купить</button><button class="btn xs ghost" data-act="shopDel" data-i="${i}">✕</button></div>`; }).join('') || '<div class="empty small">Пусто — добавь товары кнопками выше</div>'}</div></div>`;
@@ -8237,7 +8299,7 @@ IN.shopF = debounce(el => { const s = shopCur(); if (!s) return; s[el.dataset.k]
 CH.shopPrice = el => { const s = shopCur(), x = s.items[int(el.dataset.i)], p = parseCoins(el.value); if (!p) return toast('Цена: например «15 ЗЗ» или «2 СЗ 5 МЗ»', 'err'); x.price = p; shopPut(s); shopRe(); };
 CH.shopStock = el => { const s = shopCur(), x = s.items[int(el.dataset.i)]; x.stock = el.value === '' ? null : Math.max(0, int(el.value)); shopPut(s); shopRe(); };
 ACT.shopDel = el => { const s = shopCur(); s.items.splice(int(el.dataset.i), 1); shopPut(s); shopRe(); };
-ACT.shopView = el => { const x = shopCur().items[int(el.dataset.i)]; openModal({ title: `${x.it.emoji || '📦'} ${esc(x.it.name)}`, size: 'wide', body: lootCardHTML(x.it, { empty: '' }) }); };
+ACT.shopView = el => { const x = shopCur().items[int(el.dataset.i)]; openModal({ title: `${esc(x.it.emoji || '📦')} ${esc(x.it.name)}`, size: 'wide', body: lootCardHTML(x.it, { empty: '' }) }); };
 const shopAdd = (it, price, stock = null) => { const s = shopCur(); if (!s) return; s.items.push({ it: itemCopy(it), price: price || {}, stock }); shopPut(s); shopRe(); };
 ACT.shopAddTtg = () => TTG.open({ kinds: ITEM_KINDS, title: '🔎 Товар с ttg.club', onPick: it => { shopAdd(it, ttgPrice(it)); toast(`🏪 «${it.name}» на прилавке${ttgPrice(it) ? '' : ' — впиши цену'}`, 'ok'); } });
 ACT.shopAddLoot = async () => { const lib = STORE.list('item'); const id = await pickBox('📜 Из библиотеки лута', lib.map(x => ({ id: x.id, label: x.name, sub: [x.type, RARITY[x.rarity]].join(' · '), icon: x.emoji || '📜' })), { empty: 'Библиотека пуста' });
@@ -9154,7 +9216,7 @@ ACT.levelUp = async () => {
     if (st.sub && !st.subD) st.subD = await TTG.post('/api/v1' + st.sub.url).catch(() => null); // умения подкласса могли не успеть загрузиться
     feats = getFeats();
     const openSpells = $('#lu-sp', m)?.checked;
-    const g = gain(); pc.level = L; pc.hp.max += g; pc.hp.cur += g;
+    const g = gain(); pc.level = L; pc.hp.max += g; pc.hp.cur = Math.min(pc.hp.cur + g, pcMaxHp(pc));
     if (st.sub) { pc.subclass = st.sub.name.rus; pc.build = { ...(pc.build || {}), sub: st.sub.url }; }
     if (isASI()) {
       if (st.asi === 'feat' && st.featD) { if (st.featAb) pc.stats[st.featAb] = Math.min(20, pc.stats[st.featAb] + 1);
@@ -9286,12 +9348,12 @@ ACT.backupLoad = async () => {
   else SHARE.openImport(text);
 };
 /* ═══ Файловый менеджер библиотек: крыжки, массовое удаление и код ═══ */
-const LIBM_KINDS = [['pc', '🧙', 'Персонажи'], ['npc', '👹', 'NPC'], ['item', '📜', 'Лут'], ['batt', '⚔', 'Бои'], ['map', '🗺', 'Сюжеты'], ['wiki', '📚', 'Вики']];
+const LIBM_KINDS = [['pc', '🧙', 'Персонажи'], ['npc', '👹', 'NPC'], ['item', '📜', 'Лут'], ['batt', '⚔', 'Бои'], ['map', '🗺', 'Сюжеты'], ['wiki', '📚', 'Вики'], ['shop', '🏪', 'Лавки']];
 const LIBM = { kind: 'npc', q: '', sel: new Set() };
 function libmList(k) {
   if (k === 'wiki') return wikiArts().map(a => ({ id: a.id, name: a.title, ic: WIKI_CATS[a.category]?.icon || '📄', sub: (a.tags || []).join(', '), _ts: a._ts, o: a }));
   return STORE.list(k).map(o => ({ id: o.id, name: o.name || o.title || 'Без названия', ic: o.emoji || LIBM_KINDS.find(x => x[0] === k)[1],
-    sub: k === 'pc' ? [o.race, o.cls, o.level && o.level + ' ур.'].filter(Boolean).join(' · ') : k === 'map' ? (o.nodes || []).length + ' сцен' : k === 'batt' ? (o.list || []).length + ' участн.' : (o.type || o.cr || ''), _ts: o._ts, o }))
+    sub: k === 'pc' ? [o.race, o.cls, o.level && o.level + ' ур.'].filter(Boolean).join(' · ') : k === 'map' ? (o.nodes || []).length + ' сцен' : k === 'batt' ? (o.list || []).length + ' участн.' : k === 'shop' ? (o.items || []).length + ' товаров' : (o.type || o.cr || ''), _ts: o._ts, o }))
     .sort((a, b) => (b._ts || 0) - (a._ts || 0));
 }
 const libmKey = (k, id) => k + ':' + id;
@@ -9337,7 +9399,8 @@ ACT.libManager = el => {
       });
       if (by.pc?.some(p => p.id === SETTINGS.pc)) setActivePC(STORE.list('pc')[0]?.id || null);
       if (by.map?.some(p => p.id === SETTINGS.map)) { SETTINGS.map = null; saveSettings(); }
-      LIBM.sel.clear(); libmRender(m); toast(`🗑 Удалено: ${total}`, 'ok'); return;
+      if (by.npc?.some(x => x.id === NPCV.id)) NPCV.id = null; if (by.item?.some(x => x.id === LOOT.id)) LOOT.id = null; if (by.shop?.some(x => x.id === SHOPV.id)) SHOPV.id = null;
+      cachesReset(); LIBM.sel.clear(); libmRender(m); toast(`🗑 Удалено: ${total}`, 'ok'); return;
     }
     const bundle = Object.fromEntries(kinds.map(k => [k, clone(by[k])]));
     if (x === 'file') { download(`dnd9_выборка_${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify({ _dnd9backup: 1, date: Date.now(), d: bundle }, null, 1)); return toast('📄 Файл скачан', 'ok'); }
@@ -9350,6 +9413,7 @@ ACT.libManager = el => {
       if (l.length === 1 && k === 'pc') return SHARE.open('pc', normPC(l[0]), l[0].name);
       if (l.length === 1 && k === 'batt') return SHARE.open('batt', l[0], l[0].name || 'Бой');
       if (l.length === 1 && k === 'map') return SHARE.open('map', MAPIO.bundle(l[0]), l[0].title);
+      if (l.length === 1 && k === 'shop') return SHARE.open('shop', l[0], l[0].name);
     }
     SHARE.open('all', bundle, `Выборка: ${total} шт.`);
   });
@@ -9358,7 +9422,7 @@ ACT.libManager = el => {
 ACT.wipeAll = async () => {
   if (!await confirmBox('Удалить ВСЕ данные V9 в этом браузере: персонажей, NPC, лут, бои, сцены, вики, экспедицию?', { ok: 'Да, удалить всё', danger: true })) return;
   if (!await confirmBox('Точно? Без резервной копии вернуть будет нельзя.', { ok: 'Удалить навсегда', danger: true })) return;
-  STORE.keys('').forEach(k => STORE.del(k)); Object.assign(SETTINGS, { pc: null, map: null }); _pc = null; saveSettings(); go('home'); toast('🗑 Всё удалено');
+  STORE.keys('').forEach(k => STORE.del(k)); Object.assign(SETTINGS, { pc: null, map: null }); cachesReset(); saveSettings(); go('home'); toast('🗑 Всё удалено');
 };
 
 // ── app.js ──
@@ -9461,7 +9525,7 @@ VIEWS.home = {
   title: 'DnD Multitool', icon: '🎲',
   render(el) {
     const pc = activePC(), m = isMaster(), pcs = STORE.list('pc');
-    const pct = pc ? clamp(pc.hp.cur / Math.max(1, pc.hp.max) * 100, 0, 100) : 0;
+    const pct = pc ? clamp(pc.hp.cur / Math.max(1, pcMaxHp(pc)) * 100, 0, 100) : 0;
     const showLegacy = LEGACY.hasOld() && !SETTINGS.legacyDone;
     el.innerHTML = `<div class="home">
       <div class="home-logo"><span>🎲</span><h1>DnD Multitool</h1><small>by Haze · V${APP_VERSION} · всё для игрока и мастера за столом</small></div>
@@ -9469,7 +9533,7 @@ VIEWS.home = {
       ${showLegacy ? `<div class="note warn home-legacy"><b>Нашлись данные старой версии (V8)</b> — персонажи, NPC, лут, бои, сцены, вики.<div class="btns mt"><button class="btn pri sm" data-act="legacyImport">⇪ Перенести сюда</button><button class="btn ghost sm" data-act="legacyHide">Не сейчас</button></div></div>` : ''}
       ${pc ? `<div class="home-pc frame" data-act="go" data-v="sheet">
         <div class="grow" style="min-width:0"><b class="ellip">${esc(pc.name)}</b><small class="ellip">${esc([pc.race, pc.cls].filter(Boolean).join(' · ') || 'Персонаж')} · ${pc.level} ур.</small>
-          <div class="hp-bar sm"><div style="width:${pct}%;background:${hpColor(pct)}"></div></div><small class="muted">❤ ${pc.hp.cur}/${pc.hp.max} · 🛡 ${pc.ac} · 💰 ${fmtGp(coinsCp(pc.coins))} ЗЗ</small></div></div>` : ''}
+          <div class="hp-bar sm"><div style="width:${pct}%;background:${hpColor(pct)}"></div></div><small class="muted">❤ ${pc.hp.cur}/${pcMaxHp(pc)} · 🛡 ${pcAC(pc)} · 💰 ${fmtGp(coinsCp(pc.coins))} ЗЗ</small></div></div>` : ''}
       <div class="home-menu">
         ${pc ? `<button class="hexbtn pri" data-act="go" data-v="sheet">Продолжить</button>` : `<button class="hexbtn pri" data-act="charWizard">🧙 Мастер создания персонажа</button><button class="hexbtn" data-act="pcNew">✨ Пустой лист</button>`}
         ${pc ? `<button class="hexbtn" data-act="go" data-v="inv">🎒 Инвентарь</button>` : ''}
@@ -9485,8 +9549,11 @@ VIEWS.home = {
     </div>`;
   },
 };
+/** Кэши в памяти (персонаж, бой, карта, вики, экспедиция, открытые редакторы). Сбрасывать после записи в хранилище «в обход»:
+    восстановление, импорт, очистка — иначе экран покажет старое, а следующее сохранение затрёт новое */
+function cachesReset() { _pc = null; BT = null; MAP = null; WIKI = null; EXP = null; _npcObj = null; _lootObj = null; _gmw = null; }
 ACT.legacyImport = async () => {
-  const s = LEGACY.fromBrowser(); SETTINGS.legacyDone = true; saveSettings(); _pc = null;
+  const s = LEGACY.fromBrowser(); SETTINGS.legacyDone = true; saveSettings(); cachesReset();
   await confirmBox('Перенесено: ' + LEGACY.summary(s) + '.\n\nСтарые данные V8 не удалены — старый файл продолжит работать.', { title: '✓ Готово', ok: 'Отлично' });
   route();
 };
