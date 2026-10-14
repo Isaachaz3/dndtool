@@ -2313,6 +2313,30 @@ button.pill{display:block;width:100%;font:inherit;color:inherit;}
 .gs-r:hover,.gs-r:focus{background:rgba(200,168,107,.08);}
 .gs-ic{width:24px;text-align:center;}
 
+/* ── v11.1.1: выбор заклинаний — строки под палец, ℹ — отдельная кнопка ── */
+.sp-limits{padding:8px 10px;border:1px solid var(--line2);border-radius:5px;background:rgba(0,0,0,.22);font-family:var(--f-label);font-size:14px;color:var(--tx2);}
+.sp-limits b{font-family:var(--f-title);font-size:17px;color:var(--tx);} .sp-limits b.gold{color:var(--gold2);}
+.sp-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:4px 10px;}
+.sp-row{display:flex;align-items:center;gap:10px;min-height:44px;padding:2px 2px 2px 8px;border:1px solid transparent;border-radius:5px;cursor:pointer;font-size:15px;color:var(--tx);}
+.sp-row:hover{background:rgba(200,168,107,.06);}
+.sp-row input{width:22px;height:22px;flex-shrink:0;accent-color:var(--gold);}
+.sp-row:has(input:checked:not([data-has])){border-color:var(--gold3);background:rgba(200,168,107,.08);}
+.sp-row.has{opacity:.6;} .sp-row.off{opacity:.4;cursor:not-allowed;}
+.sp-row .spc-tag{font-size:10.5px;padding:0 4px;}
+.sp-i{flex-shrink:0;width:40px;height:40px;display:grid;place-items:center;border:1px solid var(--line2);border-radius:5px;font-weight:700;color:var(--gold2);background:rgba(0,0,0,.25);}
+.sp-i:hover{border-color:var(--gold);}
+
+/* ── Мастер создания: модификатор в рамке, предупреждение, статьи в редакторе ── */
+.cw-fin{display:inline-flex;align-items:center;gap:8px;}
+.mod-box{display:inline-block;min-width:34px;padding:1px 6px;border:1.5px solid var(--gold3);border-radius:4px;text-align:center;font-family:var(--f-label);font-weight:700;font-style:normal;font-size:13px;color:var(--gold2);background:rgba(200,168,107,.1);}
+.cw-disc{margin-top:12px;padding:8px 10px;border-left:3px solid var(--orange2);background:rgba(213,138,46,.08);font-size:13px;line-height:1.4;color:var(--tx2);}
+.refs{display:flex;flex-wrap:wrap;gap:8px;}
+.ref-chip{display:flex;flex-direction:column;align-items:flex-start;min-height:44px;padding:5px 12px;border:1px solid var(--gold3);border-radius:5px;background:rgba(200,168,107,.07);text-align:left;}
+.ref-chip small{font-family:var(--f-label);font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;}
+.ref-chip b{font-size:14.5px;color:var(--gold2);}
+.ref-chip:hover{border-color:var(--gold);}
+@media (pointer:coarse){ .cw-grid .chk{min-height:40px;} .cw-grid .chk input{width:20px;height:20px;} }
+
 </style>
 </head>
 <body>
@@ -2336,7 +2360,7 @@ button.pill{display:block;width:100%;font:inherit;color:inherit;}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '11.1.0';
+const APP_VERSION = '11.1.1';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -3128,15 +3152,17 @@ function dkSrcLines(tb) {
   ].filter(Boolean);
 }
 /** d20: «брось d20 +5», режим и откуда он. extra — свои строки правил (крит у атаки и т. п.) */
-function dkHintD20(label, mod, tb = {}, extra = []) {
+function dkHintD20(label, mod, tb = {}, extra = [], opt = {}) {
   const adv = !!tb.adv, dis = !!tb.dis, mode = adv && !dis ? 'adv' : dis && !adv ? 'dis' : '', m = mod + (tb.bonus || 0);
   const dice = (tb.dice || []).map(d => ' + ' + esc(String(d).replace(/^\+/, '').replace(/d/g, 'к'))).join('');
   const fail = (tb.src || []).some(s => s.e === 'FAIL');
   const lines = [...dkSrcLines(tb),
     mode === 'adv' && { t: 'Брось <b>два d20</b> и возьми <b>больший</b>' }, mode === 'dis' && { t: 'Брось <b>два d20</b> и возьми <b>меньший</b>' },
     adv && dis && { t: 'Преимущество и помеха гасят друг друга — один d20' }, ...extra];
-  dkHint({ label, mode, formula: fail ? '✕ автопровал' : `${mode ? '2d20' : 'd20'} ${m ? sgn(m) : ''}${dice}${mode ? `<small>${mode === 'adv' ? 'больший' : 'меньший'}</small>` : ''}`, lines });
+  dkHint({ label, mode, formula: fail ? '✕ автопровал' : `${mode ? '2d20' : 'd20'} ${m ? sgn(m) : ''}${dice}${mode ? `<small>${mode === 'adv' ? 'больший' : 'меньший'}</small>` : ''}${opt.need ? `<small>≥ ${opt.need}</small>` : ''}`, lines, acts: opt.acts });
 }
+/** Урон/лечение по формуле: автобросок — кубики в свитке, иначе подсказка (кости живые) */
+const dmgRoll = (label, f, opt = {}) => autoRoll() ? dkFormula(label, f, { tag: opt.tag }) : dkHintDmg(label, f, opt);
 /** Урон: формула, крит (кости ×2) и тип */
 function dkHintDmg(label, f, opt = {}) {
   const ff = String(f || '').replace(/\s+/g, ''), crit = ff.replace(/(\d*)d(\d+)/gi, (_, n, s) => `${2 * int(n || 1, 1)}d${s}`);
@@ -3322,6 +3348,8 @@ const SIZES = ['Крошечный', 'Маленький', 'Средний', 'Б
 const SIZE_CARRY = { 'Крошечный': 0.5, 'Маленький': 1, 'Средний': 1, 'Большой': 2, 'Огромный': 4, 'Громадный': 8 };
 // вес одного снаряда, если у вещи свой вес не указан (PHB: стрелы 20 шт. — 1 фнт., болты и пули 20 шт. — 1,5 фнт., иглы 50 шт. — 1 фнт.)
 const AMMO_LB = [[/игл/i, 1 / 50], [/болт|пул|снаряд/i, 1.5 / 20], [/стрел/i, 1 / 20]];
+// что считать снарядами со счётчиком (стартовое снаряжение, наборы, лавки)
+const AMMO_RE = /стрел|болт|игл[аы]|пул[ья]/i;
 
 /* ═══ Теги бросков ═══ */
 const TAG_CATS = {
@@ -4966,6 +4994,7 @@ function pcSpeed(pc) {
   if (req && int(pc.stats.str, 10) < req && !/дварф/i.test(pc.race)) { ft -= 10; why.push(`доспех требует Силу ${req}: −10`); }
   const c = pcCarry(pc);
   if (c.lvl === 1 || c.lvl === 2) { ft -= c.lvl * 10; why.push(c.lvl === 1 ? 'обременён: −10' : 'сильно обременён: −20'); }
+  pc.conds.forEach(x => { const k = EFFECT_BY[x.name]?.speedX; if (k) { ft = Math.floor(ft * k / 5) * 5; why.push(`${x.name}: ×${k === 0.5 ? '½' : k}`); } });
   const exh = int(pc.exh);
   if (exh >= 2 && exh < 5) { ft = Math.floor(ft / 2 / 5) * 5; why.push(`истощение ${exh}: вдвое`); }
   ft = Math.max(0, ft);
@@ -5005,6 +5034,21 @@ function pcAC(pc) {
 }
 /** Максимум хитов с учётом уменьшения (вампиризм) и истощения 4+ */
 function pcMaxHp(pc) { const m = Math.max(1, int(pc.hp.max, 1) - Math.max(0, int(pc.hpRed))); return int(pc.exh) >= 4 ? Math.max(1, Math.floor(m / 2)) : m; }
+/** Тип урона против защит цели: иммунитет 0, сопротивление ½ (вниз), уязвимость ×2. rz — {resist, vuln, immune} (массивы или Set).
+    Одна функция для листа и трекера */
+function resistApply(v, type, rz) {
+  const has = a => !!a && (a.has ? a.has(type) : a.includes(type)), why = [];
+  if (!type) return { v, why };
+  if (has(rz.immune)) return { v: 0, why: ['иммунитет'] };
+  if (has(rz.resist)) { v = Math.floor(v / 2); why.push('сопротивление ½'); }
+  if (has(rz.vuln)) { v *= 2; why.push('уязвимость ×2'); }
+  return { v, why };
+}
+/** СЛ спасброска концентрации: больше из 10 и половины урона */
+const concDC = dmg => Math.max(10, Math.floor(dmg / 2));
+/** <option> типов урона с пометкой защит цели (лист и трекер) */
+const dmgTypeOpts = (sel, rz) => '<option value="">тип урона…</option>' + DMG_TYPES.map(t => { const r = resistApply(10, t, rz);
+  return `<option value="${t}" ${sel === t ? 'selected' : ''}>${t}${r.v === 0 ? ' · иммун.' : r.v === 5 ? ' · ½' : r.v === 20 ? ' · ×2' : ''}</option>`; }).join('');
 /** Сопротивления сейчас: свои + от состояний и эффектов (Ярость, окаменение) */
 function pcResists(pc) {
   const r = new Set(pc.resist || []);
@@ -5403,9 +5447,7 @@ ACT.pcInsp = el => pcDo(pc => { pc.insp = Math.max(0, pc.insp + int(el.dataset.d
     урон ≥ максимума хитов — мгновенная смерть. Концентрацию проверяем (напоминание или бросок — по настройке) */
 function pcDamage(pc, n, o = {}) {
   const old = pc.hp.cur, max = pcMaxHp(pc), why = [];
-  if (o.type) { const rz = pcResists(pc);
-    if (rz.immune.has(o.type)) { n = 0; why.push(`иммунитет: ${o.type}`); }
-    else { if (rz.resist.has(o.type)) { n = Math.floor(n / 2); why.push(`сопротивление: ½`); } if (rz.vuln.has(o.type)) { n *= 2; why.push(`уязвимость: ×2`); } } }
+  if (o.type) { const r = resistApply(n, o.type, pcResists(pc)); n = r.v; why.push(...r.why); }
   const taken = n, fromTemp = Math.min(pc.hp.temp || 0, n); pc.hp.temp = (pc.hp.temp || 0) - fromTemp; n -= fromTemp;
   const down = pc.hp.cur === 0;
   if (n > 0 && down) {
@@ -5423,24 +5465,23 @@ function pcHeal(pc, n) { const old = pc.hp.cur, max = pcMaxHp(pc); if (pc.hp.cur
 /** Спасбросок концентрации после урона: СЛ = больше из 10 и половины урона */
 function pcConcCheck(dmg) {
   const pc = activePC(); if (!pc?.conc) return;
-  const dc = Math.max(10, Math.floor(dmg / 2)), tb = tagBonus(pc, 'save', 'ТЕЛ'), mod = pcSave(pc, 'con'), lbl = `⚡ Концентрация · СЛ ${dc}`;
+  const dc = concDC(dmg), tb = tagBonus(pc, 'save', 'ТЕЛ'), mod = pcSave(pc, 'con'), lbl = `⚡ Концентрация · СЛ ${dc}`;
   if (autoRoll()) {
     dkD20(lbl, mod, tb); const r = DK.last, ok = r.total >= dc;
     dkShow({ ...r, note: ok ? `Удержал «${pc.conc}»` : `Концентрация на «${pc.conc}» прервана` }); DK.log.splice(1, 1);
     if (!ok) pcDo(p => { p.conc = null; }, 'spells', 'pills');
     return;
   }
-  dkHint({ label: lbl, mode: tb.adv && !tb.dis ? 'adv' : tb.dis && !tb.adv ? 'dis' : '', formula: `d20 ${sgn(mod + tb.bonus)}${tb.dice.map(d => ' + ' + esc(d.replace(/d/g, 'к'))).join('')} <small>≥ ${dc}</small>`,
-    lines: [{ t: `Держишь «<b>${esc(pc.conc)}</b>» и получил урон ${dmg} — спасбросок <b>Телосложения</b>` }, { t: `СЛ = больше из 10 и половины урона = <b>${dc}</b>` }, ...dkSrcLines(tb)],
-    acts: `<button class="dk-b adv" data-act="pcConcKeep">✓ Удержал</button><button class="dk-b dis" data-act="pcConcLost">✕ Сбилась</button>` });
+  dkHintD20(lbl, mod, tb, [{ t: `Держишь «<b>${esc(pc.conc)}</b>» и получил урон ${dmg} — спасбросок <b>Телосложения</b>` }, { t: `СЛ = больше из 10 и половины урона = <b>${dc}</b>` }],
+    { need: dc, acts: `<button class="dk-b adv" data-act="pcConcKeep">✓ Удержал</button><button class="dk-b dis" data-act="pcConcLost">✕ Сбилась</button>` });
 }
 ACT.pcConcKeep = () => dkClose();
 ACT.pcConcLost = () => { dkClose(); pcDo(pc => { const c = pc.conc; pc.conc = null; if (c) toast(`⚡ Концентрация на «${c}» прервана`); }, 'spells', 'pills'); };
 /* ── Окно урона: тип урона (сопротивления считаются сами) и «крит» по лежащему без сознания ── */
 let DMG_T = '';
 function dmgOptsHTML(pc, pfx) {
-  const rz = pcResists(pc), mark = t => rz.immune.has(t) ? ' · иммунитет' : rz.resist.has(t) ? ' · ½' : rz.vuln.has(t) ? ' · ×2' : '';
-  return `<div class="row wrap mt dmg-opts"><select id="${pfx}-t" data-ch="pcDmgT" title="Тип урона — сопротивления посчитаются сами"><option value="">тип урона…</option>${DMG_TYPES.map(t => `<option value="${t}" ${DMG_T === t ? 'selected' : ''}>${t}${mark(t)}</option>`).join('')}</select>
+  const rz = pcResists(pc);
+  return `<div class="row wrap mt dmg-opts"><select id="${pfx}-t" data-ch="pcDmgT" title="Тип урона — сопротивления посчитаются сами">${dmgTypeOpts(DMG_T, rz)}</select>
     ${pc.hp.cur === 0 ? `<label class="chk"><input type="checkbox" id="${pfx}-c"> крит (2 провала)</label>` : ''}
     <button class="btn xs ghost" data-act="pcTempGain" data-f="${pfx}" title="Временные хиты не складываются: остаётся большее">🛡 врем.</button><button class="btn xs ghost" data-act="pcMaxRed" data-f="${pfx}" title="Уменьшить максимум хитов (вампиризм, призрак) — до длинного отдыха">↓ макс.</button></div>
     ${int(pc.hpRed) ? `<div class="muted small mt">Максимум уменьшен на ${int(pc.hpRed)} до длинного отдыха <button class="btn xs ghost" data-act="pcMaxRedClear">вернуть</button></div>` : ''}`;
@@ -5509,8 +5550,7 @@ ACT.pcRollAtk = el => { const pc = activePC(), a = atkOf(pc, el); if (!a) return
 ACT.pcRollDmg = el => {
   const pc = activePC(), a = atkOf(pc, el), tb = tagBonusAny(pc, 'damage', ['Оружием']); if (!a) return;
   const f = [a.damage, ...tb.dice].join('+') + (tb.bonus ? sgn(tb.bonus) : ''), tag = [a.type, tb.dice.length || tb.bonus ? 'с вещами и эффектами' : ''].filter(Boolean).join(' · ');
-  if (autoRoll()) return dkFormula(`💥 ${a.name || 'Урон'}`, f, { tag });
-  dkHintDmg(`💥 ${a.name || 'Урон'}`, f, { tag, lines: [...dkSrcLines(tb).filter(l => !/^Добавь/.test(l.t)), ...atkExtraLines(pc, a)] });
+  dmgRoll(`💥 ${a.name || 'Урон'}`, f, { tag, lines: [...dkSrcLines(tb).filter(l => !/^Добавь/.test(l.t)), ...atkExtraLines(pc, a)] });
 };
 ACT.pcRollInit = () => { const pc = activePC(); rollToast('Инициатива', pcInit(pc), tagBonus(pc, 'initiative', null), [{ t: 'Назови итог мастеру — он расставит очередь' }]); };
 ACT.pcRollAbil = el => { const pc = activePC(), s = el.dataset.s; rollToast(STAT_NAMES[s], pcAbilCheck(pc, s), tagBonus(pc, 'check', STAT_SHORT[s])); };
@@ -5533,8 +5573,7 @@ ACT.pcCast = el => pcDo(pc => {
 }, 'spells', 'pills');
 ACT.pcSpellDmg = el => { const pc = activePC(), s = pc.spells[int(el.dataset.i)], sd = s && spellDice(s, pc); if (!sd) return;
   const lv = int(s.level), l = int(el.dataset.l), f = spellFormula(sd, lv, l, pc), label = `${sd.heal ? '💚' : '✨'} ${s.name}${l > lv ? ` · ячейка ${l}-го` : ''}`;
-  if (autoRoll()) return dkFormula(label, f, { tag: sd.heal ? 'лечение' : '' });
-  dkHintDmg(label, f, { tag: sd.heal ? 'лечение' : '', lines: [lv === 0 && { t: 'Заговор растёт с уровнем персонажа: 5, 11, 17' }, sd.per && l > lv && { t: `Ячейка выше на ${l - lv}: +${sd.per.n * (l - lv)}к${sd.per.d}` }, sd.heal && { t: 'Лечение не удваивается на крите' }].filter(Boolean) });
+  dmgRoll(label, f, { tag: sd.heal ? 'лечение' : '', lines: [lv === 0 && { t: 'Заговор растёт с уровнем персонажа: 5, 11, 17' }, sd.per && l > lv && { t: `Ячейка выше на ${l - lv}: +${sd.per.n * (l - lv)}к${sd.per.d}` }, sd.heal && { t: 'Лечение не удваивается на крите' }].filter(Boolean) });
 };
 ACT.pcRitual = el => pcDo(pc => { const s = pc.spells[int(el.dataset.i)]; if (!s) return; let msg = `📖 ${s.name} — ритуалом: +10 минут, ячейка не тратится`;
   if (s.concentration) { if (pc.conc && pc.conc !== s.name) msg += ` · концентрация на «${pc.conc}» прервана`; pc.conc = s.name; } toast(msg, '', 4000); }, 'spells', 'pills');
@@ -5747,6 +5786,16 @@ ACT.ccHelp = el => {
 const ccSecHead = (id, title, help = '') => `<div class="sec-h fold-h" data-act="fold"><span class="arr">▾</span>${title}<span class="sp"></span>${help ? helpBtn(help) : ''}</div>`;
 
 const CCSEC = {};
+/** Статьи ttg.club, по которым мастер создания собрал персонажа (из pc.build) — чтобы дозаполнить лист */
+function buildRefs(pc) {
+  const b = pc.build || {}; if (b.src && b.src !== 'ttg') return [];
+  return [['Класс', pc.cls, b.cls], ['Подкласс', pc.subclass, b.sub], ['Раса', pc.race, b.race], ['Предыстория', pc.background, b.bg], ['Черта', b.featN, b.feat]]
+    .filter(([, , u]) => u).map(([t, n, u]) => ({ t, n: n || u.split('/').pop(), u }));
+}
+CCSEC.refs = pc => { const r = buildRefs(pc); return r.length ? `<section class="sec" id="cc-refs"><div class="sec-h">📚 По этим статьям создан персонаж</div><div class="sec-b">
+  <p class="muted small mb">Мастер создания учёл не всё — открой статью, сверься и дозаполни лист.</p>
+  <div class="refs">${r.map(x => `<button class="ref-chip" data-act="ttgOpen" data-u="${esc(x.u)}"><small>${x.t}</small><b>${esc(x.n)}</b></button>`).join('')}</div></div></section>` : ''; };
+ACT.ttgOpen = el => ttgView(el.dataset.u);
 CCSEC.basic = pc => `<section class="sec fold" id="cc-basic">${ccSecHead('basic', '📜 Основное', 'basic-info')}<div class="sec-b fold-b">
   <div class="g2">
     <div class="fld"><label>Имя персонажа</label><input data-bind="name" value="${esc(pc.name)}" placeholder="Тавита Серебряный Клинок"></div>
@@ -5860,7 +5909,7 @@ function creatorHTML(pc) {
     <div class="note mb row wrap"><span class="grow">📝 Все правки сразу сохраняются в персонажа «<b>${esc(pc.name)}</b>». Закончил — жми <b>«К листу»</b>.</span><button class="btn gold sm" data-act="charWizard">🧙 Мастер создания</button></div>
     <nav class="anchors">${anchors.map(([id, l]) => `<button data-act="anchor" data-to="${id}">${l}</button>`).join('')}</nav>
     <div class="sheet-cols">
-      <div class="sheet-col"><div data-cc="basic">${CCSEC.basic(pc)}</div><div data-cc="stats">${CCSEC.stats(pc)}</div><div data-cc="def">${CCSEC.def(pc)}</div><div data-cc="saves">${CCSEC.saves(pc)}</div><div data-cc="skills">${CCSEC.skills(pc)}</div><div data-cc="profs">${CCSEC.profs(pc)}</div></div>
+      <div class="sheet-col"><div data-cc="refs">${CCSEC.refs(pc)}</div><div data-cc="basic">${CCSEC.basic(pc)}</div><div data-cc="stats">${CCSEC.stats(pc)}</div><div data-cc="def">${CCSEC.def(pc)}</div><div data-cc="saves">${CCSEC.saves(pc)}</div><div data-cc="skills">${CCSEC.skills(pc)}</div><div data-cc="profs">${CCSEC.profs(pc)}</div></div>
       <div class="sheet-col"><div data-cc="attacks">${CCSEC.attacks(pc)}</div><div data-cc="spells">${CCSEC.spells(pc)}</div><div data-cc="spellcards">${CCSEC.spellcards(pc)}</div><div data-cc="res">${CCSEC.res(pc)}</div>
         <div data-cc="cards">${CCSEC.cards(pc)}</div><div data-cc="coins">${CCSEC.coins(pc)}</div><div data-cc="bio">${CCSEC.bio(pc)}</div></div>
     </div>
@@ -5956,7 +6005,9 @@ function itemLb(it) {
   if (it.ammo && !v) v = (AMMO_LB.find(([re]) => re.test(it.ammo.name + ' ' + it.name)) || [0, 0])[1];
   return v;
 }
-const itemTotalLb = it => itemLb(it) * (it.ammo ? it.ammo.cur : Math.max(0, it.qty));
+/** Вес одной позиции: 1 шт. (у вещи со снарядами — весь счётчик) и всей стопки */
+const itemUnitLb = it => itemLb(it) * (it.ammo ? it.ammo.cur : 1);
+const itemTotalLb = it => it.ammo ? itemUnitLb(it) : itemLb(it) * Math.max(0, it.qty);
 /** Ноша персонажа: вещи всех зон + монеты (50 шт. = 1 фнт.). Грузоподъёмность — СИЛ × 15 (× размер, × мощное телосложение) */
 function pcCarry(pc) {
   const str = int(pc.stats.str, 10), k = (SIZE_CARRY[pc.size] ?? 1) * (pc.powerBuild ? 2 : 1);
@@ -6064,7 +6115,8 @@ const POTION_HEAL = [[/высш|превосходн/i, '8d4+8'], [/большо
 const potionF = it => { const b = healDice(it); if (b) return diceF(b); if (it.type !== 'Зелье' && !/зель/i.test(it.name)) return ''; const m = POTION_HEAL.find(([re]) => re.test(it.name)); return m ? m[1] : ''; };
 function useHTML(it, id) {
   const f = potionF(it), scroll = it.type === 'Свиток' || /свиток/i.test(it.name);
-  return [f ? `<div class="is-use"><span class="lbl">🧪 Выпить · лечит ${esc(f.replace(/d/g, 'к'))}</span>${autoRoll() ? `<button class="btn sm good" data-act="isDrink" data-id="${id}" ${it.qty ? '' : 'disabled'}>🎲 Выпить</button>`
+  return [isPackItem(it) ? `<div class="is-use"><span class="lbl">📦 Это набор — его вещи можно разложить по отдельности</span><button class="btn sm gold" data-act="isUnpack" data-id="${id}">Разложить набор</button>
+      <small class="muted">Вещи с ttg.club (с весом и свойствами) лягут в ту же зону, сам набор исчезнет</small></div>` : '',f ? `<div class="is-use"><span class="lbl">🧪 Выпить · лечит ${esc(f.replace(/d/g, 'к'))}</span>${autoRoll() ? `<button class="btn sm good" data-act="isDrink" data-id="${id}" ${it.qty ? '' : 'disabled'}>🎲 Выпить</button>`
       : `<input type="number" min="0" id="is-heal" placeholder="выпало" style="width:90px" inputmode="numeric" data-enter="isDrink" data-id="${id}"><button class="btn sm good" data-act="isDrink" data-id="${id}" ${it.qty ? '' : 'disabled'}>Выпить</button>`}
       <small class="muted">Выпить — действие; влить в другого — тоже действие</small></div>` : '',
     scroll ? `<div class="is-use"><span class="lbl">📜 Прочитать свиток</span><button class="btn sm" data-act="isScroll" data-id="${id}" ${it.qty ? '' : 'disabled'}>Прочитать (−1)</button>
@@ -6148,6 +6200,12 @@ ACT.isZone = el => { const pc = activePC(); invMove(pc, el.dataset.id, el.datase
 ACT.isQty = el => { const pc = activePC(), f = invFind(pc, el.dataset.id); f.it.qty = Math.max(0, f.it.qty + int(el.dataset.d)); savePC(pc); isRe(f.it.id); if (f.it.qty === 0) toast(`«${f.it.name}» закончился — можно удалить 🗑 или оставить пустым`); };
 ACT.isAmmo = el => { const pc = activePC(), f = invFind(pc, el.dataset.id); f.it.ammo.cur = Math.max(0, f.it.ammo.cur + int(el.dataset.d)); savePC(pc); isRe(f.it.id); };
 ACT.isCh = el => { const pc = activePC(), f = invFind(pc, el.dataset.id), c = f.it.charges, i = int(el.dataset.i); c.cur = c.cur === i + 1 ? i : i + 1; savePC(pc); isRe(f.it.id); };
+ACT.isUnpack = async el => {
+  const pc = activePC(), f = invFind(pc, el.dataset.id); if (!f) return; el.disabled = true; el.textContent = '⏳ Раскладываю…';
+  const items = await expandPack(itemDesc(f.it)); if (!items.length) { el.disabled = false; el.textContent = 'Разложить набор'; return toast('Не понял состав набора', 'err'); }
+  const g = invFind(pc, f.it.id); if (g) { g.it.qty--; if (g.it.qty <= 0) pc.inv[g.z].splice(g.i, 1); }
+  items.forEach(x => invAdd(pc, x, f.z)); savePC(pc); closeModal(); invRefresh(); toast(`📦 «${f.it.name}» разложен: ${items.length} ${plural(items.length, 'вещь', 'вещи', 'вещей')}`, 'ok');
+};
 ACT.isDrink = el => { const pc = activePC(), f = invFind(pc, el.dataset.id); if (!f || f.it.qty < 1) return; const F = potionF(f.it); let v;
   if (autoRoll()) { const r = dkFormula(`🧪 ${f.it.name}`, F, { tag: 'лечение' }); if (!r) return; v = r.total; } else { v = int($('#is-heal')?.value, -1); if (v < 0) return toast(`Впиши, сколько вылечило (${F.replace(/d/g, 'к')})`, 'err'); }
   f.it.qty--; pcHeal(pc, v); savePC(pc); isRe(f.it.id); toast(`🧪 ${f.it.name}: +${v} HP${f.it.qty ? '' : ' · закончилось'}`, 'ok'); };
@@ -6230,6 +6288,20 @@ ACT.invSort = el => {
    ВАЛЮТА И ТОРГОВЛЯ (автосдача, обмен предметами, история)
 ═══════════════════════════════════════════════════════ */
 const coinsCp = c => COINS.reduce((s, k) => s + int(c?.[k.k]) * k.val, 0);
+/** Медные → монеты для цен {gp, sp, cp} без нулей. Одна функция для торговли, лавок, цен ttg */
+const cpCoins = cp => Object.fromEntries(Object.entries({ gp: Math.floor(cp / 100), sp: Math.floor(cp % 100 / 10), cp: cp % 10 }).filter(([, v]) => v));
+/** Прибавить монеты к объекту-кошельку (на месте) */
+const addCoins = (to, c) => { Object.entries(c || {}).forEach(([k, n]) => { if (int(n)) to[k] = int(to[k]) + int(n); }); return to; };
+/** Цена так, как пишет ttg.club: «10 зм», «2 см 5 мм» — для строки «Цена» в свойствах вещи */
+const PRICE_UNIT = { pp: 'пм', gp: 'зм', ep: 'эм', sp: 'см', cp: 'мм' };
+const fmtPrice = c => COINS.filter(k => int(c?.[k.k])).map(k => `${int(c[k.k])} ${PRICE_UNIT[k.k]}`).join(' ') || '0';
+/** «15 ЗЗ», «2 см 5 мм», «0,5 зм», «10» (без единицы — золото) → монеты; null — чисел нет */
+function parseCoins(t) {
+  const s = String(t || '').toLowerCase().replace(/,/g, '.'), re = /(\d+(?:\.\d+)?)\s*(пз|пм|зз|зм|эз|эм|сз|см|мз|мм)?/g;
+  const unit = { 'пз': 'pp', 'пм': 'pp', 'зз': 'gp', 'зм': 'gp', 'эз': 'ep', 'эм': 'ep', 'сз': 'sp', 'см': 'sp', 'мз': 'cp', 'мм': 'cp' };
+  let m, cp = 0, any = false; while ((m = re.exec(s))) { any = true; cp += Math.round(num(m[1]) * COIN[unit[m[2]] || 'gp'].val); }
+  return any ? cpCoins(cp) : null;
+}
 function fmtGp(cp) { const g = cp / 100; return (Number.isInteger(g) ? g : g.toFixed(2).replace(/0$/, '')).toString().replace('.', ','); }
 function fmtCoins(c, empty = '0') { const p = COINS.filter(k => int(c?.[k.k])).map(k => `${int(c[k.k])} ${k.short}`); return p.length ? p.join(' ') : empty; }
 function coinTotalText(c) { return `Всего ≈ ${fmtGp(coinsCp(c))} ЗЗ`; }
@@ -6325,17 +6397,22 @@ ACT.trPickItem = async () => {
 };
 /** Продажа: половина цены вещи (×количество) — в «Я получаю» */
 ACT.trHalf = el => { const x = TR.payItems[int(el.dataset.i)]; if (!x?.price) return; const cp = Math.floor(coinsCp(x.price) * x.qty / 2);
-  Object.entries({ gp: Math.floor(cp / 100), sp: Math.floor(cp % 100 / 10), cp: cp % 10 }).forEach(([k, n]) => { if (n) TR.get[k] = int(TR.get[k]) + n; });
+  addCoins(TR.get, cpCoins(cp));
   const c = $('.tr-side.get .tr-coins'); if (c) c.outerHTML = trCoinsEd('get'); trSummary(); toast(`💰 «${x.name}» за полцены: +${fmtGp(cp)} ЗЗ`); };
 ACT.trAddGet = () => {
   const inp = $('#tr-get-in'); parseQuick(inp.value).forEach(({ name, qty }) => TR.getItems.push({ name, qty, emoji: itemTemplate(name)?.emoji || guessEmoji(name) }));
   inp.value = ''; $('#tr-get-items').innerHTML = trItemsHTML('get'); trSummary(); inp.focus();
 };
-function trCommit() {
+async function trCommit() {
   const pc = activePC(); trSummary(); if (!TR.after) return;
+  const go = $('#tr-go'); if (go) { go.disabled = true; go.textContent = '⏳…'; }
+  // наборы (путешественника, артиста…) кладём в рюкзак уже разложенными на вещи
+  const got = [];
+  for (const x of TR.getItems) { const tpl = x.full || itemTemplate(x.name);
+    if (tpl && isPackItem(tpl)) got.push(...await expandPack(itemDesc(tpl), x.qty)); else got.push(tpl ? itemCopy(tpl, x.qty) : normItem({ name: x.name, qty: x.qty, emoji: x.emoji })); }
   pc.coins = TR.after;
   TR.payItems.forEach(x => { const f = invFind(pc, x.id); if (!f) return; f.it.qty -= x.qty; if (f.it.qty <= 0) pc.inv[f.z].splice(f.i, 1); });
-  TR.getItems.forEach(x => { const tpl = x.full || itemTemplate(x.name); invAdd(pc, tpl ? itemCopy(tpl, x.qty) : { name: x.name, qty: x.qty, emoji: x.emoji }, 'pack'); });
+  got.forEach(it => invAdd(pc, it, 'pack'));
   const pay = [fmtCoins(TR.pay, ''), ...TR.payItems.map(x => (x.qty > 1 ? x.qty + '× ' : '') + x.name)].filter(Boolean).join(', ');
   const get = [fmtCoins(TR.get, ''), ...TR.getItems.map(x => (x.qty > 1 ? x.qty + '× ' : '') + x.name)].filter(Boolean).join(', ');
   pc.trades.unshift({ ts: Date.now(), who: ($('#tr-who')?.value || '').trim(), pay, get }); pc.trades = pc.trades.slice(0, 50);
@@ -6535,20 +6612,20 @@ function btTurnStart(c) {
   if (!c) return;
   c.reacted = false; c.legLeft = int(c.legMax);
   const got = [];
-  [...c.actions, ...c.bonusActions].forEach(a => (a._limitStates || []).forEach(l => { if (l.type !== 'recharge' || !l.spent) return;
-    const r = roll(6), ok = r >= int(l.min, 5); if (ok) l.spent = false; got.push(`${a.name}: d6=${r}${ok ? ' — перезарядилось ✓' : ' — ещё нет'}`); }));
+  [...c.actions, ...c.bonusActions].forEach(a => (a._limitStates || []).forEach(l => { if (l.type === 'recharge' && l.spent) got.push(rechargeRoll(a, l)); }));
   if (got.length) toast(`🎲 #${c.tag} ${c.name} · ${got.join(' · ')}`, got.some(x => x.includes('✓')) ? 'ok' : '', 6000);
 }
+/** Перезарядка 5–6: d6 (кубик мастера бросает трекер) → строка для тоста */
+function rechargeRoll(a, l) { const r = roll(6), ok = r >= int(l.min, 5); if (ok) l.spent = false; return `${a.name}: d6=${r}${ok ? ' — перезарядилось ✓' : ' — ещё нет'}`; }
 /** Урон по участнику: тип → ½ / ×2 / 0 по его сопротивлениям; сперва временные хиты; концентрация — спасбросок ТЕЛ (бросает трекер) */
 function btDamage(c, v, type = '') {
-  const why = [];
-  if (type) { if ((c.immune || []).includes(type)) { v = 0; why.push('иммунитет'); } else { if ((c.resist || []).includes(type)) { v = Math.floor(v / 2); why.push('сопротивление ½'); } if ((c.vuln || []).includes(type)) { v *= 2; why.push('уязвимость ×2'); } } }
+  const r = resistApply(v, type, c), why = r.why; v = r.v;
   const t = Math.min(int(c.tempHp), v); c.tempHp = int(c.tempHp) - t; c.currentHp = Math.max(0, c.currentHp - (v - t));
   if (why.length || t) toast(`💥 #${c.tag} ${c.name}: ${[type && `${type} — ${why.join(', ') || 'обычный'}`, t && `врем. хиты −${t}`].filter(Boolean).join(' · ')} → ${v}`);
   const ci = c.conditions.findIndex(x => x.name === 'Концентрация');
   if (ci >= 0 && v > 0) {
     if (c.currentHp === 0) { c.conditions.splice(ci, 1); toast(`⚡ #${c.tag} ${c.name}: без сознания — концентрация прервана`, 'err'); }
-    else { const dc = Math.max(10, Math.floor(v / 2)), mod = c.saves?.con ?? abMod(c.stats?.con); dkD20(`#${c.tag} ${c.name} · концентрация, СЛ ${dc}`, mod);
+    else { const dc = concDC(v), mod = c.saves?.con ?? abMod(c.stats?.con); dkD20(`#${c.tag} ${c.name} · концентрация, СЛ ${dc}`, mod);
       if (DK.last.total < dc) { c.conditions.splice(ci, 1); toast(`⚡ #${c.tag} ${c.name}: концентрация прервана (${DK.last.total} < ${dc})`, 'err', 5000); } else toast(`⚡ #${c.tag} ${c.name}: концентрация удержана (${DK.last.total})`, 'ok'); }
   }
 }
@@ -6564,7 +6641,7 @@ CS.hp = c => {
     <div class="nc-hpb"><button class="hpb dmg" data-act="btHp" data-u="${c.uid}" data-d="-1">−1</button><button class="hpb dmg" data-act="btHp" data-u="${c.uid}" data-d="-5">−5</button>
       <button class="hpb heal" data-act="btHp" data-u="${c.uid}" data-d="1">+1</button><button class="hpb heal" data-act="btHp" data-u="${c.uid}" data-d="5">+5</button><button class="hpb" data-act="btHp" data-u="${c.uid}" data-d="full" title="Полное лечение">⟳</button></div>
     <div class="row mt"><input type="number" min="0" placeholder="число" class="grow nc-hpv" inputmode="numeric" data-enter="btHpDmg" data-u="${c.uid}"><button class="btn sm danger" data-act="btHpDmg" data-u="${c.uid}">💥 Урон</button><button class="btn sm good" data-act="btHpHeal" data-u="${c.uid}">💚</button><button class="btn sm" data-act="btTemp" data-u="${c.uid}" title="Временные хиты (не складываются — остаётся большее)">🛡</button></div>
-    <select class="nc-dt mt" title="Тип урона — сопротивления посчитаются сами"><option value="">тип урона…</option>${DMG_TYPES.map(t => `<option value="${t}" ${BT_DT === t ? 'selected' : ''}>${t}${(c.immune || []).includes(t) ? ' · иммун.' : (c.resist || []).includes(t) ? ' · ½' : (c.vuln || []).includes(t) ? ' · ×2' : ''}</option>`).join('')}</select></div>`;
+    <select class="nc-dt mt" title="Тип урона — сопротивления посчитаются сами">${dmgTypeOpts(BT_DT, c)}</select></div>`;
 };
 CS.stats = c => { const rz = [['Сопр.', c.resist], ['Уязв.', c.vuln], ['Иммун.', c.immune], ['Иммун. к сост.', c.condImm]].filter(([, a]) => (a || []).length);
   return `<div class="nc-stats">${STATS.map(s => `<div><small>${STAT_SHORT[s]}</small><b>${sgn(abMod(c.stats?.[s]))}</b><i>${c.stats?.[s] ?? 10}</i></div>`).join('')}</div>
@@ -6653,7 +6730,7 @@ ACT.btReact = el => withC(el, c => { c.reacted = !c.reacted; });
 ACT.btLeg = el => withC(el, c => { const a = (c.legActs || [])[int(el.dataset.i)], cost = a ? a.cost : 1; if (c.legLeft < cost) return toast('Легендарных действий не осталось', 'err'); c.legLeft -= cost; toast(`☽ #${c.tag} ${c.name}${a ? ': ' + a.name : ''} · осталось ${c.legLeft}/${c.legMax}`); });
 ACT.btLegRes = el => withC(el, c => { if (c.legResLeft < 1) return; c.legResLeft--; toast(`🛡 #${c.tag} ${c.name}: провал → успех · осталось ${c.legResLeft}/${c.legRes} на сегодня`); });
 ACT.btRecharge = el => withC(el, c => { const a = (el.dataset.t === 'action' ? c.actions : c.bonusActions)[int(el.dataset.i)], l = (a?._limitStates || []).find(x => x.type === 'recharge'); if (!l) return;
-  const r = roll(6), ok = r >= int(l.min, 5); if (ok) l.spent = false; toast(`🎲 ${a.name}: d6=${r}${ok ? ' — перезарядилось ✓' : ' — ещё нет'}`, ok ? 'ok' : ''); });
+  const t = rechargeRoll(a, l); toast('🎲 ' + t, t.includes('✓') ? 'ok' : ''); });
 ACT.btHpHeal = el => { const v = Math.abs(int(el.closest('.nc-hp').querySelector('.nc-hpv').value)); if (v) withC(el, c => { c.currentHp = Math.min(c.maxHp, c.currentHp + v); }); };
 ACT.btExec = el => withC(el, c => {
   const type = el.dataset.t, a = (type === 'action' ? c.actions : c.bonusActions)[int(el.dataset.i)];
@@ -7750,9 +7827,7 @@ function ttgPrice(it) {
   const v = (it.blocks || []).find(b => b.type === 'properties')?.rows?.find(r => r.key === 'Цена')?.val || '';
   const m = String(v).match(/^\s*([\d.,]+)\s*(пм|зм|эм|см|мм)\.?\s*$/i); if (!m) return null;
   const rate = { 'пм': 1000, 'зм': 100, 'эм': 50, 'см': 10, 'мм': 1 }[m[2].toLowerCase()], cp = Math.round(parseFloat(m[1].replace(',', '.')) * rate);
-  if (!(cp > 0)) return null;
-  const o = { gp: Math.floor(cp / 100), sp: Math.floor(cp % 100 / 10), cp: cp % 10 };
-  Object.keys(o).forEach(k => { if (!o[k]) delete o[k]; }); return o;
+  return cp > 0 ? cpCoins(cp) : null;
 }
 const TTG = {
   KINDS: {
@@ -7780,10 +7855,13 @@ const TTG = {
   },
   /** Поиск; сначала точное совпадение, потом «начинается с», потом остальное */
   async search(kind, q) {
-    const list = await TTG.post(TTG.KINDS[kind].list, { page: 0, size: 40, search: { value: q, exact: false } });
-    const s = q.toLowerCase().replace(/ё/g, 'е'), score = x => { const n = [x.name?.rus, x.name?.eng].map(v => String(v || '').toLowerCase().replace(/ё/g, 'е'));
-      return n.includes(s) ? 0 : n.some(v => v.startsWith(s)) ? 1 : 2; };
-    return [...list].sort((a, b) => score(a) - score(b));
+    return TTG.rank(await TTG.post(TTG.KINDS[kind].list, { page: 0, size: 40, search: { value: q, exact: false } }), q);
+  },
+  /** Порядок результатов: точное совпадение → «начинается с» → содержит; strict — выбросить не совпавшие (офлайн-поиск по полному списку) */
+  rank(list, q, strict = false) {
+    const s = String(q).toLowerCase().replace(/ё/g, 'е'), nm = x => [x.name?.rus, x.name?.eng].map(v => String(v || '').toLowerCase().replace(/ё/g, 'е'));
+    const sc = x => { const n = nm(x); return n.includes(s) ? 0 : n.some(v => v.startsWith(s)) ? 1 : n.some(v => v.includes(s)) ? 2 : 3; };
+    return list.map(x => [x, sc(x)]).filter(([, k]) => !strict || k < 3).sort((a, b) => a[1] - b[1]).map(([x]) => x);
   },
   detail(url) { return TTG.post('/api/v1' + url); },
   kindOfUrl(url) { const m = String(url).match(/^\/(spells|items\/magic|weapons|armors|items|bestiary)\//); return m ? { spells: 'spell', 'items/magic': 'magic', weapons: 'weapon', armors: 'armor', items: 'item', bestiary: 'beast' }[m[1]] : null; },
@@ -7966,7 +8044,7 @@ const TTG = {
     const pick = async url => {
       const kind = TTG.kindOfUrl(url) || st.kind;
       if (!kinds.includes(kind)) return toast(`Здесь нужен раздел: ${kinds.map(k => TTG.KINDS[k].label).join(', ')}`, 'err');
-      try { const obj = TTG.convert(kind, await TTG.detail(url)); onPick(obj, kind); FX.loot($(`[data-ttg="${CSS.escape(url)}"]`, m), obj, kind); const b = $(`[data-cnt="${CSS.escape(url)}"]`, m); if (b) { b.hidden = false; b.textContent = int(b.textContent) + 1; } }
+      try { const d = await TTG.detail(url), obj = TTG.convert(kind, d); onPick(obj, kind, d); FX.loot($(`[data-ttg="${CSS.escape(url)}"]`, m), obj, kind); const b = $(`[data-cnt="${CSS.escape(url)}"]`, m); if (b) { b.hidden = false; b.textContent = int(b.textContent) + 1; } }
       catch (e) { toast('⚠ Не получилось загрузить: ' + (e.message === 'Failed to fetch' ? 'нет связи с прокси' : e.message), 'err', 4000); }
     };
     qi.addEventListener('input', run); off.addEventListener('change', () => { SETTINGS.ttgAll = !off.checked; saveSettings(); draw(); });
@@ -7980,7 +8058,10 @@ const TTG = {
 /* ── Точки входа ── */
 const ITEM_KINDS = ['magic', 'weapon', 'armor', 'item'];
 ACT.ttgSpell = () => TTG.open({ kinds: ['spell'], title: '🔎 Заклинание с ttg.club', onPick: s => { const pc = activePC(); pc.hasSpells = true; pc.spells.push(s); savePC(pc); ccRefresh('spellcards'); toast(`✨ «${s.name}» добавлено`, 'ok'); } });
-ACT.ttgInv = el => { const z = el.dataset.z || 'pack'; TTG.open({ kinds: ITEM_KINDS, title: `🔎 Предмет с ttg.club → ${ZONES[z].label}`, onPick: it => { const pc = activePC(), got = invAdd(pc, it, z); savePC(pc); invRefresh(); FX.markNew(got.id); toast(`${ZONES[z].icon} «${it.name}» добавлен`, 'ok'); } }); };
+ACT.ttgInv = el => { const z = el.dataset.z || 'pack'; TTG.open({ kinds: ITEM_KINDS, title: `🔎 Предмет с ttg.club → ${ZONES[z].label}`, onPick: async (it, kind, d) => {
+  const pc = activePC();
+  if (isPackItem(it)) { toast(`📦 Раскладываю «${it.name}» на вещи…`); const items = await expandPack(d?.description || itemDesc(it)); items.forEach(x => invAdd(pc, x, z)); savePC(pc); invRefresh(); toast(`📦 «${it.name}»: ${items.length} ${plural(items.length, 'вещь', 'вещи', 'вещей')} в «${ZONES[z].label}»`, 'ok'); return; }
+  const got = invAdd(pc, it, z); savePC(pc); invRefresh(); FX.markNew(got.id); toast(`${ZONES[z].icon} «${it.name}» добавлен`, 'ok'); } }); };
 ACT.ttgLoot = () => { let last = null; TTG.open({ kinds: ITEM_KINDS, title: '🔎 Предмет с ttg.club → библиотека лута', onPick: it => { STORE.put('item', it); last = it; lootListRefresh(); toast(`📜 «${it.name}» в библиотеке`, 'ok'); } });
   MODAL_STACK.at(-1).onClose = () => { if (last) { LOOT.id = last.id; _lootObj = null; route(); } }; };
 ACT.ttgNpc = () => { let last = null; TTG.open({ kinds: ['beast'], title: '🔎 Бестиарий ttg.club → NPC', onPick: n => { STORE.put('npc', n); last = n; npcListRefresh(); toast(`👹 «${n.name}» в библиотеке NPC`, 'ok'); } });
@@ -8045,8 +8126,7 @@ TTG.search = async function (kind, q) {
   catch (e) {
     const full = await TTGDB.get(TTG.fullKey(kind));
     if (!full) throw new Error(`${e.message} · офлайн-списка «${TTG.KINDS[kind].label}» нет (Настройки → Офлайн-справочник)`);
-    const s = String(q).toLowerCase().replace(/ё/g, 'е'), nm = x => [x.name?.rus, x.name?.eng].map(v => String(v || '').toLowerCase().replace(/ё/g, 'е'));
-    return full.d.filter(x => nm(x).some(v => v.includes(s))).sort((a, b) => (nm(a).some(v => v.startsWith(s)) ? 0 : 1) - (nm(b).some(v => v.startsWith(s)) ? 0 : 1)).slice(0, 40);
+    return TTG.rank(full.d, q, true).slice(0, 40);
   }
 };
 
@@ -8124,9 +8204,9 @@ const SHOP_GOODS = {
   tavern: { icon: '🍺', label: 'Таверна', items: [GG('Эль (кружка)', 0, 0.04, 'Еда'), GG('Вино (бутылка)', 0, 0.2, 'Еда'), GG('Хлеб (буханка)', 0, 0.02, 'Еда'), GG('Сыр (кусок)', 0, 0.1, 'Еда'), GG('Мясо (кусок)', 0, 0.3, 'Еда'),
     GG('Еда на день (скромно)', 0, 0.3, 'Еда'), GG('Еда на день (богато)', 0, 2, 'Еда'), GG('Комната на ночь (скромно)', 0, 0.5, 'Прочее'), GG('Комната на ночь (богато)', 0, 2, 'Прочее'), GG('Конюшня (день)', 0, 0.05, 'Прочее')] },
 };
-const gpCoins = gp => { const cp = Math.round(gp * 100); return Object.fromEntries(Object.entries({ gp: Math.floor(cp / 100), sp: Math.floor(cp % 100 / 10), cp: cp % 10 }).filter(([, v]) => v)); };
+const gpCoins = gp => cpCoins(Math.round(gp * 100));
 function goodsItem(g) {
-  const rows = [...(g.rows || []).map(([key, val]) => ({ key, val })), { key: 'Цена', val: fmtCoins(gpCoins(g.gp), '0').replace('ЗЗ', 'зм').replace('СЗ', 'см').replace('МЗ', 'мм') }];
+  const rows = [...(g.rows || []).map(([key, val]) => ({ key, val })), { key: 'Цена', val: fmtPrice(gpCoins(g.gp)) }];
   const blocks = [{ type: 'properties', rows }];
   if (g.dice) blocks.push({ type: 'dice', label: 'Урон', count: '1', die: String(g.dice), mod: '', dmgtype: g.dt });
   if (g.heal) blocks.push({ type: 'dice', label: 'Лечение', count: String(g.heal[0]), die: String(g.heal[1]), mod: g.heal[2], dmgtype: 'Лечение' });
@@ -8146,22 +8226,14 @@ function shopHTML(s) {
     <div class="fld"><label>Наценка, %</label><input type="number" min="10" max="1000" data-in="shopF" data-k="markup" value="${s.markup}"></div></div>
     <div class="fld mt"><label>Заметка</label><input data-in="shopF" data-k="note" value="${esc(s.note)}" placeholder="Торгуется, если похвалить кошку"></div>
     <div class="btns mt"><button class="btn sm" data-act="shopAddTtg">🔎 ttg.club</button>${STORE.keys('item_').length ? '<button class="btn sm" data-act="shopAddLoot">📜 Из лута</button>' : ''}<button class="btn sm" data-act="shopAddQuick">✎ Вручную</button><button class="btn sm gold" data-act="shopGoods">🎲 Набор товаров</button></div>
-    <div class="shop-list mt">${s.items.map((x, i) => { const cp = shopPriceCp(s, x), w = itemLb(x.it);
-      return `<div class="shop-row ${x.stock === 0 ? 'out' : ''}"><span class="irow-em">${x.it.emoji || '▪'}</span><button class="grow shop-n" data-act="shopView" data-i="${i}"><b>${esc(x.it.name)}</b><small class="muted">${[x.it.type !== 'Прочее' ? x.it.type : '', w ? fmtW(w * (x.it.ammo ? x.it.ammo.cur : 1)) : ''].filter(Boolean).join(' · ')}</small></button>
+    <div class="shop-list mt">${s.items.map((x, i) => { const cp = shopPriceCp(s, x), w = itemUnitLb(x.it);
+      return `<div class="shop-row ${x.stock === 0 ? 'out' : ''}"><span class="irow-em">${x.it.emoji || '▪'}</span><button class="grow shop-n" data-act="shopView" data-i="${i}"><b>${esc(x.it.name)}</b><small class="muted">${[x.it.type !== 'Прочее' ? x.it.type : '', w ? fmtW(w) : ''].filter(Boolean).join(' · ')}</small></button>
         <input class="shop-p" value="${esc(fmtCoins(x.price, ''))}" placeholder="цена" data-ch="shopPrice" data-i="${i}" title="Базовая цена: 15 ЗЗ, 2 СЗ 5 МЗ…">${s.markup !== 100 ? `<small class="gold">${fmtGp(cp)} ЗЗ</small>` : ''}
         <input class="shop-s" type="number" min="0" value="${x.stock ?? ''}" placeholder="∞" data-ch="shopStock" data-i="${i}" title="Сколько в наличии (пусто — без счёта)">
         <button class="btn sm pri" data-act="shopBuy" data-i="${i}" ${!pc || x.stock === 0 ? 'disabled' : ''} title="${pc ? 'Купить — откроется торговля' : 'Выбери персонажа'}">Купить</button><button class="btn xs ghost" data-act="shopDel" data-i="${i}">✕</button></div>`; }).join('') || '<div class="empty small">Пусто — добавь товары кнопками выше</div>'}</div></div>`;
 }
 const shopRe = () => { const b = $('#shop-body'), s = shopCur(); if (b && s) b.innerHTML = shopHTML(s); };
 IN.shopF = debounce(el => { const s = shopCur(); if (!s) return; s[el.dataset.k] = el.dataset.k === 'markup' ? clamp(int(el.value, 100), 10, 1000) : el.value; shopPut(s); if (el.dataset.k === 'name') $('#shop-list') && ($('#shop-list').innerHTML = shopListHTML()); if (el.dataset.k === 'markup') shopRe(); }, 300);
-/** «15 ЗЗ», «2 см 5 мм», «0,5 зм» → монеты */
-function parseCoins(t) {
-  const out = {}, s = String(t || '').toLowerCase().replace(',', '.');
-  const re = /(\d+(?:\.\d+)?)\s*(пз|пм|зз|зм|эз|эм|сз|см|мз|мм)?/g; let m, any = false;
-  while ((m = re.exec(s))) { any = true; const k = { 'пз': 'pp', 'пм': 'pp', 'зз': 'gp', 'зм': 'gp', 'эз': 'ep', 'эм': 'ep', 'сз': 'sp', 'см': 'sp', 'мз': 'cp', 'мм': 'cp' }[m[2]] || 'gp';
-    const v = num(m[1]); if (v % 1 && k === 'gp') Object.entries(gpCoins(v)).forEach(([kk, n]) => { out[kk] = int(out[kk]) + n; }); else out[k] = int(out[k]) + Math.round(v); }
-  return any ? out : null;
-}
 CH.shopPrice = el => { const s = shopCur(), x = s.items[int(el.dataset.i)], p = parseCoins(el.value); if (!p) return toast('Цена: например «15 ЗЗ» или «2 СЗ 5 МЗ»', 'err'); x.price = p; shopPut(s); shopRe(); };
 CH.shopStock = el => { const s = shopCur(), x = s.items[int(el.dataset.i)]; x.stock = el.value === '' ? null : Math.max(0, int(el.value)); shopPut(s); shopRe(); };
 ACT.shopDel = el => { const s = shopCur(); s.items.splice(int(el.dataset.i), 1); shopPut(s); shopRe(); };
@@ -8180,7 +8252,7 @@ ACT.shopBuy = el => {
   const s = shopCur(), i = int(el.dataset.i), x = s.items[i]; if (!x || !activePC()) return;
   ACT.trade(); const cp = shopPriceCp(s, x);
   TR.getItems.push({ name: x.it.name, qty: 1, emoji: x.it.emoji, full: x.it }); TR.who = s.name;
-  Object.entries({ gp: Math.floor(cp / 100), sp: Math.floor(cp % 100 / 10), cp: cp % 10 }).forEach(([k, n]) => { if (n) TR.pay[k] = int(TR.pay[k]) + n; });
+  addCoins(TR.pay, cpCoins(cp));
   const c = $('.tr-side.pay .tr-coins'); if (c) c.outerHTML = trCoinsEd('pay'); $('#tr-get-items').innerHTML = trItemsHTML('get'); const w = $('#tr-who'); if (w) w.value = s.name + (s.keeper ? ' · ' + s.keeper : '');
   TR.onCommit = () => { const t = shopCur(); const y = t?.items[i]; if (y && y.stock != null) { y.stock = Math.max(0, y.stock - (TR.getItems.find(g => g.full === x.it)?.qty || 1)); shopPut(t); shopRe(); } };
   trSummary();
@@ -8564,9 +8636,10 @@ function cwBody() {
     const cell = s => CW.method === 'buy' ? `<div class="stepper"><button data-wz="pb" data-s="${s}" data-d="-1">−</button><b>${CW.base[s]}</b><button data-wz="pb" data-s="${s}" data-d="1">+</button></div>`
       : CW.method === 'manual' ? `<input type="number" min="3" max="20" data-wz="man" data-s="${s}" value="${CW.base[s]}" style="width:70px">`
       : `<select data-wz="asg" data-s="${s}"><option value="">—</option>${vals.map((v, i) => `<option value="${i}" ${CW.assign[s] === i ? 'selected' : ''} ${used.includes(i) && CW.assign[s] !== i ? 'disabled' : ''}>${v}</option>`).join('')}</select>`;
-    return `${head}${top}<table class="cw-ab"><tr><th></th><th>База</th><th>Бонус расы</th><th>Итог</th></tr>
+    return `${head}${top}<table class="cw-ab"><tr><th></th><th>База</th><th>Бонус расы</th><th>Итог <small class="muted">· мод.</small></th></tr>
       ${STATS.map(s => `<tr><td><b>${STAT_SHORT[s]}</b> <small class="muted">${STAT_NAMES[s]}</small></td><td>${cell(s)}</td>
-        <td><input type="number" min="-2" max="4" data-wz="bon" data-s="${s}" value="${int(CW.bonus[s])}" style="width:60px"></td><td><b class="gold">${fin[s]}</b> <small>${sgn(abMod(fin[s]))}</small>${CW.featAb === s ? ' <small class="muted">(+1 черта)</small>' : ''}</td></tr>`).join('')}</table>
+        <td><input type="number" min="-2" max="4" data-wz="bon" data-s="${s}" value="${int(CW.bonus[s])}" style="width:60px"></td><td><span class="cw-fin"><b class="gold">${fin[s]}</b><span class="mod-box" title="Модификатор — его прибавляешь к броскам этой характеристики">${sgn(abMod(fin[s]))}</span></span>${CW.featAb === s ? ' <small class="muted">(+1 черта)</small>' : ''}</td></tr>`).join('')}</table>
+      <div class="muted small mt"><span class="mod-box">+2</span> в рамке — <b>модификатор</b>: его прибавляешь к броскам (проверки, спасброски, атаки). Число слева — сама характеристика.</div>
       <div class="row mt"><button class="btn xs ghost" data-wz="resetBonus">↺ Бонусы по расе</button>${r?.free ? `<span class="muted small">Раса даёт ещё ${r.free}× +1 на выбор — допиши в столбце «Бонус»</span>` : ''}</div>`;
   }
   if (st === 6) {
@@ -8582,7 +8655,7 @@ function cwBody() {
   const P = cwPreview();
   return `${P.warn.length ? `<div class="note warn small mb">${P.warn.map(esc).join('<br>')}</div>` : ''}
     <div class="well pad"><b class="gold">${esc(P.pc.name)}</b> · ${esc([P.pc.race, P.pc.cls + (P.pc.subclass ? ' (' + P.pc.subclass + ')' : ''), P.pc.level + ' ур.'].filter(Boolean).join(' · '))}${P.pc.background ? ' · ' + esc(P.pc.background) : ''}
-      <div class="cw-sum mt">${STATS.map(s => `<span><small>${STAT_SHORT[s]}</small><b>${P.pc.stats[s]}</b><i>${sgn(abMod(P.pc.stats[s]))}</i></span>`).join('')}</div>
+      <div class="cw-sum mt">${STATS.map(s => `<span><small>${STAT_SHORT[s]}</small><b>${P.pc.stats[s]}</b><i class="mod-box" title="Модификатор — прибавляешь к броскам">${sgn(abMod(P.pc.stats[s]))}</i></span>`).join('')}</div>
       <div class="small mt">❤ <b>${P.pc.hp.max}</b> HP (d${P.c?.hd || '?'}) · 🛡 КБ <b>${P.pc.ac}</b> (без доспехов) · 👣 ${P.pc.speed} фт. · Спасброски: ${P.pc.saveProfs.map(s => STAT_SHORT[s]).join(', ') || '—'}</div>
       <div class="small mt">Навыки: ${P.pc.skillProfs.map(i => SKILLS[i].label).join(', ') || '—'}</div>
       ${P.pc.hasSpells ? `<div class="small mt">Ячейки: ${Object.entries(P.pc.slots).filter(([, n]) => n).map(([l, n]) => `${l}-й×${n}`).join(', ') || 'пока нет'}${P.pc.warlockLv.length ? ' (колдовские)' : ''} · хар-ка ${STAT_SHORT[P.pc.spellAbility]}</div>` : ''}
@@ -8637,7 +8710,7 @@ function cwPreview() {
     coins: { pp: 0, gp: b?.gold || 0, ep: 0, sp: 0, cp: 0 },
     bio: { personality: CW.pers['Черта характера'] || '', ideals: CW.pers['Идеал'] || '', bonds: CW.pers['Привязанность'] || '', flaws: CW.pers['Слабость'] || '' },
     // выборы — для повышения уровня и заклинаний класса потом
-    build: c ? { slug: c.slug, cls: CW.cls.url, sub: CW.sub?.url || '', race: CW.race?.url || '', subrace: CW.subrace, bg: CW.bg?.url || '', caster: c.caster, ab: c.ab,
+    build: c ? { slug: c.slug, cls: CW.cls.url, sub: CW.sub?.url || '', race: CW.race?.url || '', subrace: CW.subrace, bg: CW.bg?.url || '', feat: CW.feat?.url || '', featN: CW.feat?.name?.rus || '', src: CW.src, caster: c.caster, ab: c.ab,
       arch: c.arch, weapon: c.weapon || null, armor: c.armor || '', hpLvl: r?.hpLvl || 0 } : undefined,
   };
   if (CW.eq.gold) pc.coins.gp += int(CW.eq.goldAmt);
@@ -8669,15 +8742,24 @@ async function cwApply() {
   const dark = CW_RACES[slugOf(CW.race?.url)]?.dark || (/т[её]мное зрение/i.test(JSON.stringify(CW.raceD?.features || CW.raceD?.traits || '')) ? 60 : 0);
   if (dark && !pc.senses) pc.senses = `тёмное зрение ${dark} фт`;
   pcGearSync(pc);
-  STORE.put('pc', pc); setActivePC(pc.id); closeModal(); go('sheet');
-  toast(`🧙 «${pc.name}» готов: ${pc.cls} ${pc.level} ур.${gearN ? ` · снаряжение: ${gearN}` : ''} · КБ ${pc.ac}`, 'ok', 4500);
-  if (pc.hasSpells && TTG.base() && pcClass(pc).spellId && await confirmBox('Выбрать заклинания класса сейчас? Список — с ttg.club, по твоему уровню.', { title: '📚 Заклинания', ok: 'Выбрать' })) spellPicker(pc);
+  STORE.put('pc', pc); setActivePC(pc.id); closeModal(); go('creator');
+  cwDone(activePC(), gearN); // дальше работаем с персонажем из хранилища — не с черновиком мастера
 }
+/** Персонаж создан: проверить в редакторе (мастер учёл не всё) и, если колдует, выбрать заклинания */
+function cwDone(pc, gearN) {
+  const spells = pc.hasSpells && TTG.base() && pcClass(pc).spellId;
+  openModal({ title: '✅ Персонаж создан', size: 'sm', body: `<p><b class="gold">${esc(pc.name)}</b> · ${esc([pc.race, pc.cls, pc.level + ' ур.'].filter(Boolean).join(' · '))}${gearN ? ` · вещей из снаряжения: ${gearN}` : ''}</p>
+      <p class="mt"><b>Проверьте правильность заполнения в редакторе.</b> Не всё может быть автоматически учтено при создании персонажа — статьи, по которым он собран, лежат вверху редактора.</p>
+      ${spells ? '<p class="mt muted small">Заклинания класса ещё не выбраны — можно сейчас или потом: «📚 Список класса» в редакторе.</p>' : ''}`,
+    foot: `${spells ? '<button class="btn gold" data-act="cwDoneSpells">📚 Выбрать заклинания</button>' : ''}<span class="sp"></span><button class="btn pri" data-act="modalClose">Проверить в редакторе</button>` });
+}
+ACT.cwDoneSpells = () => { closeModal(); const pc = activePC(); if (pc) setTimeout(() => spellPicker(pc), 60); };
 
 /* ── Окно ── */
 ACT.charWizard = () => {
   CW = cwNew();
-  const m = openModal({ title: '🧙 Мастер создания персонажа', size: 'wide', cls: 'cw', body: `<div class="seg wrap cw-steps" id="cw-steps"></div><div id="cw-body" class="mt"></div>`,
+  const m = openModal({ title: '🧙 Мастер создания персонажа', size: 'wide', cls: 'cw', body: `<div class="seg wrap cw-steps" id="cw-steps"></div><div id="cw-body" class="mt"></div>
+      <div class="cw-disc">⚠ Не всё может быть автоматически учтено при создании персонажа — читайте статьи на сайте, чтобы точно знать, кого вы создаёте.</div>`,
     foot: `<button class="btn ghost" id="cw-prev">‹ Назад</button><span class="sp"></span><button class="btn pri" id="cw-next">Далее ›</button>` });
   m.id = 'cw-modal';
   const sel = async (kind, i) => {
@@ -8763,33 +8845,77 @@ const colAt = (d, re, lvl) => { const c = (d?.tableColumns || []).find(x => re.t
 
 /* ═══ Снаряжение ═══ */
 const NUMW = { 'один': 1, 'одна': 1, 'одно': 1, 'два': 2, 'две': 2, 'двух': 2, 'три': 3, 'четыре': 4, 'пять': 5, 'десять': 10, 'двадцать': 20 };
-/** HTML снаряжения класса → [{ opts: [{ label, parts: [{ text, href, qty, generic: 'simple'|'martial'|null, melee }] }] }], gold */
+/** Ссылки ttg внутри элемента → метки §i§ в тексте; links[i] = {href, name, eng} («рюкзак [backpack]» → name «рюкзак», eng «backpack») */
+function tokenLinks(el, links) {
+  el.querySelectorAll('a').forEach(a => { const t = a.textContent; links.push({ href: a.getAttribute('href'), name: t.replace(/\s*\[.*?\]\s*/g, '').trim(), eng: (t.match(/\[([^\]]+)\]/) || [])[1] || '' });
+    (a.closest('detail-tooltip') || a).replaceWith(`§${links.length - 1}§`); });
+}
+/** Перечень «X, 2 Y, рационы на 10 дней и Z» → части [{text, href, eng, qty, generic, melee}]. Один разбор для снаряжения класса и наборов */
+function eqSplit(t, links) {
+  return t.split(/,\s*|\s+и\s+/).map(x => x.trim().replace(/[.;:]+$/, '')).filter(Boolean).map(x => {
+    let days = 0; x = x.replace(/\s+на\s+(\d+)\s+(?:дн|день|сут)\S*/i, (_, n) => { days = int(n); return ''; });
+    const m = /^\d+\s+(фут|фт|миль|метр)/i.test(x) ? null : x.match(/^(\d+|[а-яё]+)\s+(.*)$/i), n = m && (/^\d+$/.test(m[1]) ? int(m[1]) : NUMW[m[1].toLowerCase()]);
+    const rest = n ? m[2] : x, li2 = rest.match(/§(\d+)§/), link = li2 ? links[int(li2[1])] : null;
+    const gen = !link && /оружи/i.test(rest) ? (/воинск/i.test(rest) ? 'martial' : /прост/i.test(rest) ? 'simple' : null) : null;
+    return { text: (link ? rest.replace(/§\d+§/, link.name) : rest).replace(/\s*\[[^\]]*\]/g, '').trim(), href: link?.href || null,
+      eng: link?.eng || (rest.match(/\[([^\]]+)\]/) || [])[1] || '', qty: days || n || 1, generic: gen, melee: /рукопашн/i.test(rest) };
+  });
+}
+/** HTML снаряжения класса → [{ opts: [{ label, parts, text }] }], gold */
 function eqParse(html) {
   const doc = new DOMParser().parseFromString(String(html || ''), 'text/html');
   const groups = [...doc.querySelectorAll('li')].map(li => {
-    const links = []; li.querySelectorAll('a').forEach(a => { links.push({ href: a.getAttribute('href'), name: a.textContent.replace(/\s*\[.*?\]\s*/g, '').trim() }); (a.closest('detail-tooltip') || a).replaceWith(`§${links.length - 1}§`); });
+    const links = []; tokenLinks(li, links);
     const opts = li.textContent.replace(/\s+/g, ' ').trim().split(/\s+или\s+(?=[а-я]\)\s)/i).map((t, i) => {
       const label = (t.match(/^([а-я])\)\s*/i) || [])[1] || String.fromCharCode(1072 + i);
-      const parts = t.replace(/^[а-я]\)\s*/i, '').split(/,\s*|\s+и\s+/).map(s => s.trim()).filter(Boolean).map(s => {
-        const m = s.match(/^(\d+|[а-яё]+)\s+(.*)$/i), n = m && (/^\d+$/.test(m[1]) ? int(m[1]) : NUMW[m[1].toLowerCase()]);
-        const rest = n ? m[2] : s, li2 = rest.match(/§(\d+)§/), link = li2 ? links[int(li2[1])] : null;
-        const gen = !link && /оружи/i.test(rest) ? (/воинск/i.test(rest) ? 'martial' : /прост/i.test(rest) ? 'simple' : null) : null;
-        return { text: (link ? rest.replace(/§\d+§/, link.name) : rest).trim(), href: link?.href || null, qty: n || 1, generic: gen, melee: /рукопашн/i.test(rest) };
-      });
-      return { label, parts, text: t.replace(/§(\d+)§/g, (_, i) => links[int(i)].name) };
+      return { label, parts: eqSplit(t.replace(/^[а-я]\)\s*/i, ''), links), text: t.replace(/§(\d+)§/g, (_, i) => links[int(i)].name) };
     });
     return { opts };
   });
   const g = doc.querySelector('dice-roller')?.getAttribute('formula');
   return { groups, gold: g || null };
 }
-/** Вещь из ttg (или просто по названию) → предмет; стрелы/болты — счётчик снарядов */
+/* ── Наборы (набор путешественника, артиста…) раскладываются на отдельные вещи ── */
+const isPackItem = it => /^набор(\s|$)/i.test(it?.name || '') && /включает в себя/i.test(itemDesc(it)); // \b не работает с кириллицей
+/** Состав набора: из HTML ttg (ссылки) или из уже сохранённого текста («рюкзак [backpack], 10 факелов [torch]…») */
+function packParts(src) {
+  const links = []; let t = String(src || '');
+  if (/<a\s/i.test(t)) { const doc = new DOMParser().parseFromString(t, 'text/html'); tokenLinks(doc.body, links); t = doc.body.textContent; }
+  t = t.replace(/\s+/g, ' ').replace(/^.*?включает в себя:?/i, '').replace(/В набор также входит/gi, ', ').replace(/,?\s*закрепл[её]нн\S*\s+сбоку/gi, '').replace(/[.\s]+$/, '');
+  return eqSplit(t, links).filter(p => p.text && p.text.length < 70);
+}
+/** Вещи набора: каждая часть — настоящая вещь с ttg (по ссылке или по английскому названию), иначе простая вещь по названию */
+async function expandPack(src, mult = 1) {
+  const parts = packParts(src), out = [];
+  for (let i = 0; i < parts.length; i += 4) out.push(...await Promise.all(parts.slice(i, i + 4).map(p => eqItem({ ...p, qty: p.qty * mult }))));
+  out.forEach(it => { delete it._packSrc; });
+  return out;
+}
+/** Вещь из ttg (по ссылке, по английскому названию — или просто по названию) → предмет; стрелы/болты — счётчик снарядов.
+    Набор помечается _packSrc (HTML состава) — eqItems его раскладывает */
 async function eqItem(part, url) {
   let it = null; const href = url || part.href;
-  if (href && TTG.base()) { try { const kind = TTG.kindOfUrl(href); const d = await TTG.detail(href); it = TTG.convert(kind, d); } catch (e) { } }
-  if (!it) it = normItem({ name: part.text.charAt(0).toUpperCase() + part.text.slice(1), emoji: guessEmoji(part.text) });
-  if (/стрел|болт|игл|пул[ья]/i.test(it.name)) { it.ammo = { name: it.name, cur: part.qty }; it.qty = 1; } else it.qty = part.qty;
+  if (TTG.base()) try {
+    let u = href;
+    if (!u && part.eng) { const l = await TTG.search('item', part.eng), e = part.eng.toLowerCase(); u = l.find(x => String(x.name?.eng || '').toLowerCase() === e)?.url || null; }
+    if (u) { const d = await TTG.detail(u); it = TTG.convert(TTG.kindOfUrl(u) || 'item', d); if (/набор/i.test((d.categories || []).join(' ')) && /включает в себя/i.test(d.description || '')) it._packSrc = d.description; }
+  } catch (e) { }
+  if (!it) it = normItem({ name: TTG.cap(nomin(part.text)), emoji: guessEmoji(part.text) });
+  if (AMMO_RE.test(it.name)) { it.ammo = { name: it.name, cur: part.qty }; it.qty = 1; } else it.qty = part.qty;
   return it;
+}
+/** Винительный падеж из перечня («включает в себя трутницу») → именительный — до первого предлога; остальное не трогаем */
+function nomin(t) {
+  const w = String(t).split(' '); let stop = false;
+  return w.map(x => { if (stop || /^(с|со|для|из|на|в|от|и)$/i.test(x)) { stop = true; return x; }
+    return x.replace(/ую$/i, 'ая').replace(/юю$/i, 'яя').replace(/([^аеёиоуыэюя])у$/i, '$1а').replace(/([^аеёиоуыэюя])ю$/i, '$1я'); }).join(' ');
+}
+/** То же, но набор сразу разложен на вещи */
+async function eqItems(part, url) {
+  const it = await eqItem(part, url);
+  if (!it._packSrc && !isPackItem(it)) return [it];
+  const src = it._packSrc || itemDesc(it); delete it._packSrc;
+  return expandPack(src, it.qty || 1);
 }
 const eqZone = it => it.ammo ? 'belt' : (it.type === 'Доспех' || it.type === 'Оружие') ? 'equip' : 'pack';
 let _weaponsList = null;
@@ -8898,13 +9024,15 @@ async function cwEqResolve() {
     const o = g.opts[int(CW.eq.pick[i])]; if (!o) continue;
     for (const [k, p] of o.parts.entries()) {
       if (p.generic) { for (let q = 0; q < p.qty; q++) { const url = CW.eq.generic[`${i}.${k}.${q}`]; if (url) out.push(await eqItem({ ...p, qty: 1, text: p.text }, url)); } }
-      else out.push(await eqItem(p));
+      else out.push(...await eqItems(p));
     }
   }
   return out;
 }
 
 /* ═══ Заклинания класса ═══ */
+/** Выбор заклинаний класса с ttg.club. Счётчики «знаешь / можно» живые: заговоры и известные заклинания упираются в лимит класса
+    (у тех, кто готовит, — без лимита: в карточки можно добавить весь список). Добавляет в актуального персонажа (не в устаревшую копию) */
 async function spellPicker(pc, { title = '📚 Заклинания класса', hint = '' } = {}) {
   const k = pcClass(pc);
   if (!k.spellId) return toast('Для этого класса нет списка заклинаний на ttg.club (или класс не распознан)', 'err', 4000);
@@ -8918,27 +9046,44 @@ async function spellPicker(pc, { title = '📚 Заклинания класса
       ttgClassData(pc)]);
     list = l; info = { cant: colAt(cd.base, /заговор/i, pc.level), spells: colAt(cd.base, /известные заклинания/i, pc.level) };
   } catch (e) { modalBody(m).innerHTML = `<div class="note warn">⚠ ttg.club: ${esc(e.message)}</div>`; return; }
-  const sel = new Set(); let q = '';
-  const cantHave = pc.spells.filter(s => int(s.level) === 0).length, splHave = pc.spells.filter(s => int(s.level) > 0).length;
+  const sel = new Set(), lvOf = u => int(list.find(s => s.url === u)?.level); let q = '';
+  const have = { cant: pc.spells.filter(s => int(s.level) === 0).length, spells: pc.spells.filter(s => int(s.level) > 0).length };
+  const grp = lv => lv ? 'spells' : 'cant';
+  const taken = g => have[g] + [...sel].filter(u => grp(lvOf(u)) === g).length;
+  const full = g => info[g] != null && taken(g) >= info[g];
+  const cntHTML = () => [info.cant != null && `Заговоры: <b class="${taken('cant') > info.cant ? 'c-red' : full('cant') ? 'gold' : ''}">${taken('cant')}</b> / ${info.cant}`,
+    info.spells != null && `Заклинания: <b class="${taken('spells') > info.spells ? 'c-red' : full('spells') ? 'gold' : ''}">${taken('spells')}</b> / ${info.spells}`,
+    pc.spellPrep && `готовишь каждый день: ${prepMax(pc)} (в карточки — хоть весь список)`, `круги до ${maxLv || 'заговоров'}`].filter(Boolean).join(' · ');
+  /** Обновить счётчики и запереть лишние галочки — без перерисовки списка (не сбивается прокрутка) */
+  const sync = () => {
+    const c = $('#sp-limits', m); if (c) c.innerHTML = cntHTML();
+    $$('[data-sp]', m).forEach(b => { if (b.dataset.has) return; const off = !b.checked && full(grp(lvOf(b.dataset.sp))); b.disabled = off; b.closest('.sp-row')?.classList.toggle('off', off); });
+    $('#sp-cnt', m).textContent = sel.size ? `Выбрано: ${sel.size}` : ''; $('#sp-add', m).disabled = !sel.size;
+  };
   const draw = () => {
     const f = list.filter(s => !q || (s.name.rus + ' ' + s.name.eng).toLowerCase().includes(q));
     const byLv = {}; f.forEach(s => (byLv[s.level] = byLv[s.level] || []).push(s));
     modalBody(m).innerHTML = `${hint ? `<div class="note small mb">${hint}</div>` : ''}
-      <div class="small mb">${info.cant != null ? `Заговоров знаешь: <b>${cantHave}</b> / ${info.cant}. ` : ''}${info.spells != null ? `Заклинаний знаешь: <b>${splHave}</b> / ${info.spells}. ` : ''}${pc.spellPrep ? `Готовишь каждый день: ${prepMax(pc)} — в карточки можно добавить хоть весь список. ` : ''}Круги до ${maxLv || 'заговоров'}.</div>
+      <div class="sp-limits mb" id="sp-limits">${cntHTML()}</div>
       <input type="search" id="sp-q" placeholder="🔍 Поиск…" value="${esc(q)}" class="mb">
-      ${Object.keys(byLv).sort((a, b) => a - b).map(lv => `<div class="lbl mt">${+lv ? lv + '-й круг' : 'Заговоры'} (${byLv[lv].length})</div><div class="cw-grid">${byLv[lv].map(s => { const has = known.has(s.name.rus.toLowerCase());
-        return `<label class="chk ${has ? 'muted' : ''}" title="${esc(s.school || '')}"><input type="checkbox" data-sp="${esc(s.url)}" ${has || sel.has(s.url) ? 'checked' : ''} ${has ? 'disabled' : ''}> ${esc(s.name.rus)}${s.concentration ? ' <small class="muted">К</small>' : ''}${s.ritual ? ' <small class="muted">Р</small>' : ''} <a class="muted small" data-spv="${esc(s.url)}">ℹ</a></label>`; }).join('')}</div>`).join('') || '<div class="muted">Ничего не нашлось</div>'}`;
+      ${Object.keys(byLv).sort((a, b) => a - b).map(lv => `<div class="lbl mt">${+lv ? lv + '-й круг' : 'Заговоры'} (${byLv[lv].length})</div><div class="sp-list">${byLv[lv].map(s => { const has = known.has(s.name.rus.toLowerCase());
+        return `<label class="sp-row ${has ? 'has' : ''}"><input type="checkbox" data-sp="${esc(s.url)}" ${has ? 'data-has="1" checked disabled' : sel.has(s.url) ? 'checked' : ''}>
+          <span class="grow">${esc(s.name.rus)}${s.concentration ? ' <small class="spc-tag k">К</small>' : ''}${s.ritual ? ' <small class="spc-tag r">Р</small>' : ''}${has ? ' <small class="muted">уже есть</small>' : ''}</span>
+          <button class="sp-i" data-act="ttgOpen" data-u="${esc(s.url)}" title="Описание на ttg.club" aria-label="Описание">ℹ</button></label>`; }).join('')}</div>`).join('') || '<div class="muted">Ничего не нашлось</div>'}`;
     const qi = $('#sp-q', m); qi.addEventListener('input', () => { q = qi.value.toLowerCase(); const pos = qi.selectionStart; draw(); const n = $('#sp-q', m); n.focus(); n.setSelectionRange(pos, pos); });
-    $('#sp-cnt', m).textContent = sel.size ? `Выбрано: ${sel.size}` : ''; $('#sp-add', m).disabled = !sel.size;
+    sync();
   };
-  m.addEventListener('change', e => { const u = e.target.dataset.sp; if (!u) return; e.target.checked ? sel.add(u) : sel.delete(u); $('#sp-cnt', m).textContent = sel.size ? `Выбрано: ${sel.size}` : ''; $('#sp-add', m).disabled = !sel.size; });
-  m.addEventListener('click', e => { const v = e.target.closest('[data-spv]'); if (v) { e.preventDefault(); ttgView(v.dataset.spv); } });
+  m.addEventListener('change', e => { const u = e.target.dataset.sp; if (!u) return;
+    if (e.target.checked && full(grp(lvOf(u)))) { e.target.checked = false; return toast(`Лимит: ${grp(lvOf(u)) === 'cant' ? 'заговоров' : 'заклинаний'} не больше ${info[grp(lvOf(u))]}`, 'err'); }
+    e.target.checked ? sel.add(u) : sel.delete(u); sync(); });
   $('#sp-add', m).addEventListener('click', async () => {
     const btn = $('#sp-add', m); btn.disabled = true; btn.textContent = '⏳ Загружаю…';
     const urls = [...sel], got = [];
     for (let i = 0; i < urls.length; i += 4) got.push(...await Promise.all(urls.slice(i, i + 4).map(u => TTG.detail(u).then(d => TTG.spell(d)).catch(() => null))));
-    const add = got.filter(Boolean).filter(s => !known.has(s.name.toLowerCase()));
-    pc.hasSpells = true; pc.spells.push(...add); savePC(pc); closeModal();
+    // персонаж мог смениться в кэше листа после открытия окна (мастер создания) — пишем в актуальный объект
+    const tgt = SETTINGS.pc === pc.id ? activePC() : pc, names = new Set(tgt.spells.map(s => s.name.toLowerCase()));
+    const add = got.filter(Boolean).filter(s => !names.has(s.name.toLowerCase()));
+    tgt.hasSpells = true; tgt.spells.push(...add); savePC(tgt); closeModal();
     if (CUR_VIEW === 'creator') ccRefresh('spells', 'spellcards'); else if (CUR_VIEW === 'sheet') sheetRefresh('spells');
     toast(`✨ Добавлено заклинаний: ${add.length}${add.length < urls.length ? ` (не загрузилось: ${urls.length - add.length})` : ''}`, 'ok', 4000);
   });
