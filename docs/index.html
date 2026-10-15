@@ -2337,6 +2337,59 @@ button.pill{display:block;width:100%;font:inherit;color:inherit;}
 .ref-chip:hover{border-color:var(--gold);}
 @media (pointer:coarse){ .cw-grid .chk{min-height:40px;} .cw-grid .chk input{width:20px;height:20px;} }
 
+/* ── dbimp.css ── */
+/* ═══════════════════════════════════════════════════════
+   v11.2 — импорт баз и дубликаты (dbimp.js)
+═══════════════════════════════════════════════════════ */
+/* окно «Вставить код / Импорт базы» */
+.dbi-files{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.dbi-files:empty{display:none;}
+.dbi-file{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:3px 4px 3px 8px;border:1px solid var(--line2);border-radius:var(--r);background:var(--bg2);font-size:13px;color:var(--tx2);}
+.dbi-file small{color:var(--tx3);white-space:nowrap;}
+.dbi-file button{padding:0 6px;color:var(--tx3);font-size:12px;}
+.dbi-file button:hover{color:var(--red2);}
+.dbi-drop-on .mbox{outline:2px dashed var(--gold2);outline-offset:-8px;}
+.dbi-fmts summary,.dbi-all summary,.dup-more summary{cursor:pointer;font-family:var(--f-label);font-size:13px;color:var(--gold2);user-select:none;}
+.dbi-fmts summary::marker,.dbi-all summary::marker,.dup-more summary::marker{color:var(--gold3);}
+.dbi-fmts ul{margin:8px 0 0 18px;font-size:13px;color:var(--tx2);}
+.dbi-fmts li{margin:4px 0;}
+.dbi-fmts code{font-size:12px;color:var(--teal3);}
+
+/* окно проверки базы */
+.dbi-sum{display:grid;gap:6px;}
+.dbi-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-left:3px solid var(--gold3);border-radius:var(--r);background:var(--bg2);}
+.dbi-row .ic{width:28px;font-size:20px;text-align:center;}
+.dbi-row b{display:block;font-family:var(--f-title);color:var(--gold2);}
+.dbi-row small{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px;}
+.dbi-st{display:inline-block;padding:0 7px;border:1px solid currentColor;border-radius:9px;font-size:11.5px;line-height:18px;white-space:nowrap;}
+.dbi-st.new{color:var(--green2);} .dbi-st.dup{color:var(--orange2);} .dbi-st.same{color:var(--tx3);}
+.dbi-list{max-height:42vh;overflow:auto;margin-top:6px;padding-right:4px;}
+.dbi-list .give-row{padding:5px 8px;}
+.dbi-done{display:grid;gap:6px;font-size:14px;}
+.dbi-modal .seg button,.dup-modal .btn{white-space:normal;}
+.dbi-modal .seg[data-g]{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));width:100%;}
+.dbi-modal .seg[data-g] button{border-bottom:1px solid var(--line2);margin-bottom:-1px;}
+
+/* сравнение дубликатов */
+.dup-pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:10px;}
+.dup-card{position:relative;display:flex;flex-direction:column;gap:8px;min-width:0;padding:10px 12px;border:1px solid var(--line2);border-radius:var(--r);background:var(--bg1);}
+.dup-card::before{content:'◆';position:absolute;top:-8px;left:50%;transform:translateX(-50%);padding:0 6px;font-size:10px;line-height:14px;color:var(--gold3);background:var(--bg1);}
+.dup-card.new{border-color:var(--gold3);box-shadow:inset 0 0 0 1px var(--gold-glow),0 0 14px var(--gold-glow);}
+.dup-card.new::before{color:var(--gold2);}
+.dup-tag{display:flex;justify-content:space-between;gap:6px;font-family:var(--f-label);font-size:12px;letter-spacing:.4px;color:var(--tx3);}
+.dup-card.new .dup-tag span{color:var(--gold2);}
+.dup-name{display:flex;align-items:center;gap:8px;font-family:var(--f-title);font-size:16px;color:var(--gold2);}
+.dup-name b{min-width:0;overflow-wrap:anywhere;}
+.dup-facts{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin:0;font-size:13px;}
+.dup-facts dt{color:var(--tx3);}
+.dup-facts dd{min-width:0;margin:0;color:var(--tx2);overflow-wrap:anywhere;}
+.dup-facts dd.dif{color:var(--orange2);}
+.dup-facts dd.long{max-height:7.6em;overflow:auto;white-space:pre-line;}
+.dup-card .btn{margin-top:auto;}
+.dup-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px;}
+.dup-cards .loot-card{max-width:100%;}
+.dup-all{gap:8px;cursor:pointer;font-size:14px;color:var(--tx2);}
+
 </style>
 </head>
 <body>
@@ -2360,7 +2413,7 @@ button.pill{display:block;width:100%;font:inherit;color:inherit;}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '11.1.2';
+const APP_VERSION = '11.2.0';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -4207,7 +4260,8 @@ function normNPC(d) {
   const lim = l => l && ['charges', 'cooldown', 'recharge'].includes(l.type) ? { ...l, amount: Math.max(1, int(l.amount, 1)), cooldown: Math.max(1, int(l.cooldown, 2)), min: clamp(int(l.min, 5), 2, 6), period: l.period === 'day' ? 'day' : 'encounter' } : null;
   const na = a => { const x = Object.assign({ name: '', range: '', description: '', dice: '', damagemod: '', damagetype: '', limits: [] }, a);
     ['name', 'range', 'description', 'dice', 'damagemod', 'damagetype'].forEach(k => { x[k] = asStr(x[k]); }); x.limits = (Array.isArray(x.limits) ? x.limits : []).map(lim).filter(Boolean); return x; };
-  n.actions = (n.actions || []).map(na); n.bonusActions = (n.bonusActions || []).map(na);
+  const acts = a => (Array.isArray(a) ? a : []).filter(x => x && typeof x === 'object').map(na); // строки и мусор из чужих файлов — прочь
+  n.actions = acts(n.actions); n.bonusActions = acts(n.bonusActions);
   delete n._memKey; delete n._savedAt; delete n._type; delete n._version;
   return n;
 }
@@ -4532,7 +4586,7 @@ const LEGACY = {
 ═══════════════════════════════════════════════════════ */
 const SHARE = {
   PART: 3500,
-  KIND_LABEL: { pc: 'Персонаж', items: 'Предметы', npc: 'NPC', npcs: 'NPC', batt: 'Бой', map: 'Карта сцен', wiki: 'Вики', shop: 'Лавка', all: 'Резервная копия' },
+  KIND_LABEL: { pc: 'Персонаж', items: 'Предметы', npc: 'NPC', npcs: 'NPC', batt: 'Бой', map: 'Карта сцен', wiki: 'Вики', shop: 'Лавка', all: 'Резервная копия', db: 'База' },
 
   /** Убираем пустые значения — код короче, нормализаторы вернут умолчания */
   compact(v) {
@@ -4645,38 +4699,52 @@ const SHARE = {
     const ta = $('.code-box', m); if (ta) ta.addEventListener('focus', () => ta.select());
   },
 
-  /* ── Окно «Вставить код» ── */
-  openImport(prefill = '') {
+  /* ── Окно «Вставить код» (оно же «Импорт базы»): коды, JSON, таблицы, файлы других программ — dbimp.js ──
+        Один обычный код (персонаж, бой, сюжет…) идёт привычным путём SHARE.apply; всё остальное — окном проверки базы */
+  openImport(prefill = '', { db = false, files: pre = [] } = {}) {
+    const files = []; let B = null, cls = null, seq = 0;
     const m = openModal({
-      title: '📥 Вставить код',
-      body: `<p class="dim small mb">Вставь код от мастера или друга. Можно вставлять прямо с ником и временем из Телеграма — лишнее отсеется. Подходят и старые JSON-файлы V8.</p>
-        <textarea id="imp-text" rows="6" placeholder="DND9:z…"></textarea>
-        <div class="btns mt"><button class="btn" data-imp-paste>📋 Вставить из буфера</button><button class="btn ghost" data-imp-file>📂 Из файла</button></div>
-        <div id="imp-status" class="imp-status mt"></div>`,
+      title: db ? '📚 Импорт базы' : '📥 Вставить код', cls: 'dbi-imp',
+      body: `<p class="dim small mb">${db ? 'Предметы, NPC, статьи вики — из файлов, таблиц и других программ. <b>Импорт только добавляет:</b> если такое название уже есть, приложение покажет обе записи и спросит, какую оставить.'
+        : 'Вставь код от мастера или друга — можно прямо с ником и временем из Телеграма, лишнее отсеется. Подходят и JSON от нейросети, таблицы, файлы других программ и старые файлы V8.'}</p>
+        <textarea id="imp-text" rows="6" placeholder="DND9:z…   ·   JSON   ·   таблица   ·   «Название: …»"></textarea>
+        <div class="btns mt"><button class="btn" data-imp-paste>📋 Вставить из буфера</button><button class="btn ${db ? 'pri' : 'ghost'}" data-imp-file>📂 Файлы…</button></div>
+        <div class="dbi-files" id="imp-files"></div>
+        <div id="imp-status" class="imp-status mt"></div>
+        <details class="dbi-fmts mt" ${db ? 'open' : ''}><summary>Какие форматы понимает</summary>${DBI.FMT_HTML}</details>`,
       foot: `<button class="btn ghost" data-act="modalClose">Отмена</button><button class="btn pri" id="imp-go" disabled>Импортировать</button>`,
     });
-    const ta = $('#imp-text', m), st = $('#imp-status', m), go = $('#imp-go', m);
-    let parsed = null;
+    const ta = $('#imp-text', m), st = $('#imp-status', m), go = $('#imp-go', m), fl = $('#imp-files', m);
     const check = async () => {
-      parsed = null; go.disabled = true;
-      const r = SHARE.scan(ta.value);
-      if (r.status === 'none') { st.innerHTML = ta.value.trim() ? '<span class="c-red">Код не найден. Он начинается с DND9</span>' : ''; return; }
-      if (r.status === 'partial') { st.innerHTML = `<span class="c-orange">Найдено частей: ${r.have} из ${r.total}. Не хватает: ${r.missing.join(', ')} — вставь их тоже (можно сразу следом).</span>`; return; }
-      if (r.status === 'badjson') { st.innerHTML = `<span class="c-red">Похоже на JSON, но в нём ошибка: ${esc(r.error)}. Попроси нейросеть прислать исправленный JSON целиком.</span>`; return; }
-      try {
-        if (r.status === 'json') parsed = r.json && r.json.v === 9 && r.json.k ? r.json : { legacy: r.json };
-        else parsed = await SHARE.decodePayload(r.payload);
-        st.innerHTML = `<span class="c-green">✓ ${esc(SHARE.describe(parsed))}</span>`; go.disabled = false;
-      } catch (e) { st.innerHTML = `<span class="c-red">Код повреждён: ${esc(e.message)}. Возможно, скопирован не целиком.</span>`; }
+      const my = ++seq; go.disabled = true;
+      const b = await DBI.collect(ta.value, files.map(x => x.B));
+      if (my !== seq) return; // пока разбирали, текст поменялся — ответит следующая проверка
+      B = b; cls = DBI.classic(B);
+      st.innerHTML = DBI.status(B, cls, !!ta.value.trim() || files.length > 0);
+      go.disabled = !cls && !DBI.total(B);
     };
-    const dCheck = debounce(check, 200);
-    ta.addEventListener('input', dCheck);
+    const addFiles = async list => {
+      for (const f of list) { const fb = DBI.batch(); try { await DBI.readFile(fb, f); } catch (e) { fb.errors.push(`${f.name}: ${e.message}`); } files.push({ f, B: fb }); }
+      fl.innerHTML = files.map((x, i) => `<span class="dbi-file">📄 ${esc(x.f.name)} <small>${esc(DBI.short(x.B))}</small><button data-rm="${i}" title="Убрать">✕</button></span>`).join('');
+      check();
+    };
+    ta.addEventListener('input', debounce(check, 250));
     m.addEventListener('click', async e => {
       if (e.target.closest('[data-imp-paste]')) { try { ta.value = await navigator.clipboard.readText(); check(); } catch (err) { toast('Браузер не дал доступ к буферу — вставь вручную (долгое нажатие → Вставить)', 'err', 4000); ta.focus(); } }
-      if (e.target.closest('[data-imp-file]')) { const f = await pickFile('.txt,.json'); if (f) { ta.value = await readFile(f); check(); } }
+      if (e.target.closest('[data-imp-file]')) { const l = await pickFiles(); if (l.length) addFiles(l); }
+      const rm = e.target.closest('[data-rm]'); if (rm) { files.splice(int(rm.dataset.rm), 1); addFiles([]); }
     });
-    go.addEventListener('click', async () => { if (!parsed) return; const p = parsed; closeModal(); await SHARE.apply(p); });
-    if (prefill) { ta.value = prefill; check(); } else setTimeout(() => ta.focus(), 80);
+    // файлы можно перетащить прямо в окно
+    m.addEventListener('dragover', e => { if ([...(e.dataTransfer?.types || [])].includes('Files')) { e.preventDefault(); m.classList.add('dbi-drop-on'); } });
+    m.addEventListener('dragleave', e => { if (!m.contains(e.relatedTarget)) m.classList.remove('dbi-drop-on'); });
+    m.addEventListener('drop', e => { const l = [...(e.dataTransfer?.files || [])]; if (!l.length) return; e.preventDefault(); m.classList.remove('dbi-drop-on'); addFiles(l); });
+    go.addEventListener('click', async () => {
+      await check(); if (go.disabled || !B) return;
+      const b = B, c = cls; closeModal();
+      if (c?.packet) await SHARE.apply(c.packet); else if (c?.legacy) SHARE.applyLegacy(c.legacy); else await DBI.review(b, { title: db ? '📚 Импорт базы' : '📥 Что нашлось' });
+    });
+    if (pre.length) addFiles(pre);
+    if (prefill) { ta.value = prefill; check(); } else if (!pre.length) setTimeout(() => ta.focus(), 80);
   },
   describe(o) {
     if (o.legacy) return 'Файл/JSON старой версии — будет перенесён';
@@ -4693,6 +4761,7 @@ const SHARE = {
       case 'shop': return `Лавка «${d.name || '?'}» · товаров: ${(d.items || []).length}`;
       case 'all': { const n = [['pc', 'перс.'], ['npc', 'NPC'], ['item', 'предм.'], ['batt', 'боёв'], ['map', 'сюжетов'], ['wiki', 'статей']].filter(([k]) => d[k]?.length).map(([k, l]) => `${l} ${d[k].length}`);
         return 'Набор данных' + (n.length ? ': ' + n.join(', ') : ''); }
+      case 'db': { const B = DBI.batch(); DBI.packet(B, o); return `База${d.title ? ` «${d.title}»` : ''}: ${DBI.describe(B) || 'пусто'}`; }
     }
     return SHARE.KIND_LABEL[o.k] || o.k;
   },
@@ -4712,22 +4781,19 @@ const SHARE = {
       STORE.put('pc', pc); setActivePC(pc.id); // сбрасывает кэш листа — иначе он покажет старого и затрёт загруженного
       toast(`🧙 «${pc.name}» загружен`, 'ok'); go('sheet'); return;
     }
+    // предметы, NPC, вики — только добавляются: совпавшее по названию — дубликат, спросить, какой оставить (dbimp.js)
+    const recs = () => { const B = DBI.batch(); DBI.packet(B, o); return B; };
     if (o.k === 'items') {
-      const items = (Array.isArray(d) ? d : [d]).filter(Boolean).map(normItem);
-      const pc = activePC();
+      const B = recs(), pc = activePC();
       const opts = []; if (pc) opts.push(`В рюкзак «${pc.name}»`); if (SETTINGS.mode === 'master' || !pc) opts.push('В библиотеку лута (мастер)');
       const ch = opts.length > 1 ? await choiceBox('Куда положить?', opts) : 0; if (ch == null) return;
-      if (pc && ch === 0) { items.forEach(it => invAdd(pc, itemCopy(it), 'pack')); savePC(pc); toast(`🎒 Добавлено: ${items.length}`, 'ok'); go('inv'); }
-      else { items.forEach(it => STORE.put('item', itemCopy(it))); toast(`📜 В библиотеку: ${items.length}`, 'ok'); go('loot'); }
+      DBI.report(await DBI.commit(B, { pack: !!pc && ch === 0 }), pc && ch === 0 ? 'inv' : 'loot');
       return;
     }
-    if (o.k === 'npc' || o.k === 'npcs') { const list = (Array.isArray(d) ? d : [d]).filter(x => x && x.name); list.forEach(n => STORE.put('npc', normNPC({ ...n, id: uid('npc') }))); toast(`👹 NPC добавлено: ${list.length}`, 'ok'); go('npc'); return; }
-    if (o.k === 'batt') {
-      // простой формат: { name, fighters: [ {…NPC…, count: 3} ] } — бойцы строятся как из библиотеки NPC
-      if (Array.isArray(d.fighters)) { let tag = 1; d = { ...d, list: d.fighters.flatMap(f => Array.from({ length: clamp(int(f.count, 1), 1, 20) }, (_, i) =>
-        npcToCombatant(normNPC({ ...f, name: int(f.count, 1) > 1 ? `${f.name} ${i + 1}` : f.name }), tag++))) }; delete d.fighters; }
-      const b = normBattle(d); b.id = uid('b'); STORE.put('batt', b); toast('⚔ Бой сохранён в библиотеку', 'ok'); go('tracker'); return; }
+    if (o.k === 'npc' || o.k === 'npcs') { DBI.report(await DBI.commit(recs()), 'npc'); return; }
+    if (o.k === 'batt') { const b = DBI.battOf(d); b.id = uid('b'); STORE.put('batt', b); toast('⚔ Бой сохранён в библиотеку', 'ok'); go('tracker'); return; } // простой формат fighters + count — тоже
     if (o.k === 'map') {
+      await DUP.mapLib(d); // NPC, предметы и статьи сюжета, которые уже есть, — спросить, какие оставить
       const { map: mp, rep } = MAPIO.import(d || {});
       STORE.put('map', mp); SETTINGS.map = mp.id; saveSettings(); MAP = null;
       if (rep.lost.length || rep.fixed.length) await confirmBox(`Сюжет «${mp.title}» загружен: ${MAPIO.summary(rep)}.` +
@@ -4737,8 +4803,13 @@ const SHARE = {
       go('scenes'); return;
     }
     if (o.k === 'shop') { const sh = normShop({ ...d, id: uid('shop') }); STORE.put('shop', sh); SHOPV.id = sh.id; toast(`🏪 Лавка «${sh.name}» открыта`, 'ok'); go('shops'); return; }
-    if (o.k === 'wiki') { const n = LEGACY.mergeWiki(Array.isArray(d) ? d : [d]); toast(`📚 Новых статей: ${n}`, 'ok'); go('wiki'); return; }
-    if (o.k === 'all') { if (await confirmBox('Восстановить резервную копию? Совпадающие записи будут перезаписаны.', { ok: 'Восстановить' })) { BACKUP.restore(d); } return; }
+    if (o.k === 'wiki') { DBI.report(await DBI.commit(recs()), 'wiki'); return; }
+    if (o.k === 'db') { await DBI.review(recs(), { title: `📚 База${d.title ? ' «' + esc(d.title) + '»' : ''}` }); return; }
+    if (o.k === 'all') {
+      const ch = await choiceBox('Это резервная копия (или выборка из библиотек). Что сделать?', ['➕ Добавить к моим — совпадения покажу и спрошу', '♻ Восстановить как было — совпадающие записи перезапишутся'], '💾 Резервная копия');
+      if (ch === 0) await DBI.review(recs(), { title: '💾 Добавить из копии' }); else if (ch === 1) BACKUP.restore(d);
+      return;
+    }
     toast('Неизвестный тип кода', 'err');
   },
   applyLegacy(j) {
@@ -6623,13 +6694,14 @@ VIEWS.npc = {
     autosizeAll(el);
   },
   actions() {
-    const n = npcObj(); if (!n) return [{ icon: '＋', label: 'Новый', act: 'npcNew', pri: true }];
+    const lib = [{ icon: '📥', label: 'Импорт базы (бестиарий)…', fn: ACT.dbImport }, { icon: '🧹', label: 'Найти дубликаты', fn: () => DUP.scan('npc') }];
+    const n = npcObj(); if (!n) return [{ icon: '＋', label: 'Новый', act: 'npcNew', pri: true }, { menu: lib }];
     return [{ icon: '⚔', label: 'В бой', act: 'npcToBattle', pri: true },
       { menu: [{ icon: '＋', label: 'Новый NPC', fn: ACT.npcNew },
         { icon: '⧉', label: 'Дублировать', fn: () => { const c = clone(n); c.id = uid('npc'); c.name += ' (копия)'; STORE.put('npc', c); NPCV.id = c.id; _npcObj = null; route(); } },
         { icon: '📤', label: 'Поделиться кодом', fn: () => SHARE.open('npc', n, n.name) },
         { icon: '📄', label: 'Скачать JSON', fn: () => download(`npc_${fileSafe(n.name)}.json`, JSON.stringify({ v: 9, k: 'npc', d: n }, null, 1)) },
-        { icon: '📋', label: 'Шаблон JSON (для генерации)', fn: () => download('шаблон_npc.json', JSON.stringify({ v: 9, k: 'npc', d: TEMPLATE_NPC }, null, 2)) },
+        { icon: '📋', label: 'Шаблон JSON (для генерации)', fn: () => download('шаблон_npc.json', JSON.stringify({ v: 9, k: 'npc', d: TEMPLATE_NPC }, null, 2)) }, ...lib,
         { sep: 1 }, { icon: '🗑', label: 'Удалить', danger: true, fn: async () => { if (!await confirmBox(`Удалить «${n.name}»?`, { ok: 'Удалить', danger: true })) return; STORE.drop('npc', n.id); NPCV.id = null; route(); } }] }];
   },
 };
@@ -7174,7 +7246,7 @@ ACT.smMaps = el => {
     { icon: '⧉', label: 'Дублировать', fn: () => { const c = clone(m); c.id = uid('map'); c.title += ' (копия)'; STORE.put('map', c); SETTINGS.map = c.id; saveSettings(); MAP = null; route(); } },
     { icon: '📤', label: 'Поделиться кодом (с NPC, лутом, боями, вики)', fn: () => SHARE.open('map', MAPIO.bundle(m), m.title) },
     { icon: '📄', label: 'Скачать JSON', fn: () => download(`сцены_${fileSafe(m.title)}.json`, JSON.stringify({ v: 9, k: 'map', d: MAPIO.bundle(m) }, null, 1)) },
-    { icon: '📥', label: 'Импорт (код или файл V8)', fn: () => SHARE.openImport() },
+    { icon: '📥', label: 'Импорт (код, JSON, файл V8)', fn: () => SHARE.openImport() },
     { sep: 1 },
     { icon: '🧹', label: 'Очистить карту', danger: true, fn: async () => { if (!await confirmBox('Удалить все сцены и связи этой карты?', { ok: 'Очистить', danger: true })) return; m.nodes = []; m.edges = []; SM.sel = null; mapSave(); route(); } },
     maps.length > 1 && { icon: '🗑', label: 'Удалить карту', danger: true, fn: async () => { if (!await confirmBox(`Удалить карту «${m.title}» целиком?`, { ok: 'Удалить', danger: true })) return; STORE.drop('map', m.id); SETTINGS.map = null; MAP = null; route(); } },
@@ -7633,7 +7705,7 @@ VIEWS.wiki = {
   },
   actions: () => [{ icon: '＋', label: 'Статья', act: 'wikiNew', pri: true },
     { menu: [{ icon: '📤', label: 'Поделиться всей вики', fn: () => wikiShare(wikiArts(), 'Вики мира') }, { icon: '📄', label: 'Скачать JSON', fn: () => download('wiki_export.json', JSON.stringify({ _type: 'wiki', version: 1, articles: wikiArts() }, null, 1)) },
-      { icon: '📥', label: 'Импорт (код или файл)', fn: () => SHARE.openImport() }, { icon: '📋', label: 'Шаблон статей (для генерации)', fn: () => download('шаблон_вики.json', JSON.stringify({ _type: 'wiki', version: 1, articles: [{ id: 'w_example1', title: 'Столица', category: 'location', tags: ['город'], body: 'Описание. Правит [[Король Эдмунд]].', gmNotes: 'Секрет' }, { id: 'w_example2', title: 'Король Эдмунд', category: 'person', tags: ['знать'], body: 'Правитель, живёт в [[Столица]].', gmNotes: '' }] }, null, 2)) }] }],
+      { icon: '📥', label: 'Импорт: код, файл, база', fn: ACT.dbImport }, { icon: '🧹', label: 'Найти дубликаты', fn: () => DUP.scan('wiki') }, { icon: '📋', label: 'Шаблон статей (для генерации)', fn: () => download('шаблон_вики.json', JSON.stringify({ _type: 'wiki', version: 1, articles: [{ id: 'w_example1', title: 'Столица', category: 'location', tags: ['город'], body: 'Описание. Правит [[Король Эдмунд]].', gmNotes: 'Секрет' }, { id: 'w_example2', title: 'Король Эдмунд', category: 'person', tags: ['знать'], body: 'Правитель, живёт в [[Столица]].', gmNotes: '' }] }, null, 2)) }] }],
 };
 ACT.wikiShareOne = () => { const a = wikiFind(WK.id); if (a) wikiShare([a], a.title); };
 
@@ -7820,12 +7892,13 @@ VIEWS.loot = {
         ${isPhone() ? '<button class="btn sm ghost mb" data-act="lootBack">‹ Вся библиотека</button>' : ''}
         <div class="lib-edit"><div data-model="lootEd" id="loot-form" class="lib-form">${itemFormHTML(it, 'lootEd', { player: false })}</div>
         <div class="lib-prev"><div class="lbl mb">Предпросмотр · так будет в PNG</div><div id="loot-prev">${lootCardHTML(it)}</div></div></div>`
-        : `<div class="empty-hero frame"><div class="big">📜</div><h2 class="t-title">Редактор лута</h2><p class="dim">Выбери карточку слева или создай новую. Готовые предметы можно выдать игроку кодом — они упадут ему в рюкзак.</p><button class="hexbtn pri mt" data-act="lootNew">＋ Новый предмет</button><button class="btn gold mt" data-act="ttgLoot">🔎 Найти на ttg.club</button></div>`}
+        : `<div class="empty-hero frame"><div class="big">📜</div><h2 class="t-title">Редактор лута</h2><p class="dim">Выбери карточку слева или создай новую. Готовые предметы можно выдать игроку кодом — они упадут ему в рюкзак.</p><button class="hexbtn pri mt" data-act="lootNew">＋ Новый предмет</button><button class="btn gold mt" data-act="ttgLoot">🔎 Найти на ttg.club</button><button class="btn mt" data-act="dbImport" title="Excel, CSV, 5etools, Foundry, Fight Club 5, JSON нейросети…">📥 Импорт базы</button></div>`}
       </section></div>`;
     autosizeAll(el);
   },
   actions() {
-    const it = lootObj(); if (!it) return [{ icon: '＋', label: 'Новый', act: 'lootNew', pri: true }];
+    const lib = [{ icon: '📥', label: 'Импорт базы…', fn: ACT.dbImport }, { icon: '🧹', label: 'Найти дубликаты', fn: () => DUP.scan('item') }];
+    const it = lootObj(); if (!it) return [{ icon: '＋', label: 'Новый', act: 'lootNew', pri: true }, { menu: lib }];
     const pc = activePC();
     return [
       { icon: '📤', label: 'Выдать кодом', act: 'lootShare', pri: true },
@@ -7834,7 +7907,7 @@ VIEWS.loot = {
         { icon: '＋', label: 'Новый предмет', fn: ACT.lootNew },
         { icon: '⧉', label: 'Дублировать', fn: () => { const c = itemCopy(it); c.name += ' (копия)'; STORE.put('item', c); LOOT.id = c.id; _lootObj = null; route(); } },
         pc && { icon: '🎒', label: `В рюкзак «${pc.name}»`, fn: () => { invAdd(pc, itemCopy(it), 'pack'); savePC(pc); toast(`🎒 «${it.name}» → ${pc.name}`, 'ok'); } },
-        { icon: '📤', label: 'Выдать несколько предметов…', fn: ACT.lootShareMany },
+        { icon: '📤', label: 'Выдать несколько предметов…', fn: ACT.lootShareMany }, ...lib,
         { icon: '📋', label: 'Шаблон JSON (для генерации)', fn: () => download('шаблон_предмета.json', JSON.stringify({ v: 9, k: 'items', d: [TEMPLATE_ITEM] }, null, 2)) },
         { sep: 1 },
         { icon: '🗑', label: 'Удалить', danger: true, fn: async () => { if (!await confirmBox(`Удалить «${it.name}» из библиотеки?`, { ok: 'Удалить', danger: true })) return; STORE.drop('item', it.id); LOOT.id = null; route(); } },
@@ -8465,6 +8538,1223 @@ document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'л' || e.code === 'KeyK')) { e.preventDefault(); ACT.gSearch(); }
   else if (e.key === '/' && !typing && !e.ctrlKey && !e.altKey) { e.preventDefault(); ACT.gSearch(); }
 });
+
+// ── dbimp.js ──
+/* ═══════════════════════════════════════════════════════
+   ИМПОРТ БАЗ И ДУБЛИКАТЫ (v11.2)
+   Импорт только ДОБАВЛЯЕТ. Запись с тем же названием, что уже есть, — дубликат: приложение показывает обе
+   и спрашивает, какую оставить (мою / новую / обе). Точные копии пропускаются молча.
+   Понимает: коды DND9 (сколько угодно сразу), JSON приложения и «базу» k:"db", резервные копии, ответы нейросети
+   (и оборванные — целые записи спасаются), 5etools, Open5e, Foundry VTT, ttg.club (ответы API),
+   Fight Club 5 / Game Master 5 (XML), CSV/TSV, Excel .xlsx, LibreOffice .ods, таблицы Markdown,
+   карточки «Ключ: значение», простой список, ZIP с любым из этого.
+   FMT — разбор форматов · TBL — столбцы таблиц · CONV — чужие схемы → наши · DUP — дубликаты · DBI — сбор, проверка, добавление
+═══════════════════════════════════════════════════════ */
+const FMT = {
+  /** Все коды DND9 в тексте: одиночные и собранные из частей; partial — кодам не хватает частей */
+  codes(t) {
+    const grab = s => {
+      const one = [...s.matchAll(/DND9:([A-Za-z0-9_-]{8,}?)(?=DND9[:[]|[^A-Za-z0-9_-]|$)/g)].map(m => m[1]), groups = []; let g = null;
+      for (const m of s.matchAll(/DND9\[(\d+)\/(\d+)\]([A-Za-z0-9_-]+?)(?=DND9[:[]|[^A-Za-z0-9_-]|$)/g)) {
+        const i = int(m[1]), n = int(m[2]);
+        if (!g || g.n !== n || g.p[i]) groups.push(g = { n, p: {} }); // нумерация пошла заново — это следующий код
+        g.p[i] = m[3];
+      }
+      return { one, groups, bad: groups.some(x => Object.keys(x.p).length < x.n) };
+    };
+    let r = grab(t);
+    if (r.bad || !r.one.length && !r.groups.length) { // переносы строк внутри кода (так бывает в Телеграме)
+      const r2 = grab(t.replace(/\s+/g, ''));
+      if (!r.one.length && !r.groups.length || !r2.bad && r2.one.length + r2.groups.length) r = r2;
+    }
+    const full = r.groups.filter(g => Object.keys(g.p).length >= g.n);
+    return { payloads: [...r.one, ...full.map(g => Array.from({ length: g.n }, (_, i) => g.p[i + 1]).join(''))],
+      partial: r.groups.filter(g => !full.includes(g)).map(g => ({ have: Object.keys(g.p).length, total: g.n, missing: Array.from({ length: g.n }, (_, i) => i + 1).filter(i => !g.p[i]) })) };
+  },
+  /** JSON в тексте: целиком, из блоков ```json, несколько объектов подряд, JSON Lines (паки Foundry .db).
+      Терпит комментарии, лишние запятые, переносы строк внутри строк. Оборванный ответ (нейросеть упёрлась в лимит)
+      или JSON с ошибкой — берутся целые вложенные записи, cut: true */
+  json(t) {
+    const s = String(t).replace(/^﻿/, '').trim(), vals = []; let err = null, cut = false;
+    const parse = c => { try { return JSON.parse(c); } catch (e) { try { return JSON.parse(FMT.loose(c)); } catch (e2) { err = err || e.message; return undefined; } } };
+    const walk = (c, depth) => {
+      for (const ch of FMT.chunks(c)) {
+        const v = ch.open ? undefined : parse(ch.t);
+        if (v && typeof v === 'object') { vals.push(v); continue; }
+        if (depth >= 4) continue;
+        const n0 = vals.length; walk(ch.t.slice(1, ch.open ? undefined : -1), depth + 1);
+        if (vals.length > n0) cut = true;
+      }
+    };
+    const fences = [...s.matchAll(/```[\w-]*[ \t]*\r?\n?([\s\S]*?)```/g)].map(m => m[1].trim()).filter(c => /^[{[]/.test(c));
+    for (const c of fences.length ? fences : [s]) { const v = /^[{[]/.test(c) ? parse(c) : undefined; if (v && typeof v === 'object') vals.push(v); else walk(c, 0); }
+    return { vals, err: vals.length ? null : err, cut: vals.length ? cut : false };
+  },
+  /** Сбалансированные куски {…} / […] верхнего уровня (кавычки учитываются); open — кусок не закрыт до конца текста */
+  chunks(s) {
+    const out = [], re = /[{[]/g; let i = 0;
+    while (i < s.length) {
+      re.lastIndex = i; const m = re.exec(s); if (!m) break;
+      const st = m.index; let d = 0, str = false, e = -1;
+      for (let j = st; j < s.length; j++) {
+        const c = s[j];
+        if (str) { if (c === '\\') j++; else if (c === '"') str = false; }
+        else if (c === '"') str = true;
+        else if (c === '{' || c === '[') d++;
+        else if ((c === '}' || c === ']') && --d === 0) { e = j; break; }
+      }
+      if (e < 0) { out.push({ t: s.slice(st), open: true }); break; }
+      out.push({ t: s.slice(st, e + 1) }); i = e + 1;
+    }
+    return out;
+  },
+  /** Мягкий JSON: без комментариев (строчных и блочных), без запятых перед } и ], переносы внутри строк → \n, undefined/NaN → null */
+  loose(s) {
+    let o = '', str = false;
+    for (let i = 0; i < s.length; i++) {
+      const c = s[i];
+      if (str) {
+        if (c === '\n') o += '\\n'; else if (c === '\t') o += '\\t'; else if (c !== '\r') { o += c; if (c === '\\') o += s[++i] ?? ''; else if (c === '"') str = false; }
+        continue;
+      }
+      if (c === '"') { str = true; o += c; }
+      else if (c === '/' && s[i + 1] === '/') { while (i < s.length && s[i] !== '\n') i++; o += '\n'; }
+      else if (c === '/' && s[i + 1] === '*') { const e = s.indexOf('*/', i + 2); i = e < 0 ? s.length : e + 1; }
+      else if (c === ',' && /^\s*[}\]]/.test(s.slice(i + 1, i + 60))) { /* лишняя запятая */ }
+      else o += c;
+    }
+    return o.replace(/:\s*(undefined|NaN)\b/g, ': null');
+  },
+  /** CSV/TSV: разделитель — самый частый в первой строке (таб ; , |), кавычки по RFC 4180 */
+  csv(t) {
+    const s = String(t).replace(/^﻿/, ''), first = (s.match(/^.*\S.*$/m) || [''])[0];
+    const [d, n] = ['\t', ';', ',', '|'].map(x => [x, first.split(x).length]).sort((a, b) => b[1] - a[1])[0];
+    if (n < 2) return null;
+    const rows = []; let row = [], cell = '', q = false;
+    for (let i = 0; i < s.length; i++) {
+      const c = s[i];
+      if (q) { if (c === '"') { if (s[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += c; }
+      else if (c === '"' && !cell.trim()) { q = true; cell = ''; }
+      else if (c === d) { row.push(cell.trim()); cell = ''; }
+      else if (c === '\n' || c === '\r') { if (c === '\r' && s[i + 1] === '\n') i++; row.push(cell.trim()); rows.push(row); row = []; cell = ''; }
+      else cell += c;
+    }
+    if (cell.trim() || row.length) { row.push(cell.trim()); rows.push(row); }
+    return rows.filter(r => r.some(Boolean));
+  },
+  /** Таблица Markdown: | Название | Тип | … | */
+  md(t) {
+    const ls = String(t).split(/\r?\n/).map(l => l.trim()).filter(l => /^\|.+\|$/.test(l));
+    if (ls.length < 2) return null;
+    return ls.filter(l => !/^\|[\s:|-]+\|$/.test(l)).map(l => l.slice(1, -1).split('|').map(c => c.trim().replace(/<br\s*\/?>/gi, '\n').replace(/\*\*(.+?)\*\*/g, '$1')));
+  },
+  /** Карточки текстом: «Название: …», «Тип: …», «Описание: …» (заголовок «## Имя» тоже начинает карточку).
+      Новая карточка — с нового заголовка или нового «Название:»; строки без ключа продолжают предыдущее поле */
+  kv(t) {
+    const out = []; let cur = null, last = null;
+    const push = () => { if (cur && cur._n && Object.keys(cur).some(k => k !== '_n' && k !== '_free')) out.push(cur); cur = null; last = null; };
+    for (const raw of String(t).replace(/\r/g, '').split('\n')) {
+      const l = raw.trim(); if (!l) { last = null; continue; }
+      const h = l.match(/^(?:#{1,6}\s+|\*\*)(.+?)(?:\*\*)?:?$/);
+      if (h && !/[:：]\s*\S/.test(l.replace(/^#+\s*/, '').replace(/^\*\*[^*]*\*\*:?$/, ''))) { push(); cur = { _n: h[1].replace(/\*\*/g, '').trim() }; continue; }
+      const m = l.replace(/^[-*•]\s+/, '').replace(/^\*\*(.+?)\*\*/, '$1').match(/^([^:：]{1,32}?)\s*[:：]\s*(.*)$/), f = m && TBL.field(m[1]);
+      if (f === 'name') { if (cur?._n) push(); cur = cur || {}; cur._n = m[2].trim(); last = null; continue; }
+      if (f) { cur = cur || {}; last = m[1].trim(); cur[last] = m[2].trim(); continue; }
+      if (cur && last) cur[last] += '\n' + l;
+      else if (cur) cur._free = (cur._free ? cur._free + '\n' : '') + l;
+    }
+    push();
+    return out.map(({ _n, _free, ...rest }) => ({ 'Название': _n, ...rest, ...(_free && !Object.keys(rest).some(k => TBL.field(k) === 'desc') ? { 'Описание': _free } : {}) }));
+  },
+  /** Простой список: по предмету на строку («Факел ×5», «Верёвка — 50 футов») или одна строка через запятую */
+  list(t) {
+    const ls = String(t).split(/\r?\n/).map(s => s.trim().replace(/^([-*•]|\d+[.)])\s+/, '')).filter(Boolean);
+    if (!ls.length || ls.length === 1 && !/[,;]/.test(ls[0]) || ls.some(l => l.length > 160 || /^[{<|[]|DND9/.test(l))) return [];
+    return (ls.length === 1 ? ls[0].split(/[,;]/) : ls).map(l => {
+      const m = l.match(/^(.+?)\s+[—–-]\s+(.+)$/), q = parseQuick(m ? m[1] : l)[0];
+      return q && CONV.mk({ name: q.name, qty: q.qty, type: CONV.guessType(q.name), blocks: m ? [{ type: 'description', text: m[2].trim() }] : [] });
+    }).filter(Boolean);
+  },
+  /** Байты файла → текст: UTF-8, UTF-16 (Excel «Юникод-текст»), иначе Windows-1251 (CSV из русского Excel) */
+  decode(u8) {
+    if (u8[0] === 0xFF && u8[1] === 0xFE) return new TextDecoder('utf-16le').decode(u8.subarray(2));
+    if (u8[0] === 0xFE && u8[1] === 0xFF) return new TextDecoder('utf-16be').decode(u8.subarray(2));
+    try { return new TextDecoder('utf-8', { fatal: true }).decode(u8); } catch (e) { try { return new TextDecoder('windows-1251').decode(u8); } catch (e2) { return new TextDecoder().decode(u8); } }
+  },
+  /** ZIP (xlsx, ods, архивы): оглавление в конце файла, deflate разжимает сам браузер */
+  unzip(buf) {
+    const v = new DataView(buf), u8 = new Uint8Array(buf), out = [];
+    let e = -1; for (let i = buf.byteLength - 22; i >= Math.max(0, buf.byteLength - 65558); i--) if (v.getUint32(i, true) === 0x06054b50) { e = i; break; }
+    if (e < 0) throw new Error('архив повреждён');
+    let p = v.getUint32(e + 16, true);
+    for (let k = v.getUint16(e + 10, true); k > 0 && p + 46 <= buf.byteLength && v.getUint32(p, true) === 0x02014b50; k--) {
+      const nl = v.getUint16(p + 28, true), lh = v.getUint32(p + 42, true), start = lh + 30 + v.getUint16(lh + 26, true) + v.getUint16(lh + 28, true);
+      out.push({ name: new TextDecoder().decode(u8.subarray(p + 46, p + 46 + nl)), method: v.getUint16(p + 10, true), data: u8.subarray(start, start + v.getUint32(p + 20, true)) });
+      p += 46 + nl + v.getUint16(p + 30, true) + v.getUint16(p + 32, true);
+    }
+    return out;
+  },
+  async inflate(e) {
+    if (e.method === 0) return e.data;
+    if (e.method !== 8 || !window.DecompressionStream) throw new Error('не умею распаковать ' + e.name);
+    return new Uint8Array(await new Response(new Blob([e.data]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+  },
+  xml: s => new DOMParser().parseFromString(s, 'application/xml'),
+  /** Excel .xlsx → [{name, rows}] по листам; get(путь) — текст файла из архива */
+  async xlsx(get) {
+    const wb = FMT.xml(await get('xl/workbook.xml')), rels = FMT.xml(await get('xl/_rels/workbook.xml.rels') || '<r/>'), ss = await get('xl/sharedStrings.xml');
+    const strs = ss ? [...FMT.xml(ss).getElementsByTagName('si')].map(si => [...si.getElementsByTagName('t')].filter(t => t.parentNode.nodeName !== 'rPh').map(t => t.textContent).join('')) : [];
+    const target = id => { const r = [...rels.getElementsByTagName('Relationship')].find(x => x.getAttribute('Id') === id), t = r?.getAttribute('Target') || ''; return t.startsWith('/') ? t.slice(1) : 'xl/' + t.replace(/^\.\//, ''); };
+    const out = [];
+    for (const sh of wb.getElementsByTagName('sheet')) {
+      const x = await get(target(sh.getAttribute('r:id'))); if (!x) continue;
+      const rows = [];
+      for (const r of FMT.xml(x).getElementsByTagName('row')) {
+        const row = [];
+        for (const c of r.getElementsByTagName('c')) {
+          const t = c.getAttribute('t'), v = c.getElementsByTagName('v')[0]?.textContent ?? ''; let col = 0;
+          for (const ch of (c.getAttribute('r') || '').replace(/\d+/g, '')) col = col * 26 + ch.charCodeAt(0) - 64;
+          row[col ? col - 1 : row.length] = t === 's' ? strs[int(v)] ?? '' : t === 'inlineStr' ? [...c.getElementsByTagName('t')].map(z => z.textContent).join('')
+            : t === 'b' ? (v === '1' ? 'да' : 'нет') : v !== '' && t !== 'str' && Number.isFinite(+v) ? String(+(+v).toFixed(6)) : v;
+        }
+        rows.push(Array.from(row, z => z ?? ''));
+      }
+      out.push({ name: sh.getAttribute('name') || 'Лист', rows });
+    }
+    return out;
+  },
+  /** LibreOffice .ods (content.xml) → [{name, rows}] */
+  ods(xml) {
+    const out = [], rep = (el, a) => Math.min(int(el.getAttribute(a), 1), 200);
+    for (const tb of FMT.xml(xml).getElementsByTagName('table:table')) {
+      const rows = [];
+      for (const r of tb.getElementsByTagName('table:table-row')) {
+        const row = [];
+        for (const c of r.children) {
+          if (!/table-cell$/.test(c.tagName)) continue;
+          const v = [...c.getElementsByTagName('text:p')].map(p => p.textContent).join('\n') || c.getAttribute('office:value') || '';
+          for (let k = rep(c, 'table:number-columns-repeated'); k > 0; k--) row.push(v);
+        }
+        while (row.length && !row[row.length - 1]) row.pop();
+        if (row.length) for (let k = rep(r, 'table:number-rows-repeated'); k > 0 && rows.length < 20000; k--) rows.push(row);
+      }
+      out.push({ name: tb.getAttribute('table:name') || 'Лист', rows });
+    }
+    return out;
+  },
+};
+function pickFiles() { return new Promise(res => { const i = document.createElement('input'); i.type = 'file'; i.multiple = true; i.onchange = () => res([...i.files]); i.click(); }); }
+
+/* ── Столбцы таблиц и ключи чужого JSON → наши поля (по-русски и по-английски) ── */
+const TBL = {
+  SYN: {
+    name: 'name|название|наименование|имя|предмет|вещь|товар|item|item name|title|заголовок|существо|монстр|npc|нпс|статья|label',
+    nameEn: 'name en|english|english name|eng|en|англ|английское название|оригинал|original|original name',
+    k: 'k|запись|вид записи|record|record type|что это',
+    type: 'type|тип|категория|category|вид|class|item type|тип предмета',
+    subtype: 'subtype|подтип|подкатегория|subcategory',
+    rarity: 'rarity|редкость',
+    attune: 'attunement|attune|настройка|требует настройки|requires attunement|req attune|reqattune',
+    weight: 'weight|вес|масса|weight lb|вес фнт|вес кг',
+    cost: 'cost|price|цена|стоимость|value|цена зм|price gp',
+    desc: 'description|desc|описание|text|текст|effect|эффект|entries|содержание|content|body|текст статьи|details|описание предмета',
+    damage: 'damage|урон|damage dice|dmg|dmg1|кость урона|кости урона',
+    dmgType: 'damage type|тип урона|dmgtype|damagetype|dmg type',
+    props: 'properties|property|свойства|свойство',
+    ac: 'ac|кб|кд|armor class|armour class|класс брони|класс доспеха|защита|ac string',
+    stealth: 'stealth|скрытность|stealth disadvantage|помеха скрытности',
+    bonuses: 'bonuses|бонусы|бонус|bonus|модификаторы|modifiers|теги бросков|bonus tags',
+    qty: 'qty|quantity|количество|колво|кол во|count|шт|штук|число',
+    emoji: 'emoji|эмодзи|значок|смайл',
+    image: 'image|picture|картинка|изображение|рисунок|image url|url картинки',
+    source: 'source|источник|книга|book',
+    charges: 'charges|заряды|заряд',
+    lore: 'lore|история|флейвор|flavor|предыстория',
+    appearance: 'appearance|внешний вид|облик',
+    note: 'note|notes|заметка|заметки|примечание|комментарий|comment',
+    hue: 'hue|оттенок',
+    hp: 'hp|хиты|хп|hit points|hitpoints|здоровье',
+    speed: 'speed|скорость|walk',
+    str: 'str|сил|сила|strength|strength requirement|требование силы',
+    dex: 'dex|лов|ловкость|dexterity', con: 'con|тел|телосложение|constitution', int: 'int|инт|интеллект|intelligence',
+    wis: 'wis|мдр|муд|мудрость|wisdom', cha: 'cha|хар|харизма|charisma',
+    cr: 'cr|по|опасность|challenge|challenge rating|уровень опасности',
+    xp: 'xp|опыт|experience',
+    size: 'size|размер',
+    side: 'side|сторона|отношение|align',
+    alignment: 'alignment|мировоззрение',
+    actions: 'actions|действия|атаки|attacks',
+    bonus: 'bonus actions|бонусные действия|бонусное действие',
+    reactions: 'reactions|реакции|реакция',
+    traits: 'traits|особенности|умения|способности|features|special abilities|trait',
+    legendary: 'legendary actions|легендарные действия|legendary',
+    resist: 'resist|resistances|сопротивление|сопротивления|damage resistances',
+    vuln: 'vuln|vulnerable|vulnerabilities|уязвимость|уязвимости|damage vulnerabilities',
+    immune: 'immune|immunities|иммунитет|иммунитеты|damage immunities|иммунитет к урону',
+    condImm: 'condition immunities|conditionimmune|иммунитет к состояниям',
+    senses: 'senses|чувства',
+    languages: 'languages|языки',
+    saves: 'saves|save|спасброски|saving throws',
+    skills: 'skills|skill|навыки',
+    tags: 'tags|теги|метки|ярлыки',
+    gmNotes: 'gmnotes|gm notes|заметки мастера|для мастера|секрет|тайна|secret',
+  },
+  _m: null,
+  norm: h => String(h ?? '').toLowerCase().replace(/ё/g, 'е').replace(/[_\-./()[\]]+/g, ' ').replace(/[^a-zа-я0-9 ]/g, '').replace(/\s+/g, ' ').trim(),
+  field(h) {
+    if (!TBL._m) { TBL._m = new Map(); Object.entries(TBL.SYN).forEach(([f, s]) => s.split('|').forEach(w => TBL._m.set(TBL.norm(w), f))); }
+    return TBL._m.get(TBL.norm(h)) || null;
+  },
+  /** Вид записи по набору полей: статблок → npc, заметки мастера/теги → wiki, иначе предмет */
+  kindOf(fs) {
+    const has = f => fs.includes(f);
+    const npc = ['hp', 'cr', 'actions', 'traits', 'legendary', 'senses', 'saves', 'dex', 'con', 'wis', 'cha', 'xp', 'reactions'].filter(has).length + (has('hp') && has('ac') ? 2 : 0);
+    const wiki = (has('gmNotes') ? 2 : 0) + (has('tags') ? 1 : 0) + (has('desc') && !['rarity', 'weight', 'cost', 'damage', 'attune', 'qty', 'props'].some(has) ? 0.5 : 0);
+    return npc >= 2 ? 'npc' : wiki >= 2 ? 'wiki' : 'item';
+  },
+  /** Подсказка по имени файла, листа или ключа JSON */
+  hint(s) {
+    const t = CONV.low(s);
+    return /npc|нпс|монстр|бестиар|существ|враг|противник|monster|creature|bestiar|enem|beast|actor/.test(t) ? 'npc'
+      : /вики|wiki|стать|лор|lore|article|локац|location|journal|фракц/.test(t) ? 'wiki'
+      : /предмет|лут|loot|item|оруж|доспех|снаряж|weapon|armou?r|gear|equip|зель|potion|магич|magic|товар|инвентар|сокровищ|treasure/.test(t) ? 'item' : '';
+  },
+  typeHint(s) {
+    const t = CONV.low(s);
+    return /оруж|weapon/.test(t) ? 'Оружие' : /доспех|брон|armou?r/.test(t) ? 'Доспех' : /зель|potion/.test(t) ? 'Зелье' : /кольц|\bring/.test(t) ? 'Кольцо' : /свит|scroll/.test(t) ? 'Свиток'
+      : /инструм|tool/.test(t) ? 'Инструмент' : /снаряж|gear|equipment/.test(t) ? 'Снаряжение' : /еда|food|провиз/.test(t) ? 'Еда' : /сокровищ|ценност|treasure|\bgem/.test(t) ? 'Ценность' : '';
+  },
+};
+
+/* ── Чужие схемы → наши записи (всё дальше проходит normItem / normNPC / normArticle) ── */
+const CONV = {
+  low: s => String(s ?? '').toLowerCase().replace(/ё/g, 'е'),
+  /** Значение поля → строка (объекты {rus|name|value…} и массивы — тоже) */
+  scal(v) {
+    if (v == null) return '';
+    if (Array.isArray(v)) return v.map(CONV.scal).filter(Boolean).join(', ');
+    if (typeof v === 'object') return CONV.scal(v.rus ?? v.ru ?? v.name ?? v.value ?? v.label ?? v.text ?? v.eng ?? v.en ?? '');
+    return String(v).trim();
+  },
+  yes(v) { if (typeof v === 'boolean') return v; if (typeof v === 'number') return v > 0; const s = CONV.low(CONV.scal(v)); return !!s && !/^(no|нет|false|0|-|—|n|н|не нужна|не требуется)$/.test(s); },
+  rarity(v) {
+    const s = CONV.low(CONV.scal(v)).replace(/[_\s-]+/g, ' ').trim(); if (!s) return '';
+    if (RARITY[s.replace(/ /g, '')]) return s.replace(/ /g, '');
+    return /очень ред|very ?rare/.test(s) ? 'veryrare' : /необыч|uncommon/.test(s) ? 'uncommon' : /легенд|legend/.test(s) ? 'legendary' : /артеф|artifact/.test(s) ? 'artifact'
+      : /ред|rare/.test(s) ? 'rare' : /unknown|varies|разн/.test(s) ? 'uncommon' : /обыч|common|none|mundane|нет/.test(s) ? 'common' : '';
+  },
+  DMG_W: [['Рубящий', /slash|рубящ/], ['Колющий', /pierc|колющ/], ['Дробящий', /bludg|дробящ/], ['Огонь', /fire|огн|огон/], ['Холод', /cold|холод/], ['Молния', /lightn|молни|электр/],
+    ['Яд', /poison|(^|[^а-яё])яд/], ['Кислота', /acid|кислот/], ['Некротика', /necro|некрот/], ['Лучистый', /radian|лучист|излуч/], ['Психика', /psych|психи/], ['Сила', /force|силов/], ['Гром', /thunder|гром|звук/]],
+  dmgType(s) {
+    const t = CONV.low(CONV.scal(s)); if (!t) return '';
+    const ex = DMG_TYPES_LOOT.find(x => CONV.low(x) === t); if (ex) return ex;
+    if (/heal|лечен|исцел/.test(t)) return 'Лечение';
+    return (CONV.DMG_W.find(([, re]) => re.test(t)) || [''])[0];
+  },
+  dmgList(s) { const t = CONV.low(CONV.scal(s)); return t ? CONV.DMG_W.filter(([, re]) => re.test(t)).map(([k]) => k) : []; },
+  COND_EN: { blinded: 'Ослеплён', charmed: 'Очарован', deafened: 'Оглохший', exhaustion: 'Истощение', frightened: 'Испуган', grappled: 'Схвачен', incapacitated: 'Недееспособен', invisible: 'Невидим',
+    paralyzed: 'Парализован', petrified: 'Окаменел', poisoned: 'Отравлен', prone: 'Лежачий', restrained: 'Скован', stunned: 'Оглушён', unconscious: 'Без сознания' },
+  condList(s) { const t = CONV.low(CONV.scal(s)); return t ? NPC_CONDITIONS.filter(c => t.includes(CONV.low(c).slice(0, 5)) || Object.entries(CONV.COND_EN).some(([en, ru]) => ru === c && t.includes(en.slice(0, 6)))) : []; },
+  /** «1d8», «2к6+3 рубящий», «1d10 slashing» → блок кубиков */
+  dice(s, label = 'Урон') {
+    const t = CONV.scal(s), m = t.match(/(\d*)\s?[dкDК](\d+)(?:\s*([+\-−])\s*(\d+)(?!\s?[dкDК]))?/);
+    if (!m) return null;
+    return { type: 'dice', label, count: m[1] || '1', die: m[2], mod: m[3] ? (m[3] === '+' ? '+' : '-') + m[4] : '', dmgtype: CONV.dmgType(t.slice(m.index + m[0].length)) || CONV.dmgType(t) };
+  },
+  ft2cells: n => Math.max(1, Math.round(num(n, 30) / 5)),
+  /** Скорость из таблицы: с «фт»/«ft» или ≥ 15 — футы, иначе уже клетки */
+  speed(v) {
+    if (v && typeof v === 'object' && !Array.isArray(v)) v = v.walk ?? v.value ?? Object.values(v)[0];
+    if (v && typeof v === 'object') v = v.number ?? v.value;
+    const s = CONV.scal(v), n = num((s.match(/\d+/) || [])[0], 30);
+    return /фт|ft|фут|feet/i.test(s) || n >= 15 ? CONV.ft2cells(n) : Math.max(1, n);
+  },
+  crStr(v) { if (v == null || v === '') return ''; if (/\//.test(String(v))) return String(v).trim(); const n = num(v, NaN); return !Number.isFinite(n) ? String(v) : n === 0.125 ? '1/8' : n === 0.25 ? '1/4' : n === 0.5 ? '1/2' : String(n); },
+  CR_XP: { 0: 10, '1/8': 25, '1/4': 50, '1/2': 100, 1: 200, 2: 450, 3: 700, 4: 1100, 5: 1800, 6: 2300, 7: 2900, 8: 3900, 9: 5000, 10: 5900, 11: 7200, 12: 8400, 13: 10000, 14: 11500, 15: 13000,
+    16: 15000, 17: 18000, 18: 20000, 19: 22000, 20: 25000, 21: 33000, 22: 41000, 23: 50000, 24: 62000, 25: 75000, 26: 90000, 27: 105000, 28: 120000, 29: 135000, 30: 155000 },
+  /** Медь → «50 зм» / «5 см» / «7 мм» (одна единица — так цену понимают лавки и торговля) */
+  cpText(cp) { cp = Math.round(num(cp)); return cp <= 0 ? '' : cp % 100 === 0 ? `${cp / 100} зм` : cp % 10 === 0 ? `${cp / 10} см` : `${cp} мм`; },
+  /** Цена из чужих форматов: «50 gp», «1,500 gp», «5 sp», «10 зм», «15» (золото) → строка «Цена» как у ttg */
+  price(v) {
+    if (v && typeof v === 'object' && !Array.isArray(v) && v.value != null) v = `${v.value} ${v.denomination || 'gp'}`;
+    let s = CONV.scal(v); if (!s) return '';
+    if (/^\d{1,3}(,\d{3})+(?!\d)/.test(s)) s = s.replace(/,(?=\d{3}(?!\d))/g, '');
+    const m = s.replace(',', '.').match(/^(\d+(?:\.\d+)?)\s*([a-zа-яё]*)\.?\s*$/i); if (!m) return s;
+    const U = { gp: 'зм', g: 'зм', зм: 'зм', зз: 'зм', з: 'зм', sp: 'см', см: 'см', сз: 'см', cp: 'мм', мм: 'мм', мз: 'мм', ep: 'эм', эм: 'эм', эз: 'эм', pp: 'пм', пм: 'пм', пз: 'пм', '': 'зм' };
+    const u = U[m[2].toLowerCase()]; return !u ? s : +m[1] ? `${+m[1]} ${u}` : '';
+  },
+  /** КБ доспеха так, как его читает лист: «11 + Лов», «12 + Лов (макс. 2)», «16», «+2» (щит) */
+  acText(v) {
+    const s = CONV.scal(v), n = (s.match(/\d+/) || [])[0]; if (!n) return s;
+    if (/^\s*\+/.test(s)) return '+' + n;
+    if (/dex|лов/i.test(s)) { const mx = s.match(/(?:max|макс)\D*(\d+)/i); return `${n} + Лов${mx ? ` (макс. ${mx[1]})` : ''}`; }
+    return n;
+  },
+  PROP_EN: [[/finesse/i, 'Фехтовальное'], [/light/i, 'Лёгкое'], [/heavy/i, 'Тяжёлое'], [/thrown/i, 'Метательное'], [/versatile/i, 'Универсальное'], [/two[- ]?handed/i, 'Двуручное'],
+    [/reach/i, 'Досягаемость'], [/loading/i, 'Перезарядка'], [/ammunition/i, 'Боеприпасы'], [/special/i, 'Особое']],
+  /** Свойства оружия (англ. → рус., как их читает лист: «Фехтовальное», «Метательное (20/60)», «Универсальное (1к10)») */
+  props(v) {
+    const parts = Array.isArray(v) ? v.map(CONV.scal) : CONV.scal(v).split(/,(?![^(]*\))/);
+    return parts.map(p => { p = p.trim(); const hit = CONV.PROP_EN.find(([re]) => re.test(p)); if (!hit) return p; const x = (p.match(/\(([^)]*)\)/) || [])[1];
+      return hit[1] + (x ? ` (${x.replace(/range\s*/i, '').replace(/(\d)\s*d\s*(\d)/gi, '$1к$2').trim()})` : ''); }).filter(Boolean).join(', ');
+  },
+  wsub(t) { const s = CONV.low(t); return /simple|martial|прост|воинск/.test(s) ? `${/martial|воинск/.test(s) ? 'Воинское' : 'Простое'} ${/ranged|дальноб/.test(s) ? 'дальнобойное' : 'рукопашное'} оружие` : ''; },
+  asub(t) { const s = CONV.low(t); return /shield|щит/.test(s) ? 'Щит' : /heavy|тяж/.test(s) ? 'Тяжёлый доспех' : /medium|средн/.test(s) ? 'Средний доспех' : /light|л[её]гк/.test(s) ? 'Лёгкий доспех' : ''; },
+  /** Тип предмета по тексту типа/категории (рус./англ.) */
+  itemType(s) {
+    const t = CONV.low(s); if (!t) return '';
+    const ex = ITEM_TYPES.find(x => CONV.low(x) === t); if (ex) return ex;
+    return /оруж|weapon|боеприп|ammunition|ammo/.test(t) ? 'Оружие' : /доспех|брон|armou?r|щит|shield/.test(t) ? 'Доспех' : /зель|potion|эликс|poison|\bяд/.test(t) ? 'Зелье' : /кольц|\bring/.test(t) ? 'Кольцо'
+      : /жезл|палоч|wand|\brod/.test(t) ? 'Жезл' : /свит|scroll/.test(t) ? 'Свиток' : /посох|staff/.test(t) ? 'Посох' : /артефакт|artifact/.test(t) ? 'Артефакт' : /чудес|дивн|wondrous|magic|магич/.test(t) ? 'Дивный предмет'
+      : /инструм|tool|набор|kit|instrument/.test(t) ? 'Инструмент' : /еда|пищ|food|drink|напит|рацион/.test(t) ? 'Еда' : /материал|material|ингред|компонент|reagent/.test(t) ? 'Материал'
+      : /ценн|сокров|treasure|\bgem|самоцв|драгоц|\bart\b|trade|товар/.test(t) ? 'Ценность' : /снаряж|gear|equipment|adventur|контейнер|container|backpack|рюкзак/.test(t) ? 'Снаряжение' : 'Прочее';
+  },
+  guessType(n) {
+    const t = CONV.low(n);
+    return /меч|кинжал|топор|секир|(^|\s)лук($|\s)|арбалет|копь|булав|молот|рапир|сабл|ятаган|алебард|глеф|цеп|кистен|дротик|праща|стрел|болт/.test(t) ? 'Оружие' : /доспех|кольчуг|латы|кираса|щит/.test(t) ? 'Доспех'
+      : /зель|эликсир/.test(t) ? 'Зелье' : /кольц|перстень/.test(t) ? 'Кольцо' : /свит/.test(t) ? 'Свиток' : /посох/.test(t) ? 'Посох' : /жезл|палочк/.test(t) ? 'Жезл' : 'Снаряжение';
+  },
+  wikiCat(s) {
+    const t = CONV.low(CONV.scal(s)); if (WIKI_CATS[t]) return t;
+    const e = Object.entries(WIKI_CATS).find(([, c]) => CONV.low(c.label) === t || CONV.low(c.many) === t); if (e) return e[0];
+    return /локац|место|город|location|place/.test(t) ? 'location' : /персон|person|npc|нпс|человек|character/.test(t) ? 'person' : /фракц|орден|гильд|faction|guild/.test(t) ? 'faction'
+      : /предмет|артефакт|item/.test(t) ? 'item' : /событ|event/.test(t) ? 'event' : 'lore';
+  },
+  side(v) { const t = CONV.low(CONV.scal(v)); return /враг|enemy|hostile|противн|злод/.test(t) ? 'enemy' : /союз|друг|friend|ally/.test(t) ? 'friend' : /нейтр|neutral/.test(t) ? 'neutral' : /игрок|player/.test(t) ? 'player' : 'enemy'; },
+  stat(k) { return { str: 'str', сил: 'str', dex: 'dex', лов: 'dex', con: 'con', тел: 'con', int: 'int', инт: 'int', wis: 'wis', мдр: 'wis', муд: 'wis', cha: 'cha', хар: 'cha' }[CONV.low(k).slice(0, 3)] || null; },
+  /** Спасброски: {dex: "+5"} или «Dex +5, Wis +3» / «Лов +5» → {dex: 5} */
+  saves(v) {
+    const o = {};
+    if (v && typeof v === 'object' && !Array.isArray(v)) { Object.entries(v).forEach(([k, x]) => { const s = CONV.stat(k); if (s && x !== '' && x != null) o[s] = int(String(x).replace('−', '-')); }); return o; }
+    for (const m of CONV.scal(v).matchAll(/([a-zа-яё]+)\.?\s*([+\-−]\s*\d+)/gi)) { const s = CONV.stat(m[1]); if (s) o[s] = int(m[2].replace('−', '-').replace(/\s/g, '')); }
+    return o;
+  },
+  /** «атака +1; урон +1к4; КБ +1; спасброски +1; Скрытность ADV» (и «weapon attack +1», «ac +1») → теги бросков */
+  bonusTags(v) {
+    const out = [], ST = ['СИЛ', 'ЛОВ', 'ТЕЛ', 'ИНТ', 'МУД', 'ХАР'];
+    for (const raw of (Array.isArray(v) ? v.map(CONV.scal) : CONV.scal(v).split(/[;\n]|,(?=\s*[a-zа-яё])/i))) {
+      const p = CONV.low(raw).trim(), em = p.match(/([+\-−]\s*\d+(?:\s*[dк]\s*\d+)?|\badv\b|\bdis\b|преимущ\S*|помех\S*)/i); if (!em) continue;
+      const eff = /^adv|преимущ/.test(em[1]) ? 'ADV' : /^dis|помех/.test(em[1]) ? 'DIS' : em[1].replace(/\s/g, '').replace('−', '-').replace('к', 'd');
+      const st = ['сил|str', 'лов|dex', 'тел|con', 'инт|int', 'муд|мдр|wis', 'хар|cha'].findIndex(r => new RegExp(r).test(p)), sk = TAG_CATS.skill.targets.find(s => p.includes(CONV.low(s)));
+      const t = /инициатив|initiative/.test(p) ? ['initiative', ''] : /спас|saving|save/.test(p) ? ['save', st >= 0 ? ST[st] : 'Все спасброски'] : /(^|\s)сл(\s|$)|\bdc\b/.test(p) ? ['dc', '']
+        : /урон|damage/.test(p) ? ['damage', /закл|spell/.test(p) ? 'Заклинанием' : /все|all/.test(p) ? 'Весь урон' : 'Оружием']
+        : /атак|attack|попадан/.test(p) ? ['attack', /закл|spell/.test(p) ? 'Заклинанием' : /дальн|ranged/.test(p) ? 'Дальние атаки' : /все|all/.test(p) ? 'Все атаки' : 'Оружием']
+        : /кб|кд|(^|\W)ac(\W|$)|armor class|класс брони/.test(p) ? ['ac', ''] : /скорост|speed/.test(p) ? ['speed', ''] : sk ? ['skill', sk] : /провер|check/.test(p) ? ['check', st >= 0 ? ST[st] : 'Все проверки'] : null;
+      if (t) out.push({ category: t[0], target: t[1], effect: eff });
+    }
+    return out;
+  },
+  TYPE_EM: { 'Еда': '🍖', 'Ценность': '💎', 'Материал': '🌿', 'Артефакт': '🔮' },
+  /** Наш предмет из полей: цвет по редкости и эмодзи по названию — если их не дали */
+  mk(o) {
+    const it = normItem(o);
+    if (o.hue == null || o.hue === '') it.hue = TTG.RAR_HUE[it.rarity] ?? 30;
+    if (!it.emoji) it.emoji = guessEmoji(it.name) || TTG.TYPE_EMOJI[it.type] || CONV.TYPE_EM[it.type] || '📦';
+    if (!o.width && itemDesc(it).length > 700) it.width = 'medium';
+    it.blocks = it.blocks.filter(b => b.type !== 'properties' || b.rows?.length);
+    return it;
+  },
+
+  /* ── Записи со своими полями: строка таблицы, карточка «Ключ: значение», чужой JSON ── */
+  JUNK: /^(_.*|id|slug|key|url|uuid|sort|folder|flags|ownership|effects|page|srd|basicrules|hasfluff\w*|document__\w*|created|updated|v|version|plus_\w+|base_ac|img|icon|ts|hash)$/i,
+  APP_KEYS: ['displayId', 'triggers', 'checks', 'battleKey', 'lootCards', 'wikiLinks', 'nodes', 'edges', 'uid', '_limitStates', 'sectionOrder', 'saveProfs', 'skillProfs'],
+  /** ctx: {kind — подсказка вида, force — вид задан таблицей, type — тип предметов по имени листа/файла} → {kind, rec} | null */
+  flat(o, ctx = {}) {
+    if (!o || typeof o !== 'object' || Array.isArray(o) || CONV.APP_KEYS.some(k => k in o)) return null;
+    const f = {}, hdr = {}, extra = [];
+    for (const [k, v] of Object.entries(o)) {
+      if (v == null || v === '' || CONV.JUNK.test(k)) continue;
+      const c = TBL.field(k);
+      if (c && f[c] == null) { f[c] = v; hdr[c] = k; }
+      else if (typeof v !== 'object' || Array.isArray(v) && v.every(x => x == null || typeof x !== 'object')) extra.push([k, CONV.scal(v)]);
+    }
+    if (!CONV.scal(f.name) || Object.keys(f).length < 2 && !ctx.kind) return null;
+    const auto = TBL.kindOf(Object.keys(f));
+    const kind = f.k ? TBL.hint(CONV.scal(f.k)) || ctx.kind || 'item' : ctx.force && ctx.kind ? ctx.kind : auto !== 'item' ? auto : ctx.kind || 'item';
+    const rec = kind === 'npc' ? CONV.npc(f, hdr, extra) : kind === 'wiki' ? CONV.wiki(f, hdr, extra) : CONV.item(f, hdr, extra, ctx.type);
+    return rec ? { kind, rec } : null;
+  },
+  ITEM_USED: new Set(['name', 'nameEn', 'type', 'subtype', 'rarity', 'attune', 'weight', 'cost', 'desc', 'damage', 'dmgType', 'props', 'ac', 'str', 'stealth', 'qty', 'emoji', 'image', 'source', 'charges', 'lore', 'appearance', 'note', 'hue', 'bonuses', 'k']),
+  item(f, hdr = {}, extra = [], typeHint = '') {
+    const name = CONV.scal(f.name); if (!name) return null;
+    const tt = CONV.scal(f.type), type = (tt && CONV.itemType(tt)) || typeHint || (f.damage ? 'Оружие' : f.ac ? 'Доспех' : CONV.guessType(name));
+    const blocks = [], rows = [], row = (key, val) => { val = CONV.scal(val); if (val) rows.push({ key, val }); }, img = CONV.scal(f.image);
+    if (/^https?:\/\//i.test(img)) blocks.push({ type: 'image', imageUrl: img, showPlaceholder: false });
+    const desc = CONV.scal(f.desc); if (desc) blocks.push({ type: 'description', text: desc });
+    if (f.appearance) blocks.push({ type: 'appearance', text: CONV.scal(f.appearance) });
+    const dm = f.damage && CONV.dice(f.damage); if (dm) { if (f.dmgType) dm.dmgtype = CONV.dmgType(f.dmgType) || dm.dmgtype; blocks.push(dm); }
+    row('Свойства', f.props && CONV.props(f.props)); row('КБ', f.ac && CONV.acText(f.ac)); row('Сила', f.str);
+    if (f.stealth && CONV.yes(f.stealth)) row('Скрытность', 'помеха');
+    row('Цена', f.cost && CONV.price(f.cost)); row('Оригинал', f.nameEn); row('Источник', f.source);
+    Object.keys(f).filter(k => !CONV.ITEM_USED.has(k)).forEach(k => row(hdr[k] || k, f[k])); extra.forEach(([k, v]) => row(k, v)); // ничего не теряем: остальное — строками свойств
+    if (rows.length) blocks.push({ type: 'properties', rows });
+    if (f.lore) blocks.push({ type: 'lore', text: CONV.scal(f.lore) });
+    const ch = clamp(int(CONV.scal(f.charges)), 0, 50);
+    return CONV.mk({ name, type, subtype: CONV.scal(f.subtype) || (type === 'Оружие' ? CONV.wsub(tt) : type === 'Доспех' ? CONV.asub(tt + ' ' + name) : ''),
+      rarity: CONV.rarity(f.rarity) || 'common', attune: f.attune != null && CONV.yes(f.attune), weight: f.weight ? parseLb(CONV.scal(f.weight)) : 0, qty: Math.max(1, int(CONV.scal(f.qty), 1)),
+      emoji: safeEmoji(CONV.scal(f.emoji)), hue: f.hue != null && f.hue !== '' ? int(f.hue, 30) : undefined, note: CONV.scal(f.note), blocks, tags: f.bonuses ? CONV.bonusTags(f.bonuses) : [],
+      charges: ch ? { max: ch, cur: ch, reset: 'рассвет' } : null });
+  },
+  NPC_USED: new Set(['name', 'hp', 'ac', 'speed', 'str', 'dex', 'con', 'int', 'wis', 'cha', 'cr', 'xp', 'size', 'type', 'alignment', 'side', 'actions', 'bonus', 'reactions', 'traits', 'legendary',
+    'resist', 'vuln', 'immune', 'condImm', 'senses', 'languages', 'saves', 'skills', 'desc', 'source', 'k', 'image', 'emoji']),
+  card: (title, color, shape, content, collapsed = true) => content ? { title, color, shape, content, collapsed } : null,
+  npc(f, hdr = {}, extra = []) {
+    const name = CONV.scal(f.name); if (!name) return null;
+    const n1 = v => int((CONV.scal(v).match(/-?\d+/) || [])[0], NaN), crT = CONV.scal(f.cr);
+    const cr = (crT.match(/\d+\/\d+|\d+(?:[.,]\d+)?/) || [''])[0].replace(',', '.'), xpIn = (crT.match(/([\d\s,.]+)\s*(xp|опыт)/i) || [])[1];
+    const stats = {}; STATS.forEach(k => { const v = n1(f[k]); if (Number.isFinite(v)) stats[k] = v; });
+    const sum = [[[CONV.scal(f.size), CONV.scal(f.type)].filter(Boolean).join(' '), CONV.scal(f.alignment)].filter(Boolean).join(', '), cr && `ПО ${cr}`,
+      f.speed && `Скорость: ${CONV.scal(f.speed)}`, f.senses && `Чувства: ${CONV.scal(f.senses)}`, f.languages && `Языки: ${CONV.scal(f.languages)}`, f.skills && `Навыки: ${CONV.scal(f.skills)}`,
+      f.source && `Источник: ${CONV.scal(f.source)}`, ...Object.keys(f).filter(k => !CONV.NPC_USED.has(k)).map(k => `${hdr[k] || k}: ${CONV.scal(f[k])}`), ...extra.map(([k, v]) => `${k}: ${v}`)].filter(Boolean).join('\n');
+    const leg = CONV.actList(f.legendary), C = CONV.card;
+    return normNPC({ name, hp: Math.max(1, n1(f.hp) || 10), ac: n1(f.ac) || 10, speed: f.speed ? CONV.speed(f.speed) : 6, align: f.side ? CONV.side(f.side) : 'enemy', stats,
+      saves: CONV.saves(f.saves), resist: CONV.dmgList(f.resist), vuln: CONV.dmgList(f.vuln), immune: CONV.dmgList(f.immune), condImm: CONV.condList(f.condImm),
+      cr, xp: int(String(CONV.scal(f.xp) || xpIn || '').replace(/[\s,.]/g, '')) || CONV.CR_XP[cr] || 0,
+      actions: CONV.actList(f.actions), bonusActions: CONV.actList(f.bonus),
+      legMax: leg.length ? 3 : 0, legActs: leg.map(a => ({ name: a.name.replace(/\s*\((?:costs?|стоит)\s*\d[^)]*\)/i, ''), cost: int((a.name.match(/(?:costs?|стоит)\s*(\d)/i) || [])[1], 1), description: a.description })),
+      customCards: [C('Сводка', '#2a9988', '◆', sum, false), C('Особенности', '#3a7acc', '★', CONV.text(f.traits)), C('Реакции', '#e06020', '⚡', CONV.text(f.reactions)), C('Описание', '#e8a020', '', CONV.scal(f.desc))].filter(Boolean) });
+  },
+  wiki(f, hdr = {}, extra = []) {
+    const title = CONV.scal(f.name); if (!title) return null;
+    const rest = Object.keys(f).filter(k => !['name', 'type', 'tags', 'desc', 'gmNotes', 'k'].includes(k)).map(k => `${hdr[k] || k}: ${CONV.scal(f[k])}`);
+    return normArticle({ title, category: CONV.wikiCat(f.type), tags: Array.isArray(f.tags) ? f.tags.map(CONV.scal) : CONV.scal(f.tags).split(/[,;]/),
+      body: [CONV.scal(f.desc), ...rest, ...extra.map(([k, v]) => `${k}: ${v}`)].filter(Boolean).join('\n\n'), gmNotes: CONV.scal(f.gmNotes) });
+  },
+  /** Действие NPC из текста: урон «7 (1d8 + 3) рубящего», досягаемость/дистанция, «(Перезарядка 5–6)», «(3/день)» */
+  npcAct(name, text, raw = {}) {
+    let n = CONV.scal(name); const t = CONV.scal(text), limits = [];
+    const rch = n.match(/\(\s*(?:recharge|перезарядка)\s*(\d)/i), day = n.match(/\(\s*(\d+)\s*\/\s*(?:day|день|сутки)/i);
+    if (rch) limits.push({ type: 'recharge', min: int(rch[1], 5) }); else if (day) limits.push({ type: 'charges', amount: int(day[1], 1), period: 'day' });
+    else if (/\(\s*(?:recharges after|перезаряжается после)/i.test(n)) limits.push({ type: 'charges', amount: 1, period: 'day' });
+    n = n.replace(/\s*\((?:recharge|перезарядка|recharges|перезаряжается|\d+\s*\/\s*(?:day|день|сутки))[^)]*\)/gi, '').trim();
+    const f = String(raw.damage_dice || String(raw.attack || '').split('|')[2] || '').replace(/\s/g, ''), fm = f.match(/^(\d*)[dкDК](\d+)([+\-−]\d+)?/);
+    const pm = fm ? null : t.match(/\(\s*(\d*)\s?[dкDК]\s?(\d+)\s*(?:([+\-−])\s*(\d+))?\s*\)/);
+    let dice = '', mod = '';
+    if (fm) { dice = `${fm[1] || 1}d${fm[2]}`; mod = fm[3] ? String(int(fm[3].replace('−', '-'))) : raw.damage_bonus ? String(int(raw.damage_bonus)) : ''; }
+    else if (pm) { dice = `${pm[1] || 1}d${pm[2]}`; mod = pm[3] ? String((/[-−]/.test(pm[3]) ? -1 : 1) * int(pm[4])) : ''; }
+    const near = pm ? t.slice(pm.index + pm[0].length, pm.index + pm[0].length + 40) : t;
+    const rg = t.match(/(?:reach|досягаемость)\s*(\d+)\s*(?:ft|фт)/i), rr = t.match(/(?:range|дистанция)\s*(\d+(?:\s*\/\s*\d+)?)\s*(?:ft|фт)/i);
+    return { name: n || 'Действие', range: rg ? rg[1] + ' фт.' : rr ? rr[1].replace(/\s/g, '') + ' фт.' : '', description: t, dice, damagemod: mod === '0' ? '' : mod, damagetype: dice ? CONV.dmgType(near) : '', limits };
+  },
+  /** Список действий: массив {name, desc|entries…} или текст «Имя. Описание» по строке на действие */
+  actList(v) {
+    if (!v) return [];
+    if (Array.isArray(v)) return v.map(a => typeof a === 'string' ? CONV.actLine(a) : a && typeof a === 'object' ? CONV.npcAct(a.name ?? a.title, a.desc ?? a.description ?? a.text ?? (a.entries ? CONV.ent(a.entries) : ''), a) : null).filter(Boolean);
+    const out = [];
+    CONV.scal(v).split(/\r?\n/).map(s => s.trim()).filter(Boolean).forEach(l => { const a = CONV.actLine(l, out.length > 0); if (a) out.push(a); else out[out.length - 1].description += '\n' + l; });
+    return out;
+  },
+  actLine(l, cont = false) { const m = l.match(/^([^.:]{2,48}?(?:\([^)]*\))?)\s*[.:]\s+(.+)$/); return m ? CONV.npcAct(m[1], m[2]) : cont ? null : CONV.npcAct(l.slice(0, 40), l); },
+  text(v) { return Array.isArray(v) ? v.map(a => typeof a === 'string' ? a : `${CONV.scal(a.name ?? a.title)}. ${CONV.scal(a.desc ?? a.description ?? a.text ?? (a.entries ? CONV.ent(a.entries) : ''))}`).join('\n\n') : CONV.scal(v); },
+
+  /* ── 5etools (items.json, items-base.json, bestiary-*.json, homebrew) ── */
+  T5: {
+    TYPE: { M: 'Оружие', R: 'Оружие', A: 'Оружие', AF: 'Оружие', LA: 'Доспех', MA: 'Доспех', HA: 'Доспех', S: 'Доспех', P: 'Зелье', RG: 'Кольцо', RD: 'Жезл', WD: 'Жезл', ST: 'Посох', SC: 'Свиток',
+      G: 'Снаряжение', SCF: 'Снаряжение', EXP: 'Снаряжение', TAH: 'Снаряжение', AT: 'Инструмент', T: 'Инструмент', INS: 'Инструмент', GS: 'Инструмент', $: 'Ценность', $A: 'Ценность', $C: 'Ценность', $G: 'Ценность',
+      TG: 'Ценность', FD: 'Еда', OTH: 'Прочее', MNT: 'Прочее', VEH: 'Прочее', SHP: 'Прочее', AIR: 'Прочее', SPC: 'Прочее' },
+    DMG: { B: 'Дробящий', P: 'Колющий', S: 'Рубящий', F: 'Огонь', C: 'Холод', L: 'Молния', I: 'Яд', A: 'Кислота', N: 'Некротика', R: 'Лучистый', Y: 'Психика', O: 'Сила', T: 'Гром' },
+    PROP: { V: 'Универсальное', F: 'Фехтовальное', L: 'Лёгкое', T: 'Метательное', H: 'Тяжёлое', R: 'Досягаемость', '2H': 'Двуручное', A: 'Боеприпасы', LD: 'Перезарядка', RLD: 'Перезарядка', S: 'Особое', AF: 'Огнестрельное', BF: 'Взрывное' },
+    SIZE: { T: 'Крошечный', S: 'Маленький', M: 'Средний', L: 'Большой', H: 'Огромный', G: 'Громадный' },
+    AL: { L: 'законопослушный', N: 'нейтральный', C: 'хаотичный', G: 'добрый', E: 'злой', U: 'без мировоззрения', A: 'любое мировоззрение' },
+  },
+  T5_KEYS: ['item', 'baseitem', 'magicvariant', 'monster', 'spell', 'race', 'subrace', 'class', 'subclass', 'classFeature', 'subclassFeature', 'feat', 'background', 'optionalfeature', 'condition', 'disease',
+    'status', 'deity', 'object', 'vehicle', 'trap', 'hazard', 'reward', 'psionic', 'variantrule', 'action', 'language', 'table', 'itemGroup', 'itemProperty', 'itemType', 'itemTypeAdditionalEntries', 'itemEntry',
+    'itemMastery', 'cult', 'boon', 'deck', 'card', 'legendaryGroup', 'charoption', 'recipe', 'skill', 'sense', 'monsterFluff', 'itemFluff', 'spellFluff', 'raceFluff', 'backgroundFluff'],
+  /** Разметка 5etools {@damage 1d6}, {@hit 4}, {@h} → текст */
+  t5(s) {
+    let t = String(s ?? ''), p;
+    do {
+      p = t;
+      t = t.replace(/\{@(\w+)\s*([^{}]*)\}/g, (_, tag, body) => { const a = body.split('|');
+        return tag === 'hit' ? sgn(int(a[0])) : tag === 'h' ? 'Hit: ' : tag === 'dc' ? 'DC ' + a[0] : tag === 'recharge' ? `(Recharge ${a[0] || 6}–6)` : tag === 'chance' ? a[0] + '%'
+          : tag === 'atk' ? ({ mw: 'Melee Weapon Attack:', rw: 'Ranged Weapon Attack:', ms: 'Melee Spell Attack:', rs: 'Ranged Spell Attack:', 'mw,rw': 'Melee or Ranged Weapon Attack:' }[a[0]] || 'Attack:')
+          : /^(filter|link|5etools|footnote)$/.test(tag) ? a[0] : a[2] || a[0]; });
+    } while (t !== p);
+    return t;
+  },
+  /** entries 5etools (строки, списки, таблицы, вложенные блоки) → текст */
+  ent(e) {
+    if (e == null) return '';
+    if (typeof e === 'string' || typeof e === 'number') return CONV.t5(e);
+    if (Array.isArray(e)) return e.map(x => CONV.ent(x)).filter(Boolean).join('\n\n');
+    if (typeof e !== 'object') return '';
+    if (e.type === 'list') return (e.items || []).map(x => '• ' + (x && typeof x === 'object' && x.name ? `${CONV.t5(x.name)}. ${CONV.ent(x.entries || x.entry)}` : CONV.ent(x))).join('\n');
+    if (e.type === 'table') return [e.caption, (e.colLabels || []).join(' | '), ...(e.rows || []).map(r => (Array.isArray(r) ? r : r?.row || []).map(c => c && typeof c === 'object' && c.roll ? (c.roll.exact ?? `${c.roll.min}–${c.roll.max}`) : CONV.ent(c)).join(' | '))].filter(Boolean).map(x => CONV.t5(x)).join('\n');
+    const body = CONV.ent(e.entries || e.entry || e.items || '');
+    return e.name ? `${CONV.t5(e.name)}. ${body}` : body;
+  },
+  t5item(d) {
+    const T = CONV.T5, ty = String(d.type || '').split('|')[0], name = CONV.t5(d.name) || 'Предмет', rar = CONV.rarity(d.rarity) || 'common';
+    const type = d.wondrous && !T.TYPE[ty] ? 'Дивный предмет' : T.TYPE[ty] || (d.weaponCategory ? 'Оружие' : d.armor ? 'Доспех' : d.poison ? 'Зелье' : d.staff ? 'Посох' : rar !== 'common' ? 'Дивный предмет' : 'Прочее');
+    const rows = [], row = (k, v) => { v = CONV.scal(v); if (v) rows.push({ key: k, val: v }); };
+    const pk = (d.property || []).map(p => String(typeof p === 'object' ? p.uid || p.property || '' : p).split('|')[0]);
+    row('Свойства', pk.filter(k => k && k !== 'M').map(k => { let s = T.PROP[k] || k; if (k === 'V' && d.dmg2) s += ` (${String(d.dmg2).replace(/d/gi, 'к')})`; if (/^(T|A|AF)$/.test(k) && d.range) s += ` (${d.range})`; return s; }).join(', '));
+    if (d.ac != null) row('КБ', ty === 'LA' ? `${d.ac} + Лов` : ty === 'MA' ? `${d.ac} + Лов (макс. 2)` : ty === 'S' ? `+${d.ac}` : d.ac);
+    row('Сила', d.strength); if (d.stealth) row('Скрытность', 'помеха');
+    row('Цена', d.value && CONV.cpText(d.value)); if (typeof d.reqAttune === 'string') row('Настройка', d.reqAttune);
+    row('Источник', [d.source, d.page && 'с. ' + d.page].filter(Boolean).join(', '));
+    const blocks = [], desc = CONV.ent([...(d.entries || []), ...(d.additionalEntries || [])]);
+    if (desc) blocks.push({ type: 'description', text: desc });
+    const dm = d.dmg1 && CONV.dice(d.dmg1); if (dm) blocks.push({ ...dm, mod: '', dmgtype: T.DMG[d.dmgType] || dm.dmgtype });
+    if (rows.length) blocks.push({ type: 'properties', rows });
+    const tags = [], tg = (category, target, v) => { if (v) tags.push({ category, target, effect: sgn(int(v)) }); };
+    tg('attack', 'Оружием', d.bonusWeapon || d.bonusWeaponAttack); tg('damage', 'Оружием', d.bonusWeapon || d.bonusWeaponDamage); tg('ac', '', d.bonusAc); tg('save', 'Все спасброски', d.bonusSavingThrow);
+    tg('attack', 'Заклинанием', d.bonusSpellAttack); tg('dc', '', d.bonusSpellSaveDc); tg('check', 'Все проверки', d.bonusAbilityCheck);
+    const ch = clamp(int(d.charges), 0, 50), am = /^(A|AF)$/.test(ty) ? { name: name.replace(/\s*\(\d+\)\s*$/, ''), cur: int((name.match(/\((\d+)\)/) || [])[1], 20) } : null;
+    const subtype = type === 'Оружие' && d.weaponCategory ? `${/martial/i.test(d.weaponCategory) ? 'Воинское' : 'Простое'} ${ty === 'R' ? 'дальнобойное' : 'рукопашное'} оружие`
+      : { LA: 'Лёгкий доспех', MA: 'Средний доспех', HA: 'Тяжёлый доспех', S: 'Щит' }[ty] || (d.wondrous ? 'Чудесный предмет' : '');
+    return CONV.mk({ name, type, subtype, rarity: rar, attune: !!d.reqAttune, weight: am ? num(d.weight) / Math.max(1, am.cur) : num(d.weight), blocks, tags, ammo: am,
+      charges: ch ? { max: ch, cur: ch, reset: { dawn: 'рассвет', dusk: 'рассвет', restShort: 'короткий отдых', restLong: 'длинный отдых' }[d.recharge] || 'рассвет' } : null });
+  },
+  t5monster(d) {
+    const T = CONV.T5, ac0 = Array.isArray(d.ac) ? d.ac[0] : d.ac, ac = int(ac0 && typeof ac0 === 'object' ? ac0.ac : ac0, 10);
+    const hp = int(d.hp?.average, int((String(d.hp?.special || '').match(/\d+/) || [])[0], 10)), cr = String(d.cr && typeof d.cr === 'object' ? d.cr.cr ?? '' : d.cr ?? '');
+    const sp = d.speed && typeof d.speed === 'object' ? d.speed : { walk: d.speed }, walk = sp.walk && typeof sp.walk === 'object' ? sp.walk.number : sp.walk;
+    const list = a => (Array.isArray(a) ? a : []).map(x => typeof x === 'string' ? x : x?.special || [...(x?.resist || x?.immune || x?.vulnerable || x?.conditionImmune || [])].join(', ') + (x?.note ? ' ' + x.note : '')).join(', ');
+    const feats = arr => (arr || []).map(f => `${CONV.t5(f.name || '')}. ${CONV.ent(f.entries)}`).join('\n\n');
+    const type = d.type && typeof d.type === 'object' ? [d.type.type, d.type.tags?.length && `(${d.type.tags.map(t => typeof t === 'object' ? t.tag : t).join(', ')})`].filter(Boolean).join(' ') : d.type || '';
+    const align = (d.alignment || []).map(a => typeof a === 'object' ? (a.alignment || []).map(x => T.AL[x] || x).join(' ') : T.AL[a] || a).join(' ');
+    const spT = Object.entries(sp).filter(([k, v]) => k !== 'canHover' && v != null).map(([k, v]) => `${k === 'walk' ? '' : k + ' '}${typeof v === 'object' ? v.number + (v.condition ? ' ' + v.condition : '') : v} ft.`).join(', ');
+    const sum = [`CR ${cr || '?'} · ${[(d.size || []).map(s => T.SIZE[s] || s).join('/'), type].filter(Boolean).join(' ')}${align ? ', ' + align : ''}`,
+      `Хиты: ${hp}${d.hp?.formula ? ` (${d.hp.formula})` : ''} · КБ ${ac}${ac0 && typeof ac0 === 'object' && ac0.from ? ` (${ac0.from.join(', ')})` : ''}`, spT && `Скорость: ${spT}`,
+      d.save && `Спасброски: ${Object.entries(d.save).map(([k, v]) => `${k} ${v}`).join(', ')}`, d.skill && `Навыки: ${Object.entries(d.skill).filter(([k]) => k !== 'other').map(([k, v]) => `${k} ${v}`).join(', ')}`,
+      d.vulnerable && `Уязвимость: ${list(d.vulnerable)}`, d.resist && `Сопротивление: ${list(d.resist)}`, d.immune && `Иммунитет: ${list(d.immune)}`, d.conditionImmune && `Иммунитет к состояниям: ${list(d.conditionImmune)}`,
+      `Чувства: ${[...[].concat(d.senses || []), d.passive != null && 'passive Perception ' + d.passive].filter(Boolean).join(', ')}`, d.languages && `Языки: ${[].concat(d.languages).join(', ')}`,
+      `Источник: ${[d.source, d.page && 'с. ' + d.page].filter(Boolean).join(', ')}`].filter(Boolean).map(x => CONV.t5(x)).join('\n');
+    const lr = (d.trait || []).find(t => /legendary resistance/i.test(t.name || '')), C = CONV.card, act = a => CONV.npcAct(CONV.t5(a.name || ''), CONV.ent(a.entries));
+    return normNPC({ name: CONV.t5(d.name) || 'Существо', hp, ac, speed: CONV.ft2cells(walk ?? 30), align: 'enemy',
+      stats: Object.fromEntries(STATS.map(k => [k, int(d[k], 10)])), saves: CONV.saves(d.save), resist: CONV.dmgList(list(d.resist)), vuln: CONV.dmgList(list(d.vulnerable)), immune: CONV.dmgList(list(d.immune)),
+      condImm: CONV.condList(list(d.conditionImmune)), cr, xp: CONV.CR_XP[cr] || 0, legMax: d.legendary ? int(d.legendaryActions, 3) : 0,
+      legActs: (d.legendary || []).map(f => ({ name: CONV.t5(f.name || '').replace(/\s*\(costs? \d actions?\)/i, ''), cost: int((String(f.name).match(/costs? (\d)/i) || [])[1], 1), description: CONV.ent(f.entries) })),
+      legRes: lr ? int((lr.name.match(/(\d+)\s*\/\s*day/i) || [])[1], 3) : 0, actions: (d.action || []).map(act), bonusActions: (d.bonus || []).map(act),
+      customCards: [C('Сводка', '#2a9988', '◆', sum, false), C('Особенности', '#3a7acc', '★', feats(d.trait)), C('Реакции', '#e06020', '⚡', feats(d.reaction)), C('Легендарные действия', '#8844cc', '☽', feats(d.legendary))].filter(Boolean) });
+  },
+  t5one(o) {
+    if (o.cr != null && (o.hp || o.ac)) return { kind: 'npc', rec: CONV.t5monster(o), fmt: '5etools' };
+    if (o.level != null && o.school && o.time) return { skip: 'заклинания' };
+    return { kind: 'item', rec: CONV.t5item(o), fmt: '5etools' };
+  },
+
+  /* ── Open5e (api.open5e.com: monsters, magicitems, weapons, armor) — предметы разбирает flat ── */
+  o5monster(d) {
+    const ab = d.ability_scores || d, full = { str: 'strength', dex: 'dexterity', con: 'constitution', int: 'intelligence', wis: 'wisdom', cha: 'charisma' };
+    const sp = d.speed && typeof d.speed === 'object' ? d.speed : { walk: d.speed }, sv = {};
+    STATS.forEach(k => { const v = d[full[k] + '_save'] ?? d.saving_throws?.[full[k]]; if (v != null && v !== '') sv[k] = int(v); });
+    const f = { name: d.name, hp: d.hit_points, ac: Array.isArray(d.armor_class) ? d.armor_class[0]?.value ?? d.armor_class[0] : d.armor_class, speed: `${int(sp.walk, 30)} ft`,
+      cr: CONV.crStr(d.challenge_rating ?? d.cr), saves: sv, size: d.size, type: [d.type, d.subtype && `(${d.subtype})`].filter(Boolean).join(' '), alignment: d.alignment,
+      skills: d.skills && typeof d.skills === 'object' ? Object.entries(d.skills).filter(([, v]) => v != null).map(([k, v]) => `${k} ${sgn(int(v))}`).join(', ') : d.skills,
+      resist: d.damage_resistances, vuln: d.damage_vulnerabilities, immune: d.damage_immunities, condImm: d.condition_immunities, senses: d.senses, languages: d.languages,
+      actions: d.actions, bonus: d.bonus_actions, reactions: d.reactions, traits: d.special_abilities, legendary: d.legendary_actions,
+      desc: [d.legendary_desc, d.desc].filter(Boolean).join('\n\n'), source: d.document__title };
+    STATS.forEach(k => { f[k] = ab[full[k]] ?? ab[k]; });
+    return CONV.npc(f);
+  },
+
+  /* ── Foundry VTT (dnd5e): экспорт предмета / актёра / журнала, паки .db (JSON Lines) ── */
+  FV_PROP: { fin: 'Фехтовальное', lgt: 'Лёгкое', thr: 'Метательное', ver: 'Универсальное', two: 'Двуручное', hvy: 'Тяжёлое', rch: 'Досягаемость', amm: 'Боеприпасы', lod: 'Перезарядка', spc: 'Особое', fir: 'Огнестрельное', rel: 'Перезарядка' },
+  FV_SIZE: { tiny: 'Крошечный', sm: 'Маленький', med: 'Средний', lg: 'Большой', huge: 'Огромный', grg: 'Громадный' },
+  fvText(h) {
+    return TTG.txt(String(h || '').replace(/@\w+\[[^\]]*\]\{([^}]*)\}/g, '$1').replace(/@\w+\[([^\]]*)\]/g, (_, p) => p.split(/[.|]/).pop())
+      .replace(/\[\[\/?(?:r|roll|damage)?\s*([^\]]*?)\]\](?:\{([^}]*)\})?/gi, (_, f, l) => l || f));
+  },
+  fvDmg(sy) { const p = sy.damage?.parts?.[0], b = sy.damage?.base; return { f: p ? String(p[0] || '') : b?.denomination ? `${b.number || 1}d${b.denomination}${b.bonus ? '+' + b.bonus : ''}` : '', t: p ? p[1] : (b?.types || [])[0] }; },
+  fv(o) {
+    const t = o.type;
+    if (['weapon', 'equipment', 'consumable', 'tool', 'loot', 'backpack', 'container'].includes(t)) return { kind: 'item', rec: CONV.fvItem(o), fmt: 'Foundry VTT' };
+    if (t === 'npc') return { kind: 'npc', rec: CONV.fvActor(o), fmt: 'Foundry VTT' };
+    return { skip: t === 'spell' ? 'заклинания' : t === 'character' ? 'Foundry: персонажи игроков' : `Foundry: ${t}` };
+  },
+  fvItem(d) {
+    const s = d.system || d.data || {}, t = d.type, sub = CONV.low(CONV.scal(s.type?.value ?? s.consumableType ?? s.armor?.type ?? s.weaponType ?? s.toolType ?? '')), rar = CONV.rarity(s.rarity) || 'common';
+    const type = t === 'weapon' ? 'Оружие' : t === 'tool' ? 'Инструмент' : t === 'backpack' || t === 'container' ? 'Снаряжение'
+      : t === 'equipment' ? (/light|medium|heavy|shield|natural/.test(sub) ? 'Доспех' : /ring/.test(sub) ? 'Кольцо' : /rod|wand/.test(sub) ? 'Жезл' : rar !== 'common' || /wondrous|trinket/.test(sub) ? 'Дивный предмет' : 'Снаряжение')
+      : t === 'consumable' ? ({ potion: 'Зелье', poison: 'Зелье', scroll: 'Свиток', wand: 'Жезл', rod: 'Жезл', ammo: 'Оружие', food: 'Еда' }[sub] || 'Снаряжение')
+      : /gem|art|treasure/.test(sub) ? 'Ценность' : /material/.test(sub) ? 'Материал' : 'Прочее';
+    const props = Array.isArray(s.properties) ? s.properties : s.properties && typeof s.properties === 'object' ? Object.keys(s.properties).filter(k => s.properties[k]) : [];
+    const rng = s.range?.value ? `${s.range.value}${s.range.long ? '/' + s.range.long : ''}` : '', vv = s.damage?.versatile, vers = typeof vv === 'string' ? vv : vv?.denomination ? `${vv.number || 1}d${vv.denomination}` : '';
+    const rows = [], row = (k, v) => { v = CONV.scal(v); if (v) rows.push({ key: k, val: v }); };
+    row('Свойства', props.map(p => { let x = CONV.FV_PROP[p]; if (!x) return null; if (p === 'ver' && vers) x += ` (${vers.replace(/\s|@mod/g, '').replace(/\+$/, '').replace(/d/g, 'к')})`; if ((p === 'thr' || p === 'amm') && rng) x += ` (${rng})`; return x; }).filter(Boolean).join(', '));
+    const av = int(s.armor?.value); if (type === 'Доспех' && av) row('КБ', /shield/.test(sub) ? '+' + av : /light/.test(sub) ? `${av} + Лов` : /medium/.test(sub) ? `${av} + Лов (макс. ${s.armor?.dex ?? 2})` : String(av));
+    if (int(s.strength)) row('Сила', s.strength); if (s.stealth || props.includes('stealthDisadvantage')) row('Скрытность', 'помеха');
+    const pv = s.price && typeof s.price === 'object' ? s.price : s.price != null ? { value: s.price, denomination: 'gp' } : null; if (pv && num(pv.value)) row('Цена', CONV.price(pv));
+    row('Источник', s.source && typeof s.source === 'object' ? s.source.book || s.source.custom : s.source);
+    const blocks = [], img = String(d.img || ''); if (/^https?:\/\//.test(img)) blocks.push({ type: 'image', imageUrl: img, showPlaceholder: false });
+    const desc = CONV.fvText(s.description?.value ?? s.description); if (desc) blocks.push({ type: 'description', text: desc });
+    const dg = CONV.fvDmg(s), x = dg.f && CONV.dice(dg.f.replace(/@mod/g, '')); if (x) blocks.push({ ...x, mod: '', dmgtype: CONV.dmgType(dg.t) || x.dmgtype });
+    if (rows.length) blocks.push({ type: 'properties', rows });
+    const mb = int(s.magicalBonus), tags = !mb ? [] : type === 'Оружие' ? [{ category: 'attack', target: 'Оружием', effect: sgn(mb) }, { category: 'damage', target: 'Оружием', effect: sgn(mb) }] : type === 'Доспех' ? [{ category: 'ac', target: '', effect: sgn(mb) }] : [];
+    const um = clamp(int(s.uses?.max), 0, 50), att = s.attunement, ammo = t === 'consumable' && sub === 'ammo';
+    return CONV.mk({ name: d.name, type, rarity: rar, attune: att === 1 || att === 2 || /required|attuned/i.test(String(att || '')),
+      subtype: type === 'Оружие' ? { simpleM: 'Простое рукопашное оружие', simpleR: 'Простое дальнобойное оружие', martialM: 'Воинское рукопашное оружие', martialR: 'Воинское дальнобойное оружие' }[s.type?.value ?? s.weaponType] || '' : type === 'Доспех' ? CONV.asub(sub) : '',
+      weight: num(s.weight && typeof s.weight === 'object' ? s.weight.value : s.weight), qty: ammo ? 1 : Math.max(1, int(s.quantity, 1)), ammo: ammo ? { name: d.name, cur: Math.max(1, int(s.quantity, 20)) } : null, blocks, tags,
+      charges: um ? { max: um, cur: um, reset: { dawn: 'рассвет', dusk: 'рассвет', day: 'рассвет', sr: 'короткий отдых', lr: 'длинный отдых' }[s.uses?.per || s.uses?.recovery?.[0]?.period] || 'рассвет' } : null });
+  },
+  fvActor(d) {
+    const s = d.system || d.data || {}, at = s.attributes || {}, ab = s.abilities || {}, tr = s.traits || {}, act = { action: [], bonus: [], reaction: [], legendary: [], passive: [] }, spells = [];
+    const sv = k => int(ab[k]?.value, 10);
+    (Array.isArray(d.items) ? d.items : []).forEach(it => {
+      if (!it || typeof it !== 'object') return;
+      if (it.type === 'spell') { spells.push(it.name); return; }
+      if (it.type !== 'weapon' && it.type !== 'feat') return;
+      const is = it.system || it.data || {}, dg = CONV.fvDmg(is);
+      const ty = is.activation?.type || Object.values(is.activities || {})[0]?.activation?.type || (it.type === 'weapon' ? 'action' : '');
+      const a = CONV.npcAct(it.name, CONV.fvText(is.description?.value), { damage_dice: dg.f.replace(/@mod|\s/g, '').replace(/\+$/, '') });
+      if (/@mod/.test(dg.f)) { const m = abMod(is.actionType === 'rwak' || /fin/.test(JSON.stringify(is.properties || '')) && sv('dex') > sv('str') ? sv('dex') : sv('str')); if (m) a.damagemod = String(m); }
+      if (a.dice && dg.t) a.damagetype = CONV.dmgType(dg.t) || a.damagetype;
+      a._cost = int(is.activation?.cost, 1);
+      act[{ bonus: 'bonus', reaction: 'reaction', legendary: 'legendary', action: 'action' }[ty] || 'passive'].push(a);
+    });
+    const tl = x => [...(Array.isArray(x?.value) ? x.value : []), x?.custom || ''].join(', '), cr = CONV.crStr(s.details?.cr), pb = Math.max(2, Math.floor((Math.max(1, num(s.details?.cr, 1)) - 1) / 4) + 2);
+    const sum = [[[CONV.FV_SIZE[tr.size] || tr.size, CONV.scal(s.details?.type?.value ?? s.details?.type)].filter(Boolean).join(' '), CONV.scal(s.details?.alignment)].filter(Boolean).join(', '), cr && `ПО ${cr}`,
+      tl(tr.languages) && `Языки: ${tl(tr.languages)}`].filter(Boolean).join('\n'), C = CONV.card, txt = l => l.map(a => `${a.name}. ${a.description}`).join('\n\n');
+    return normNPC({ name: d.name, hp: int(at.hp?.max ?? at.hp?.value, 10), ac: int(at.ac?.flat ?? at.ac?.value, 10), speed: CONV.ft2cells(at.movement?.walk ?? 30), align: 'enemy',
+      stats: Object.fromEntries(STATS.map(k => [k, sv(k)])), saves: Object.fromEntries(STATS.filter(k => ab[k]?.proficient).map(k => [k, abMod(sv(k)) + pb])),
+      resist: CONV.dmgList(tl(tr.dr)), vuln: CONV.dmgList(tl(tr.dv)), immune: CONV.dmgList(tl(tr.di)), condImm: CONV.condList(tl(tr.ci)), cr, xp: int(s.details?.xp?.value) || CONV.CR_XP[cr] || 0,
+      legMax: int(s.resources?.legact?.max), legRes: int(s.resources?.legres?.max), legActs: act.legendary.map(a => ({ name: a.name, cost: a._cost, description: a.description })),
+      actions: act.action, bonusActions: act.bonus,
+      customCards: [C('Сводка', '#2a9988', '◆', sum, false), C('Особенности', '#3a7acc', '★', txt(act.passive)), C('Реакции', '#e06020', '⚡', txt(act.reaction)), C('Заклинания', '#8844cc', '✨', spells.join(', ')),
+        C('Описание', '#e8a020', '', CONV.fvText(s.details?.biography?.value))].filter(Boolean) });
+  },
+  journal(o) { return normArticle({ title: o.name, category: 'lore', body: o.pages.map(p => [p.name !== o.name && p.name, CONV.fvText(p.text?.content || '')].filter(Boolean).join('\n\n')).filter(Boolean).join('\n\n') }); },
+
+  /* ── ttg.club: сохранённые ответы API (карточки) — свои конвертеры TTG.* ── */
+  ttg(o) {
+    const k = TTG.kindOfUrl(o.url || '') || (o.hits || o.ability ? 'beast' : o.school && o.level != null ? 'spell' : o.armorClass != null ? 'armor' : o.damage ? 'weapon' : o.rarity || o.rarityRaw ? 'magic' : 'item');
+    if (k === 'spell') return { skip: 'заклинания' };
+    if (!o.description && k !== 'weapon' && k !== 'armor' || k === 'beast' && !o.ability) return { skip: 'ttg.club: строки списков без карточки' };
+    try { return { kind: k === 'beast' ? 'npc' : 'item', rec: TTG[k](o), fmt: 'ttg.club' }; } catch (e) { return { skip: 'ttg.club: не разобралось' }; }
+  },
+
+  /* ── Fight Club 5 / Game Master 5 (compendium .xml) ── */
+  fcKids: (el, tag) => [...el.children].filter(c => c.tagName === tag),
+  fcTxt(el, tag) { return CONV.fcKids(el, tag).map(c => c.textContent.trim()).filter(Boolean); },
+  fc5item(el) {
+    const one = t => CONV.fcTxt(el, t)[0] || '', detail = one('detail'), ty = one('type').toUpperCase(), prop = one('property').split(',').map(s => s.trim()).filter(Boolean);
+    const it = CONV.t5item({ name: one('name'), type: ty === 'W' ? '' : ty, wondrous: ty === 'W', weight: num(one('weight')), value: num(one('value')) * 100, property: prop,
+      weaponCategory: /^(M|R)$/.test(ty) ? (prop.includes('M') ? 'martial' : 'simple') : undefined, dmg1: one('dmg1'), dmg2: one('dmg2'), dmgType: one('dmgType'), range: one('range'),
+      ac: one('ac') ? int(one('ac')) : null, strength: one('strength'), stealth: /^(yes|1|true)$/i.test(one('stealth')), rarity: one('rarity') || detail, reqAttune: /attunement/i.test(detail) || null,
+      entries: CONV.fcTxt(el, 'text') });
+    it.tags.push(...CONV.bonusTags(CONV.fcTxt(el, 'modifier')));
+    return it;
+  },
+  fc5monster(el) {
+    const one = t => CONV.fcTxt(el, t)[0] || '';
+    const bl = t => CONV.fcKids(el, t).map(c => ({ name: CONV.fcTxt(c, 'name')[0] || '', desc: CONV.fcTxt(c, 'text').join('\n'), attack: CONV.fcTxt(c, 'attack')[0] || '' }));
+    const f = { name: one('name'), hp: one('hp'), ac: one('ac'), speed: one('speed'), cr: one('cr'), saves: one('save'), skills: one('skill'), resist: one('resist'), vuln: one('vulnerable'),
+      immune: one('immune'), condImm: one('conditionImmune'), senses: [one('senses'), one('passive') && 'passive Perception ' + one('passive')].filter(Boolean).join(', '), languages: one('languages'),
+      size: CONV.T5.SIZE[one('size').toUpperCase()] || one('size'), type: one('type'), alignment: one('alignment'), desc: one('description'),
+      actions: bl('action'), bonus: bl('bonus'), reactions: bl('reaction'), traits: bl('trait'), legendary: bl('legendary') };
+    STATS.forEach(k => { f[k] = one(k); });
+    return CONV.npc(f);
+  },
+};
+
+/* ═══════════════════════════════════════════════════════
+   ДУБЛИКАТЫ: одинаковое название (без регистра, ё = е, без знаков и «(копия)») — значит, одно и то же
+═══════════════════════════════════════════════════════ */
+const DUP = {
+  name: (kind, o) => asStr(kind === 'wiki' || kind === 'map' ? o?.title : o?.name),
+  key: (kind, o) => CONV.low(DUP.name(kind, o)).replace(/\[[^\]]*\]/g, ' ').replace(/\(\s*копия\s*\d*\s*\)/g, ' ').replace(/[^a-zа-я0-9]+/g, ' ').trim(),
+  NORM: { item: normItem, npc: normNPC, wiki: normArticle, batt: normBattle, shop: normShop, map: x => normMap(x), pc: normPC },
+  list: kind => kind === 'wiki' ? wikiArts() : STORE.list(kind),
+  /** Отпечаток для «точная копия»: нормализованная запись без id, времени и количества, ключи по алфавиту */
+  DROP: new Set(['id', '_ts', '_ref', '_st', '_on', '_dupOf', 'created', 'updated', 'qty', 'uid']),
+  stable(v) { return Array.isArray(v) ? '[' + v.map(x => DUP.stable(x)).join(',') + ']' : v && typeof v === 'object' ? '{' + Object.keys(v).filter(k => !DUP.DROP.has(k)).sort().map(k => JSON.stringify(k) + ':' + DUP.stable(v[k])).join(',') + '}' : JSON.stringify(v ?? null); },
+  same(kind, a, b) { try { const s = x => DUP.stable(SHARE.compact(DUP.NORM[kind](clone(x)))); return s(a) === s(b); } catch (e) { return false; } },
+  /** Совпадение для записи r среди одноимённых: точная копия, если есть (same), иначе самая свежая */
+  match(cands, kind, r) { const l = cands || [], twin = l.find(o => DUP.same(kind, o, r)); return twin ? { old: twin, same: true } : { old: l[0] || null, same: false }; },
+  /** {вид: Map(ключ → [записи])} по библиотекам */
+  index(kinds) {
+    const idx = {};
+    kinds.forEach(k => { const m = new Map(); DUP.list(k).forEach(o => { const key = DUP.key(k, o); if (key) { if (!m.has(key)) m.set(key, []); m.get(key).push(o); } }); idx[k] = m; });
+    return idx;
+  },
+  /** Что показать в сравнении: [подпись, значение, длинное?]; порядок строк одинаковый, пустые у всех вариантов окно прячет */
+  facts(kind, o) {
+    const cut = (t, n = 240) => { t = asStr(t).trim(); return t.length > n ? t.slice(0, n) + '…' : t; };
+    if (kind === 'item') {
+      const it = normItem(clone(o)), dm = it.blocks.find(b => b.type === 'dice'), lb = itemLb(it);
+      return [['Тип', [it.type, it.subtype].filter(Boolean).join(', ')], ['Редкость', (RARITY[it.rarity] || '') + (it.attune ? ' · настройка' : '')], ['Вес', lb ? fmtW(lb) : ''], ['Цена', propRow(it, 'Цена')],
+        ['Урон', dm ? `${dm.count || 1}к${dm.die}${dm.mod || ''} ${dm.dmgtype || ''}`.trim() : ''], ['КБ', propRow(it, 'КБ')], ['Свойства', propRow(it, 'Свойства')],
+        ['Заряды', it.charges ? `${it.charges.max} · ${it.charges.reset}` : ''], ['Снаряды', it.ammo ? `${it.ammo.name}: ${it.ammo.cur}` : ''], ['Бонусы', it.tags.map(tagLabel).join('; ')],
+        ['Блоков', String(it.blocks.length)], ['Описание', cut(itemDesc(it)), 1]];
+    }
+    if (kind === 'npc') {
+      const n = normNPC(clone(o));
+      return [['Хиты · КБ', `${n.hp} · ${n.ac}`], ['Скорость', `${n.speed * 5} фт.`], ['ПО', n.cr || '—'], ['Сторона', ALIGN[n.align]?.label || ''], ['Характеристики', STATS.map(k => n.stats[k]).join(' / ')],
+        ['Действия', n.actions.map(a => a.name).join(', ')], ['Бонусные', n.bonusActions.map(a => a.name).join(', ')], ['Легендарные', n.legActs.map(a => a.name).join(', ')],
+        ['Карточки', n.customCards.map(c => c.title).join(', ')], ['Сводка', cut(n.customCards[0]?.content), 1]];
+    }
+    if (kind === 'wiki') return [['Категория', WIKI_CATS[o.category]?.label || ''], ['Теги', (o.tags || []).join(', ') || '—'], ['Текст', cut(o.body, 320) || '—', 1], ['Для мастера', cut(o.gmNotes, 120) || '—', 1]];
+    if (kind === 'pc') return [['Класс', [o.cls, o.subclass].filter(Boolean).join(' · ') || '—'], ['Уровень', String(o.level || 1)], ['Раса', o.race || '—'], ['Хиты', `${o.hp?.cur ?? '?'}/${o.hp?.max ?? '?'}`],
+      ['Вещей', String(ZONE_KEYS.reduce((a, z) => a + (o.inv?.[z]?.length || 0), 0))]];
+    if (kind === 'batt') return [['Участники', (o.list || []).map(c => c.name).join(', ') || '—', 1], ['Раунд', String(o.round || 1)]];
+    if (kind === 'shop') return [['Хозяин', o.keeper || '—'], ['Товаров', String((o.items || []).length)], ['Наценка', (o.markup || 100) + '%'], ['Товары', cut((o.items || []).map(x => x.it?.name).join(', ')) || '—', 1]];
+    if (kind === 'map') return [['Сцен', String((o.nodes || []).length)], ['Связей', String((o.edges || []).length)], ['Сцены', cut((o.nodes || []).map(n => n.title).join(', ')) || '—', 1]];
+    return [];
+  },
+  /** Окно сравнения. vars: [{o, tag, sub, cls}]; btns[i] — кнопка под карточкой i; foot — общие кнопки; left — сколько ещё таких вопросов (галочка «для всех») */
+  dialog({ kind, title, text, vars, btns = [], foot = [], left = 0 }) {
+    return new Promise(res => {
+      let done = false;
+      const facts = vars.map(x => DUP.facts(kind, x.o)), raw = (fi, l) => asStr((fi.find(f => f[0] === l) || [])[1]);
+      const labels = [...new Set(facts.flat().map(f => f[0]))].filter(l => facts.some(fi => raw(fi, l)));
+      const val = (fi, l) => raw(fi, l) || '—', dif = l => new Set(facts.map(fi => val(fi, l))).size > 1, long = l => facts.some(fi => (fi.find(f => f[0] === l) || [])[2]);
+      const ic = o => kind === 'item' ? o.emoji || '📜' : DBI.LBL[kind][0];
+      const card = (x, i) => `<div class="dup-card ${x.cls || ''}"><div class="dup-tag"><span>${esc(x.tag)}</span>${x.sub ? `<small>${esc(x.sub)}</small>` : ''}</div>
+        <div class="dup-name"><span>${esc(ic(x.o))}</span><b class="grow">${esc(DUP.name(kind, x.o) || 'Без названия')}</b></div>
+        <dl class="dup-facts">${labels.map(l => `<dt>${esc(l)}</dt><dd class="${dif(l) ? 'dif' : ''} ${long(l) ? 'long' : ''}">${esc(val(facts[i], l))}</dd>`).join('')}</dl>
+        ${btns[i] ? `<button class="btn block ${btns[i].cls || ''}" data-dv="${esc(btns[i].v)}">${esc(btns[i].label)}</button>` : ''}</div>`;
+      const m = openModal({ title, size: 'wide', cls: 'dup-modal',
+        body: `<p class="dim small mb">${text}</p><div class="dup-pair">${vars.map(card).join('')}</div>
+          ${kind === 'item' ? `<details class="dup-more mt"><summary>Показать карточки целиком</summary><div class="dup-cards">${vars.map(x => lootCardHTML(itemFix(normItem(clone(x.o))), { empty: '' })).join('')}</div></details>` : ''}
+          ${left > 0 ? `<label class="row mt dup-all"><input type="checkbox" id="dup-all"><span>Так же — со всеми остальными дубликатами (ещё ${left})</span></label>` : ''}`,
+        foot: foot.map(b => `<button class="btn ${b.cls || ''}" data-dv="${esc(b.v)}">${esc(b.label)}</button>`).join(''),
+        onClose: () => { if (!done) res(null); } });
+      m.addEventListener('click', e => { const b = e.target.closest('[data-dv]'); if (!b) return; done = true; const all = !!$('#dup-all', m)?.checked; closeModal(); res({ v: b.dataset.dv, all }); });
+    });
+  },
+  /** Дубликат при добавлении: old — что уже есть, neu — новое → {ch: 'old'|'new'|'both', all} | null (окно закрыли) */
+  async ask(kind, old, neu, { left = 0, inv = false, batch = false } = {}) {
+    const where = inv ? 'в инвентаре' : batch ? 'выше в этой же базе' : { pc: 'среди твоих персонажей', wiki: 'в вики', map: 'среди сюжетов', shop: 'среди лавок', batt: 'среди боёв' }[kind] || 'в библиотеке';
+    const r = await DUP.dialog({ kind, title: '⧉ Такое уже есть', left,
+      text: `«<b>${esc(DUP.name(kind, neu))}</b>» уже есть ${where}. Какой оставить?${inv ? ' Количество сложится в любом случае.' : ''}`,
+      vars: [{ o: old, tag: inv ? '🎒 Мой' : batch ? '📦 Из этой базы' : '📦 Уже есть', sub: old._ts ? 'изменён ' + fmtDate(old._ts) : '' }, { o: neu, tag: '✨ Новый', cls: 'new' }],
+      btns: inv ? [{ v: 'old', label: 'Сложить в мою карточку' }, { v: 'new', label: 'Сложить, взять новую', cls: 'pri' }]
+        : [{ v: 'old', label: batch ? 'Оставить этот' : 'Оставить мой' }, { v: 'new', label: batch ? 'Взять этот' : 'Взять новый', cls: 'pri' }],
+      foot: [{ v: 'both', label: inv ? '⧉ Положить отдельно' : '⧉ Оставить оба' }] });
+    return r && { ch: r.v, all: r.all };
+  },
+  /** Предметы в рюкзак активного персонажа: такой же уже есть (в любой зоне) — одинаковые складываются, разные — спросить, какую карточку оставить */
+  async toPack(items) {
+    const keyOf = x => DUP.key('item', x), find = (pc, it) => { for (const z of ZONE_KEYS) { const f = pc.inv[z].find(x => keyOf(x) === keyOf(it)); if (f) return f; } return null; };
+    const pc0 = activePC(); if (!pc0) return 0;
+    let pol = null, left = items.filter(it => { const f = find(pc0, it); return f && !DUP.same('item', f, it); }).length; // в рюкзаке — первая одноимённая стопка
+    for (const raw of items) {
+      const pc = activePC(), it = itemCopy(normItem(raw)), f = find(pc, it); // после окна — свежий объект листа (§14.6)
+      if (!f) { invAdd(pc, it, 'pack'); continue; }
+      if (DUP.same('item', f, it)) { f.qty += it.qty; continue; }
+      let ch = pol;
+      if (!ch) { left--; const a = await DUP.ask('item', f, it, { inv: true, left }); ch = a ? a.ch : 'old'; if (!a || a.all) pol = ch; }
+      const p = activePC(), g = find(p, it) || f;
+      if (ch === 'old') g.qty += it.qty;
+      else if (ch === 'new') { const keep = { id: g.id, qty: g.qty + it.qty, attuned: g.attuned }; Object.keys(g).forEach(k => delete g[k]); Object.assign(g, it, keep); }
+      else p.inv.pack.push(it);
+      savePC(p);
+    }
+    savePC(activePC()); return items.length;
+  },
+  /** Библиотека сюжета (lib) до MAPIO.import: совпавшие по названию NPC, предметы, статьи — спросить; «мой» — сцены и бои сюжета ссылаются на мою запись */
+  async mapLib(d, pol = {}) {
+    const lib = d.lib || {}, idx = DUP.index(['npc', 'item', 'wiki']), alias = { npc: {}, item: {}, wiki: {} }; let arts = null;
+    for (const kind of ['npc', 'item', 'wiki']) {
+      const list = (Array.isArray(lib[kind]) ? lib[kind] : []).filter(x => x && typeof x === 'object' && (x.name || x.title)), mt = x => DUP.match(idx[kind].get(DUP.key(kind, x)), kind, x);
+      let left = list.filter(x => { const m = mt(x); return m.old && !m.same; }).length;
+      for (const x of list) {
+        const { old, same } = mt(x); if (!old) continue;
+        let ch = same ? 'old' : pol[kind];
+        if (!ch) { left--; const a = await DUP.ask(kind, old, x, { left }); ch = a ? a.ch : 'old'; if (!a || a.all) pol[kind] = ch; }
+        if (ch === 'both') continue;
+        if (ch === 'new') {
+          if (kind === 'wiki') { arts = arts || STORE.get('wiki', []); const i = arts.findIndex(a => a.id === old.id), { id: _i, ...rest } = x; if (i >= 0) arts[i] = normArticle({ ...rest, id: old.id, created: old.created }); }
+          else STORE.put(kind, (kind === 'npc' ? normNPC : normItem)({ ...x, id: old.id }));
+        }
+        [x.id, x.name, x.title].filter(v => v != null && v !== '').forEach(v => { alias[kind][String(v)] = old.id; alias[kind][CONV.low(v)] = old.id; });
+        x.id = old.id; if (ch === 'old') { if (kind === 'wiki') x.title = old.title; else x.name = old.name; }
+      }
+    }
+    if (arts) { STORE.set('wiki', arts); WIKI = null; }
+    const re = (k, v) => alias[k][v] || alias[k][CONV.low(v)] || v;
+    (d.nodes || []).forEach(n => [['npcs', 'npc'], ['lootCards', 'item'], ['wikiLinks', 'wiki']].forEach(([f, k]) => { if (Array.isArray(n[f])) n[f] = n[f].map(v => re(k, v)); }));
+    (lib.batt || []).forEach(b => { if (Array.isArray(b?.npcs)) b.npcs = b.npcs.map(v => re('npc', v)); });
+  },
+  /** Найти дубликаты в библиотеке: точные копии — убрать разом (с согласия), остальные — по одной группе, «оставь нужную» */
+  async scan(kind) {
+    const all = DUP.list(kind), m = new Map(), lbl = DBI.LBL[kind][1].toLowerCase();
+    all.forEach(o => { const k = DUP.key(kind, o); if (k) { if (!m.has(k)) m.set(k, []); m.get(k).push(o); } });
+    let groups = [...m.values()].filter(g => g.length > 1);
+    if (!groups.length) return toast(`✓ Дубликатов нет (${lbl}: ${all.length})`, 'ok');
+    const gone = {}; let n = 0;
+    const keep = (g, i) => g.forEach((o, j) => { if (j !== i) { gone[o.id] = g[i].id; n++; } });
+    const twins = groups.filter(g => g.every(o => DUP.same(kind, g[0], o)));
+    if (twins.length && await confirmBox(`Названия совпадают в ${groups.length} ${plural(groups.length, 'группе', 'группах', 'группах')}.\nИз них полностью одинаковых копий — ${twins.length}: убрать лишние сразу? Останется самая свежая.`, { title: '🧹 Дубликаты', ok: 'Убрать копии' })) {
+      twins.forEach(g => keep(g, 0)); groups = groups.filter(g => !twins.includes(g));
+    }
+    for (let i = 0; i < groups.length; i++) {
+      const g = groups[i];
+      const r = await DUP.dialog({ kind, title: `🧹 Дубликаты · ${i + 1} из ${groups.length}`,
+        text: `Одно название у ${g.length} ${plural(g.length, 'записи', 'записей', 'записей')}. Оставь нужную — остальные удалятся, сцены и бои будут ссылаться на оставленную.`,
+        vars: g.map((o, j) => ({ o, tag: j === 0 ? '★ Самая свежая' : `Вариант ${j + 1}`, sub: o._ts ? fmtDate(o._ts) : '' })),
+        btns: g.map((o, j) => ({ v: String(j), label: 'Оставить только этот', cls: j === 0 ? 'pri' : '' })), foot: [{ v: 'stop', label: 'Хватит', cls: 'ghost' }, { v: 'all', label: 'Оставить все' }] });
+      if (!r || r.v === 'stop') break;
+      if (r.v !== 'all') keep(g, int(r.v));
+    }
+    if (n) DUP.drop(kind, gone);
+    cachesReset(); route();
+    toast(n ? `🧹 Убрано дубликатов: ${n}` : 'Ничего не удалено', n ? 'ok' : '');
+  },
+  /** Удалить записи; ссылки сцен, боёв и открытых редакторов — на оставленные. gone: {id удалённой: id оставленной} */
+  drop(kind, gone) {
+    if (kind === 'wiki') { WIKI = wikiArts().filter(a => !gone[a.id]); wikiSave(); } else Object.keys(gone).forEach(id => STORE.drop(kind, id));
+    const f = { npc: 'npcs', item: 'lootCards', wiki: 'wikiLinks' }[kind];
+    if (f || kind === 'batt') STORE.list('map').forEach(mp => { let ch = false;
+      (mp.nodes || []).forEach(nd => {
+        if (f && Array.isArray(nd[f]) && nd[f].some(x => gone[x])) { nd[f] = nd[f].map(x => gone[x] || x); if (f !== 'npcs') nd[f] = [...new Set(nd[f])]; ch = true; }
+        if (kind === 'batt' && gone[nd.battleKey]) { nd.battleKey = gone[nd.battleKey]; ch = true; }
+      });
+      if (ch) STORE.set('map_' + mp.id, mp); });
+    if (kind === 'npc') {
+      STORE.list('batt').forEach(b => { if ((b.list || []).some(c => gone[c.srcId])) { b.list.forEach(c => { if (gone[c.srcId]) c.srcId = gone[c.srcId]; }); STORE.set('batt_' + b.id, b); } });
+      const cur = STORE.get('battle_cur'); if (cur && (cur.list || []).some(c => gone[c.srcId])) { cur.list.forEach(c => { if (gone[c.srcId]) c.srcId = gone[c.srcId]; }); STORE.set('battle_cur', cur); }
+    }
+    if (kind === 'item' && gone[LOOT.id]) LOOT.id = gone[LOOT.id];
+    if (kind === 'npc' && gone[NPCV.id]) NPCV.id = gone[NPCV.id];
+  },
+};
+
+/* ═══════════════════════════════════════════════════════
+   СБОР БАЗЫ (batch) → окно проверки → добавление
+═══════════════════════════════════════════════════════ */
+const DBI = {
+  KINDS: ['npc', 'item', 'wiki', 'batt', 'shop', 'map', 'pc'], // порядок добавления: сначала то, на что ссылаются бои, сюжеты и лавки
+  LBL: { item: ['📜', 'Предметы'], npc: ['👹', 'NPC'], wiki: ['📚', 'Статьи вики'], batt: ['⚔', 'Бои'], shop: ['🏪', 'Лавки'], map: ['🗺', 'Сюжеты'], pc: ['🧙', 'Персонажи'] },
+  PFX: { item: 'it', npc: 'npc', wiki: 'w', batt: 'b', shop: 'shop', map: 'map', pc: 'pc' },
+  batch: () => ({ rec: { npc: [], item: [], wiki: [], batt: [], shop: [], map: [], pc: [] }, packets: [], legacy: [], pkRecs: 0, skip: {}, fmt: {}, partial: [], errors: [], unknown: 0, cut: false }),
+  total: B => DBI.KINDS.reduce((s, k) => s + B.rec[k].length, 0),
+  /** Запись в пакет: новый id (своё никогда не перезапишется), исходный id — в _ref (по нему сцены и бои найдут её новый id) */
+  add(B, kind, rec, fmt, ref) {
+    if (!rec || !B.rec[kind]) return;
+    if (ref != null && ref !== '') rec._ref = String(ref);
+    rec.id = uid(DBI.PFX[kind]); delete rec._ts;
+    B.rec[kind].push(rec); B.fmt[fmt || '?'] = (B.fmt[fmt || '?'] || 0) + 1;
+  },
+  skip(B, why, n = 1) { B.skip[why] = (B.skip[why] || 0) + n; },
+  merge(B, X) {
+    DBI.KINDS.forEach(k => B.rec[k].push(...X.rec[k])); B.packets.push(...X.packets); B.legacy.push(...X.legacy); B.pkRecs += X.pkRecs;
+    B.partial.push(...X.partial); B.errors.push(...X.errors); B.unknown += X.unknown; B.cut = B.cut || X.cut;
+    Object.entries(X.skip).forEach(([k, n]) => { B.skip[k] = (B.skip[k] || 0) + n; }); Object.entries(X.fmt).forEach(([k, n]) => { B.fmt[k] = (B.fmt[k] || 0) + n; });
+  },
+  /** Предмет приложения; без блоков, но со своими полями (description, price…) — через flat */
+  itemOf: x => Array.isArray(x.blocks) || !Object.keys(x).some(k => ['desc', 'damage', 'cost', 'weight', 'props', 'ac'].includes(TBL.field(k))) ? normItem(x) : CONV.flat(x, { kind: 'item', force: true })?.rec || normItem(x),
+  /** NPC приложения; действия строками или текстом — через flat */
+  npcOf(x) { const ok = a => a == null || Array.isArray(a) && a.every(y => y && typeof y === 'object'); return ok(x.actions) && ok(x.bonusActions) ? normNPC(x) : CONV.flat(x, { kind: 'npc', force: true })?.rec || normNPC({ name: x.name }); },
+  /** Бой; простой формат { fighters: [{…NPC…, count: 3}] } — бойцы как из библиотеки NPC */
+  battOf(d) {
+    const x = { ...d };
+    if (Array.isArray(x.fighters)) { let tag = 1; x.list = x.fighters.filter(f => f && typeof f === 'object').flatMap(f => Array.from({ length: clamp(int(f.count, 1), 1, 20) }, (_, i) =>
+      npcToCombatant(DBI.npcOf({ ...f, name: int(f.count, 1) > 1 ? `${f.name} ${i + 1}` : f.name }), tag++))); delete x.fighters; }
+    return normBattle(x);
+  },
+  /** Код приложения {v:9, k, d} → записи */
+  packet(B, o) {
+    const n0 = DBI.total(B), d = o.d, F = o.k === 'all' ? 'резервная копия' : o.k === 'db' ? 'база (k: db)' : 'код приложения';
+    const arr = x => (Array.isArray(x) ? x : x && typeof x === 'object' ? [x] : []).filter(y => y && typeof y === 'object');
+    if (d == null || typeof d !== 'object') { B.errors.push('В коде нет данных (поле d)'); return; }
+    if (o.k === 'all' || o.k === 'db') DBI.dbOf(B, d, F);
+    else if (o.k === 'pc') arr(d).forEach(x => DBI.add(B, 'pc', normPC(x), F, x.id));
+    else if (o.k === 'items') arr(d).forEach(x => DBI.add(B, 'item', DBI.itemOf(x), F, x.id));
+    else if (o.k === 'npc' || o.k === 'npcs') arr(d).filter(x => x.name).forEach(x => DBI.add(B, 'npc', DBI.npcOf(x), F, x.id));
+    else if (o.k === 'wiki') arr(d).filter(x => x.title).forEach(x => DBI.add(B, 'wiki', normArticle(x), F, x.id));
+    else if (o.k === 'batt') DBI.add(B, 'batt', DBI.battOf(d), F, d.id);
+    else if (o.k === 'shop') DBI.add(B, 'shop', normShop(d), F, d.id);
+    else if (o.k === 'map') DBI.add(B, 'map', clone(d), F, d.id);
+    else DBI.skip(B, `неизвестный вид кода «${asStr(o.k)}»`);
+    B.pkRecs += DBI.total(B) - n0;
+  },
+  /** База k:"db" и резервная копия: разделы по видам (имена разделов — с запасом на ошибки нейросети) */
+  dbOf(B, d, F) {
+    const pick = (...ks) => ks.flatMap(k => Array.isArray(d[k]) ? d[k] : []).filter(x => x && typeof x === 'object');
+    pick('npc', 'npcs', 'monsters', 'bestiary').filter(x => x.name).forEach(x => DBI.add(B, 'npc', DBI.npcOf(x), F, x.id));
+    pick('item', 'items', 'loot').filter(x => x.name).forEach(x => DBI.add(B, 'item', DBI.itemOf(x), F, x.id));
+    pick('wiki', 'articles').filter(x => x.title || x.name).forEach(x => DBI.add(B, 'wiki', normArticle({ ...x, title: x.title || x.name }), F, x.id));
+    pick('batt', 'battles').forEach(x => DBI.add(B, 'batt', DBI.battOf(x), F, x.id));
+    pick('shop', 'shops').forEach(x => DBI.add(B, 'shop', normShop(x), F, x.id));
+    pick('map', 'maps').forEach(x => DBI.add(B, 'map', clone(x), F, x.id));
+    pick('pc', 'pcs').forEach(x => DBI.add(B, 'pc', normPC(x), F, x.id));
+    if (d.exp || d.battle_cur) DBI.skip(B, 'экспедиция и текущий бой (не библиотека — их переносит только «Восстановить»)');
+  },
+  /** Любое JSON-значение: коды приложения, копии, V8, 5etools, Open5e, Foundry, ttg, свои поля; контейнеры — вглубь, ключ подсказывает вид */
+  absorb(B, v, ctx = {}, depth = 0) {
+    if (!v || typeof v !== 'object' || depth > 8) return;
+    if (Array.isArray(v)) { v.forEach(x => DBI.absorb(B, x, ctx, depth + 1)); return; }
+    if (v.v === 9 && v.k) { B.packets.push(v); DBI.packet(B, v); return; }
+    if (v._dnd9backup && v.d && typeof v.d === 'object') { const o = { v: 9, k: 'all', d: v.d }; B.packets.push(o); DBI.packet(B, o); return; }
+    if (v._format === 'memo_hdnf' || v._type === 'memcat_export' || v._format === 'scene_map') { B.legacy.push(v); return; }
+    if (v._type === 'wiki' && Array.isArray(v.articles)) { v.articles.filter(a => a && a.title).forEach(a => DBI.add(B, 'wiki', normArticle(a), 'вики (файл)', a.id)); return; }
+    if (typeof v.name !== 'string' && CONV.T5_KEYS.some(k => Array.isArray(v[k]))) { DBI.t5(B, v); return; }
+    if (typeof v.name !== 'string' && Array.isArray(v.results)) { v.results.forEach(x => DBI.absorb(B, x, { ...ctx, o5: true }, depth + 1)); return; }
+    const r = DBI.sniff(v, ctx);
+    if (r) { if (r.skip) DBI.skip(B, r.skip); else DBI.add(B, r.kind, r.rec, r.fmt, r.ref); return; }
+    let any = false;
+    for (const [k, x] of Object.entries(v)) if (x && typeof x === 'object') { any = true; DBI.absorb(B, x, { ...ctx, kind: TBL.hint(k) || ctx.kind, type: TBL.typeHint(k) || ctx.type }, depth + 1); }
+    if (!any) B.unknown++;
+  },
+  /** Одиночная запись: чья она и как её перевести */
+  sniff(o, ctx) {
+    const nm = o.name, sys = o.system || o.data;
+    if (nm && typeof nm === 'object' && (nm.rus || nm.eng)) return CONV.ttg(o);
+    if (typeof nm === 'string' && Array.isArray(o.pages)) return { kind: 'wiki', rec: CONV.journal(o), fmt: 'Foundry VTT' };
+    if (typeof o.type === 'string' && typeof nm === 'string' && sys && typeof sys === 'object' && !Array.isArray(sys)) return CONV.fv(o);
+    if (typeof nm === 'string' && typeof o.source === 'string' && (Array.isArray(o.entries) || typeof o.page === 'number' || /^[A-Z$]{1,4}(\|\w+)?$/.test(o.type || '') || o.hp && typeof o.hp === 'object')) return CONV.t5one(o);
+    if (typeof nm === 'string' && o.hit_points != null && (o.armor_class != null || o.slug || ctx.o5)) return { kind: 'npc', rec: CONV.o5monster(o), fmt: 'Open5e' };
+    if (o.casting_time && (o.level_int != null || o.school)) return { skip: 'заклинания' };
+    // V8 (старая версия) — поштучно
+    if (o._type === 'loot' || o.cardHue != null || o.bonus_tags) return { kind: 'item', rec: LEGACY.item(o), fmt: 'V8' };
+    if (o._type === 'player_character' || o.quickInv || o.spellUsedSlots != null) return { kind: 'pc', rec: LEGACY.pc(o), fmt: 'V8' };
+    if (o._type === 'npc') return { kind: 'npc', rec: normNPC(o), fmt: 'V8', ref: o.id };
+    if (Array.isArray(o.npcs) && !o.nodes && (o.battleName != null || o.npcs.some(c => c && typeof c === 'object'))) return { kind: 'batt', rec: normBattle(o), fmt: 'V8' };
+    // приложение без обёртки кода
+    if (Array.isArray(o.nodes)) return { kind: 'map', rec: clone(o), fmt: 'сюжет (JSON)', ref: o.id };
+    if (Array.isArray(o.saveProfs) || Array.isArray(o.skillProfs) || o.inv && o.stats) return { kind: 'pc', rec: normPC(o), fmt: 'персонаж (JSON)', ref: o.id };
+    if (Array.isArray(o.fighters) || Array.isArray(o.list) && o.list.some(c => c && c.uid)) return { kind: 'batt', rec: DBI.battOf(o), fmt: 'бой (JSON)', ref: o.id };
+    if (Array.isArray(o.items) && o.items.some(x => x && x.it)) return { kind: 'shop', rec: normShop(o), fmt: 'лавка (JSON)', ref: o.id };
+    if (typeof nm === 'string' && Array.isArray(o.blocks)) return { kind: 'item', rec: DBI.itemOf(o), fmt: 'предметы (JSON)', ref: o.id };
+    if (typeof nm === 'string' && o.hp != null && (Array.isArray(o.actions) || o.maxActions != null || Array.isArray(o.customCards))) return { kind: 'npc', rec: DBI.npcOf(o), fmt: 'NPC (JSON)', ref: o.id };
+    if (typeof o.title === 'string' && typeof o.body === 'string') return { kind: 'wiki', rec: normArticle(o), fmt: 'статьи вики (JSON)', ref: o.id };
+    const f = CONV.flat(o, ctx);
+    return f ? { ...f, fmt: ctx.o5 ? 'Open5e' : 'JSON со своими полями' } : null;
+  },
+  t5(B, v) {
+    [...(v.item || []), ...(v.baseitem || [])].filter(d => d && d.name).forEach(d => { if (d._copy && !d.entries && !d.type) DBI.skip(B, '5etools: копии-ссылки (_copy)'); else DBI.add(B, 'item', CONV.t5item(d), '5etools'); });
+    (v.monster || []).filter(d => d && d.name).forEach(d => { if (d._copy && !d.hp) DBI.skip(B, '5etools: копии-ссылки (_copy)'); else DBI.add(B, 'npc', CONV.t5monster(d), '5etools'); });
+    if (v.spell?.length) DBI.skip(B, 'заклинания', v.spell.length);
+    const n = CONV.T5_KEYS.filter(k => !['item', 'baseitem', 'monster', 'spell'].includes(k) && Array.isArray(v[k])).reduce((s, k) => s + v[k].length, 0);
+    if (n) DBI.skip(B, '5etools: расы, классы, черты и прочее', n);
+  },
+  /** Таблица (CSV, Excel, ods, Markdown): строка заголовков — где есть столбец с названием; вид записей — по имени листа/файла или по столбцам */
+  readRows(B, rows, name, fmt = 'таблица') {
+    if (!rows || rows.length < 2) return false;
+    const h = rows.slice(0, 6).findIndex(r => r.some(c => TBL.field(c) === 'name')); if (h < 0) return false;
+    const head = rows[h], kind = TBL.hint(name) || TBL.kindOf(head.map(c => TBL.field(c)).filter(Boolean)), type = TBL.typeHint(name), n0 = DBI.total(B);
+    rows.slice(h + 1).forEach(r => {
+      const o = {}; head.forEach((k, i) => { const v = r[i]; if (k && v != null && String(v).trim() !== '') o[k] = v; });
+      const x = CONV.flat(o, { kind, type, force: true }); if (x) DBI.add(B, x.kind, x.rec, fmt);
+    });
+    return DBI.total(B) > n0;
+  },
+  readXml(B, t, name) {
+    const doc = FMT.xml(t);
+    if (doc.getElementsByTagName('parsererror').length) { B.errors.push(`${name}: XML с ошибкой`); return; }
+    const items = [...doc.getElementsByTagName('item')], mons = [...doc.getElementsByTagName('monster')], F = 'Fight Club 5 (XML)';
+    items.forEach(el => { try { DBI.add(B, 'item', CONV.fc5item(el), F); } catch (e) { DBI.skip(B, 'XML: не разобралось'); } });
+    mons.forEach(el => { try { DBI.add(B, 'npc', CONV.fc5monster(el), F); } catch (e) { DBI.skip(B, 'XML: не разобралось'); } });
+    const sp = doc.getElementsByTagName('spell').length; if (sp) DBI.skip(B, 'заклинания', sp);
+    const other = ['race', 'class', 'feat', 'background'].reduce((s, k) => s + doc.getElementsByTagName(k).length, 0); if (other) DBI.skip(B, 'XML: расы, классы, черты', other);
+    if (!items.length && !mons.length && !sp && !other) B.errors.push(`${name}: из XML понимаю только Fight Club 5 / Game Master 5 (compendium)`);
+  },
+  /** Текст в любом виде → записи */
+  async readText(B, text, name = '') {
+    const t = String(text || '').replace(/^﻿/, ''); if (!t.trim()) return;
+    const ext = ((name.match(/\.(\w+)$/) || [])[1] || '').toLowerCase(), nm = name || 'вставленный текст';
+    const c = FMT.codes(t);
+    if (c.payloads.length || c.partial.length) {
+      B.partial.push(...c.partial);
+      for (const p of c.payloads) { try { DBI.absorb(B, await SHARE.decodePayload(p)); } catch (e) { B.errors.push(`Код повреждён: ${e.message}. Возможно, скопирован не целиком.`); } }
+      return;
+    }
+    if (ext === 'xml' || /^\s*<(\?xml|compendium)/i.test(t)) { DBI.readXml(B, t, nm); return; }
+    if (ext === 'csv' || ext === 'tsv') { if (!DBI.readRows(B, FMT.csv(t), nm, 'CSV')) B.errors.push(`${nm}: в таблице не нашлось столбца «Название» (name)`); return; }
+    const j = /[{[]/.test(t) ? FMT.json(t) : { vals: [] };
+    if (j.vals.length) { j.vals.forEach(v => DBI.absorb(B, v, { kind: TBL.hint(nm), type: TBL.typeHint(nm) })); if (j.cut) B.cut = true; return; }
+    const md = FMT.md(t); if (md && DBI.readRows(B, md, nm, 'Markdown')) return;
+    const cs = /[\t;,|]/.test((t.match(/^.*\S.*$/m) || [''])[0]) && FMT.csv(t); if (cs && cs.length > 1 && DBI.readRows(B, cs, nm, 'CSV')) return;
+    const n0 = DBI.total(B);
+    FMT.kv(t).forEach(o => { const x = CONV.flat(o, { kind: TBL.hint(nm) }); if (x) DBI.add(B, x.kind, x.rec, 'карточки «Ключ: значение»'); });
+    if (DBI.total(B) > n0) return;
+    if (j.err && /^\s*(```[\w-]*\s*)?[{[]/.test(t)) { B.errors.push(`Похоже на JSON, но в нём ошибка: ${j.err}. Попроси нейросеть прислать исправленный JSON целиком.`); return; }
+    const ls = FMT.list(t); if (ls.length) { ls.forEach(it => DBI.add(B, 'item', it, 'простой список')); return; }
+    B.unknown++;
+  },
+  async readFile(B, f) {
+    const buf = await f.arrayBuffer(), u8 = new Uint8Array(buf), name = f.name || 'файл';
+    if (u8[0] === 0x50 && u8[1] === 0x4b && u8[2] === 3 && u8[3] === 4) return DBI.readZip(B, buf, name);
+    return DBI.readText(B, FMT.decode(u8), name);
+  },
+  async readZip(B, buf, name) {
+    let ents; try { ents = FMT.unzip(buf); } catch (e) { B.errors.push(`${name}: ${e.message}`); return; }
+    const get = async n => { const e = ents.find(x => x.name === n); return e ? FMT.decode(await FMT.inflate(e)) : null; };
+    try {
+      if (ents.some(e => e.name === 'xl/workbook.xml')) { (await FMT.xlsx(get)).forEach(sh => DBI.readRows(B, sh.rows, sh.name, 'Excel')); return; }
+      if (/opendocument\.spreadsheet/.test(await get('mimetype') || '')) { FMT.ods(await get('content.xml')).forEach(sh => DBI.readRows(B, sh.rows, sh.name, 'LibreOffice')); return; }
+      let total = 0;
+      for (const e of ents) {
+        if (/\/$/.test(e.name) || !/\.(json|jsonl|ndjson|db|txt|csv|tsv|xml|md)$/i.test(e.name)) continue;
+        const bytes = await FMT.inflate(e); total += bytes.length;
+        if (total > 80e6) { B.errors.push(`${name}: архив слишком большой — взята только часть`); break; }
+        await DBI.readText(B, FMT.decode(bytes), e.name.split('/').pop());
+      }
+    } catch (e) { B.errors.push(`${name}: ${e.message}`); }
+  },
+  async collect(text, fileBatches = []) { const B = DBI.batch(); await DBI.readText(B, text, ''); fileBatches.forEach(x => DBI.merge(B, x)); return B; },
+  /** Один обычный код (персонаж, бой, сюжет…) — привычный путь SHARE.apply; одна старая V8-штука — перенос; иначе — окно базы */
+  classic(B) {
+    const n = DBI.total(B);
+    if (B.packets.length === 1 && !B.legacy.length && n === B.pkRecs && !B.cut) return { packet: B.packets[0] };
+    if (!B.packets.length && B.legacy.length === 1 && !n) return { legacy: B.legacy[0] };
+    return null;
+  },
+  describe(B) {
+    const p = DBI.KINDS.filter(k => B.rec[k].length).map(k => `${DBI.LBL[k][1]}: ${B.rec[k].length}`), f = Object.keys(B.fmt).filter(k => k !== '?');
+    return p.join(' · ') + (f.length ? ` — ${f.slice(0, 4).join(', ')}${f.length > 4 ? '…' : ''}` : '');
+  },
+  short(B) { const n = DBI.total(B); return n ? `${n} ${plural(n, 'запись', 'записи', 'записей')}` : B.packets.length || B.legacy.length ? 'код' : B.errors.length ? 'ошибка' : Object.keys(B.skip).length ? 'пропущено' : 'не понял'; },
+  status(B, cls, any) {
+    const warn = [...B.partial.map(p => `<span class="c-orange">Код из ${p.total} частей: есть ${p.have}, не хватает ${p.missing.join(', ')} — вставь их тоже (можно сразу следом).</span>`),
+      ...B.errors.slice(0, 4).map(e => `<span class="c-red">${esc(e)}</span>`)];
+    let main = '';
+    if (cls?.packet) main = `<span class="c-green">✓ ${esc(SHARE.describe(cls.packet))}</span>`;
+    else if (cls?.legacy) main = '<span class="c-green">✓ Файл/JSON старой версии — будет перенесён</span>';
+    else if (DBI.total(B)) main = `<span class="c-green">✓ 📚 ${esc(DBI.describe(B))}</span>`;
+    else if (Object.keys(B.skip).length) main = `<span class="c-orange">Нашлось только то, что приложение не хранит: ${esc(Object.entries(B.skip).map(([k, n]) => `${k} — ${n}`).join(', '))}</span>`;
+    else if (any && !warn.length) main = '<span class="c-red">Ничего не нашлось. Код начинается с DND9, у таблицы нужен столбец «Название».</span>';
+    if (B.cut && main) main += '<br><span class="c-orange">⚠ JSON оборван или с ошибкой — будут взяты только целые записи</span>';
+    return [main, ...warn].filter(Boolean).join('<br>');
+  },
+  /** Пометить записи: new — новая; dup — такое название уже есть (в библиотеке или выше в этой базе); same — точная копия */
+  analyze(B) {
+    const idx = DUP.index(DBI.KINDS);
+    DBI.KINDS.forEach(k => { const seen = new Map();
+      B.rec[k].forEach(r => { const key = DUP.key(k, r), mt = key ? DUP.match([...(idx[k].get(key) || []), ...(seen.get(key) || [])], k, r) : { old: null };
+        r._st = !mt.old ? 'new' : mt.same ? 'same' : 'dup'; r._dupOf = mt.old ? DUP.name(k, mt.old) : '';
+        if (key) seen.set(key, [...(seen.get(key) || []), r]); }); });
+  },
+  clean(o) { ['_ref', '_st', '_on', '_dupOf'].forEach(k => { delete o[k]; }); return o; },
+  /** Добавить пакет в библиотеки. policy: ask — спрашивать про каждый дубликат | old | new | both; pack — предметы в рюкзак активного персонажа */
+  async commit(B, { policy = 'ask', pack = false } = {}) {
+    DBI.analyze(B);
+    const sum = { add: {}, kept: 0, took: 0, both: 0, same: 0, full: false, stop: false, lost: [] }, ref = {}, pol = {}, left = {}, fresh = new WeakSet();
+    DBI.KINDS.forEach(k => { ref[k] = {}; pol[k] = policy === 'ask' ? null : policy; left[k] = B.rec[k].filter(r => r._on !== false && r._st === 'dup').length; });
+    const idx = DUP.index(DBI.KINDS), arts = wikiArts(); let wikiDirty = false;
+    const put = (kind, o, old) => {
+      DBI.clean(o);
+      if (kind === 'wiki') { const i = old ? arts.indexOf(old) : -1; if (i >= 0) arts[i] = o; else arts.push(o); wikiDirty = true; return o; }
+      return STORE.put(kind, o) ? o : null;
+    };
+    for (const kind of DBI.KINDS) {
+      if (sum.full) break;
+      const list = B.rec[kind].filter(r => r._on !== false);
+      if (kind === 'item' && pack) { if (list.length) sum.add.pack = await DUP.toPack(list.map(r => DBI.clean(r))); continue; }
+      for (const r of list) {
+        const rf = r._ref, key = DUP.key(kind, r);
+        if (kind === 'batt') (r.list || []).forEach(c => { if (c.srcId && ref.npc[c.srcId]) c.srcId = ref.npc[c.srcId]; });
+        if (kind === 'map') DBI.mapRefs(r, ref);
+        const mt = key ? DUP.match(idx[kind].get(key), kind, r) : { old: null }, old = mt.old;
+        let ch = 'add';
+        if (old) {
+          if (mt.same) ch = 'same';
+          else {
+            ch = pol[kind]; left[kind]--;
+            if (!ch) {
+              const a = await DUP.ask(kind, old, r, { left: left[kind], batch: fresh.has(old) });
+              if (!a) { sum.stop = true; DBI.KINDS.forEach(k => { pol[k] = pol[k] || 'old'; }); ch = 'old'; } else { ch = a.ch; if (a.all) pol[kind] = ch; }
+            }
+          }
+        }
+        if (ch === 'same' || ch === 'old') { if (rf) ref[kind][rf] = old.id; sum[ch === 'same' ? 'same' : 'kept']++; continue; }
+        let x;
+        if (kind === 'map') x = DBI.putMap(r, ch === 'new' ? old : null, sum);
+        else {
+          if (ch === 'new') { r.id = old.id; if (kind === 'wiki') r.created = old.created; }
+          if (ch === 'both' && kind === 'pc') r.name += ' (копия)';
+          x = put(kind, r, ch === 'new' ? old : null);
+        }
+        if (!x) { sum.full = true; break; }
+        fresh.add(x); if (rf) ref[kind][rf] = x.id;
+        if (key) { const arr = idx[kind].get(key); if (!arr) idx[kind].set(key, [x]); else if (ch === 'new') arr[arr.indexOf(old)] = x; else arr.push(x); }
+        if (ch === 'new') sum.took++; else { sum.add[kind] = (sum.add[kind] || 0) + 1; if (ch === 'both') sum.both++; }
+      }
+    }
+    if (wikiDirty) { WIKI = arts; wikiSave(); }
+    cachesReset();
+    return sum;
+  },
+  /** Ссылки сцен на записи из этой же базы/копии: их id при добавлении поменялись */
+  mapRefs(m, ref) {
+    (m.nodes || []).forEach(n => {
+      [['npcs', 'npc'], ['lootCards', 'item'], ['wikiLinks', 'wiki']].forEach(([f, k]) => { if (Array.isArray(n[f])) n[f] = n[f].map(v => ref[k][v] || v); });
+      if (n.battleKey && ref.batt[n.battleKey]) n.battleKey = ref.batt[n.battleKey];
+    });
+  },
+  putMap(r, old, sum) {
+    const d = DBI.clean(clone(r)), { map: mp, rep } = MAPIO.import(d); // библиотеку сюжета (lib) MAPIO заводит сам; дубликаты в ней спрошены заранее (DBI.prepMaps)
+    if (old) mp.id = old.id;
+    if (!STORE.put('map', mp)) return null;
+    sum.lost.push(...rep.lost.map(x => `«${mp.title}»: ${x}`));
+    if (!SETTINGS.map) { SETTINGS.map = mp.id; saveSettings(); }
+    return mp;
+  },
+  viewOf(s) { const ks = DBI.KINDS.filter(k => s.add[k]); return s.add.pack ? 'inv' : ks.length === 1 ? { item: 'loot', npc: 'npc', wiki: 'wiki', map: 'scenes', shop: 'shops', batt: 'tracker', pc: 'saves' }[ks[0]] : null; },
+  /** Итог: перейти к добавленному, показать сводку (тостом, если всё просто) */
+  report(s, view) {
+    const lines = [...DBI.KINDS.filter(k => s.add[k]).map(k => `${DBI.LBL[k][0]} ${DBI.LBL[k][1]} — добавлено ${s.add[k]}`), s.add.pack && `🎒 В рюкзак — ${s.add.pack}`, s.took && `✨ Заменено новыми — ${s.took}`,
+      s.kept && `📦 Оставлены твои — ${s.kept}`, s.both && `⧉ Оставлены обе версии — ${s.both}`, s.same && `＝ Уже были, без изменений — ${s.same}`].filter(Boolean);
+    const warn = [s.stop && 'Окно дубликата закрыли — остальные дубликаты пропущены, оставлены твои.', s.full && '⚠ Память браузера кончилась — добавлено не всё. Сделай резервную копию и удали лишнее.',
+      s.lost.length && `⚠ В сюжетах не нашлось (ссылки убраны):\n• ${s.lost.slice(0, 10).join('\n• ')}${s.lost.length > 10 ? `\n…и ещё ${s.lost.length - 10}` : ''}`].filter(Boolean);
+    const v = view || DBI.viewOf(s); if (v && (isMaster() || ['inv', 'saves'].includes(v))) go(v); else route();
+    if (!warn.length && lines.length <= 2) return toast(lines.length ? lines.join(' · ') : 'Ничего нового — всё уже было', lines.length ? 'ok' : '', 4500);
+    openModal({ title: '📚 Импорт завершён', size: 'sm', body: `<div class="dbi-done">${lines.map(l => `<div>${esc(l)}</div>`).join('') || '<div class="dim">Ничего нового — всё уже было</div>'}</div>
+      ${warn.map(w => `<div class="note warn mt" style="white-space:pre-line">${esc(w)}</div>`).join('')}`, foot: '<button class="btn pri" data-act="modalClose">Понятно</button>' });
+  },
+  /** Сюжеты пакета: дубликаты в их библиотеках (lib) — спросить до добавления, пока ничего не записано */
+  async prepMaps(B, policy) {
+    const pol = policy === 'ask' ? {} : { npc: policy, item: policy, wiki: policy };
+    for (const r of B.rec.map) if (r._on !== false && r.lib) await DUP.mapLib(r, pol);
+  },
+  /** Окно проверки: что нашлось, дубликаты, куда положить → добавить */
+  review(B, { title = '📚 Импорт базы' } = {}) {
+    B.legacy.forEach(j => SHARE.applyLegacy(j)); B.legacy = [];
+    DBI.analyze(B);
+    const pc = activePC();
+    if (!DBI.total(B)) { toast(Object.keys(B.skip).length ? 'Нашлось только то, что приложение не хранит' : 'Ничего не нашлось', 'err'); return Promise.resolve(null); }
+    const S = Object.fromEntries(DBI.KINDS.map(k => { const l = B.rec[k], c = s => l.filter(r => r._st === s).length; return [k, { n: l.length, nw: c('new'), dup: c('dup'), same: c('same') }]; }));
+    const dups = DBI.KINDS.reduce((a, k) => a + S[k].dup, 0), kinds = DBI.KINDS.filter(k => S[k].n), skip = Object.entries(B.skip), fm = Object.entries(B.fmt).filter(([k]) => k !== '?');
+    let pol = 'ask', pack = !isMaster() && !!pc && S.item.n > 0, done = false, resolve;
+    const result = new Promise(r => { resolve = r; });
+    const st = r => r._st === 'dup' ? `<span class="dbi-st dup" title="${esc('уже есть: ' + r._dupOf)}">дубликат</span>` : r._st === 'same' ? '<span class="dbi-st same">уже есть</span>' : '<span class="dbi-st new">новое</span>';
+    const m = openModal({ title, size: 'wide', cls: 'dbi-modal',
+      body: `<div class="orn left">◆ Что нашлось</div>
+        <div class="dbi-sum">${kinds.map(k => `<div class="dbi-row"><span class="ic">${DBI.LBL[k][0]}</span><span class="grow"><b>${DBI.LBL[k][1]}: ${S[k].n}</b><small>${[S[k].nw && `<span class="dbi-st new">новых ${S[k].nw}</span>`,
+          S[k].dup && `<span class="dbi-st dup">дубликатов ${S[k].dup}</span>`, S[k].same && `<span class="dbi-st same">уже есть, без изменений ${S[k].same}</span>`].filter(Boolean).join(' ')}</small></span></div>`).join('')}</div>
+        ${skip.length ? `<p class="small muted mt">Пропущено: ${skip.map(([k, n]) => `${esc(k)} — ${n}`).join(' · ')}</p>` : ''}
+        ${B.cut ? '<div class="note warn mt">JSON оборван или с ошибкой — взяты только целые записи. Если чего-то не хватает, попроси нейросеть дослать остаток отдельным сообщением.</div>' : ''}
+        ${B.partial.length ? `<p class="small c-orange mt">Не все части кода: ${B.partial.map(p => `не хватает ${p.missing.join(', ')} из ${p.total}`).join('; ')}</p>` : ''}
+        ${B.errors.length ? `<p class="small c-red mt">${B.errors.slice(0, 5).map(esc).join('<br>')}</p>` : ''}
+        ${fm.length ? `<p class="tiny muted mt">Форматы: ${fm.map(([k, n]) => `${esc(k)} (${n})`).join(', ')}</p>` : ''}
+        ${S.item.n && pc ? `<div class="orn left mt2">◆ Куда предметы</div><div class="seg wrap" data-g="to"><button data-v="lib" class="${pack ? '' : 'on'}">📜 В библиотеку лута</button><button data-v="pack" class="${pack ? 'on' : ''}">🎒 В рюкзак «${esc(pc.name)}»</button></div>` : ''}
+        ${dups ? `<div class="orn left mt2">◆ Дубликаты: ${dups}</div><p class="small dim mb">Записи с тем же названием, что уже есть. Без твоего выбора ничего не заменится.</p>
+          <div class="seg wrap" data-g="pol">${[['ask', '❓ Спрашивать про каждый'], ['old', '📦 Оставлять мои'], ['new', '✨ Брать новые'], ['both', '⧉ Оставлять оба']].map(([v, l]) => `<button data-v="${v}" class="${v === 'ask' ? 'on' : ''}">${l}</button>`).join('')}</div>` : ''}
+        <details class="dbi-all mt"><summary>Список записей — сними галочки с лишнего</summary><div class="dbi-list">${kinds.map(k => `<div class="t-label mt">${DBI.LBL[k][0]} ${DBI.LBL[k][1]}</div>
+          ${B.rec[k].map((r, i) => `<label class="give-row"><input type="checkbox" data-k="${k}" data-i="${i}" ${r._on === false ? '' : 'checked'}><span class="grow ellip">${esc(DUP.name(k, r) || 'Без названия')}</span>${st(r)}</label>`).join('')}`).join('')}</div></details>`,
+      foot: '<button class="btn ghost" data-act="modalClose">Отмена</button><button class="btn pri" id="dbi-go">＋ Добавить</button>',
+      onClose: () => { if (!done) resolve(null); } });
+    const go = $('#dbi-go', m), cnt = () => { const n = $$('.dbi-list input[data-k]:checked', m).length; go.textContent = `＋ Добавить (${n})`; go.disabled = !n; };
+    m.addEventListener('click', e => { const b = e.target.closest('[data-g] [data-v]'); if (!b) return; const g = b.closest('[data-g]');
+      $$('[data-v]', g).forEach(x => x.classList.toggle('on', x === b)); if (g.dataset.g === 'to') pack = b.dataset.v === 'pack'; else pol = b.dataset.v; });
+    m.addEventListener('change', cnt); cnt();
+    go.addEventListener('click', async () => {
+      $$('.dbi-list input[data-k]', m).forEach(c => { B.rec[c.dataset.k][int(c.dataset.i)]._on = c.checked; });
+      done = true; closeModal();
+      await DBI.prepMaps(B, pol);
+      const sum = await DBI.commit(B, { policy: pol, pack: pack && !!activePC() }); DBI.report(sum); resolve(sum);
+    });
+    return result;
+  },
+  FMT_HTML: `<ul>
+    <li><b>Коды DND9</b> — сколько угодно сразу, части длинных кодов собираются сами.</li>
+    <li><b>JSON</b> — приложения и нейросети (даже оборванный: целые записи спасутся), база <code>k: "db"</code>, резервные копии, файлы V8.</li>
+    <li><b>Таблицы</b> — Excel (.xlsx), LibreOffice (.ods), CSV/TSV (Google Таблицы, Excel), таблицы Markdown. Первая строка — названия столбцов:
+      <i>Название, Тип, Редкость, Вес, Цена, Описание, Урон, КБ, Свойства, Бонусы, Количество</i>; для NPC — <i>Хиты, КБ, Скорость, СИЛ…ХАР, ПО, Действия</i>; для вики — <i>Название, Категория, Теги, Текст</i>. Можно по-английски.</li>
+    <li><b>Другие программы</b> — 5etools (предметы, бестиарий, homebrew), Open5e, Foundry VTT (предметы, NPC, журналы, паки .db), ttg.club (ответы API), Fight Club 5 / Game Master 5 (.xml).</li>
+    <li><b>Текст</b> — карточки «Название: … / Тип: … / Описание: …» и простой список, по предмету на строку.</li>
+    <li><b>ZIP</b> с любыми из этих файлов. Файлов можно выбрать или перетащить сюда несколько.</li>
+    <li class="muted">Заклинания, классы и расы пропускаются — у приложения нет для них библиотеки (заклинания добавляются на листе через 🔎).</li></ul>`,
+};
+ACT.dbImport = () => SHARE.openImport('', { db: true });
+ACT.dupScan = el => DUP.scan(el?.dataset?.k || 'item');
+ACT.dupScanPick = async () => {
+  const ks = ['item', 'npc', 'wiki'], i = await choiceBox('Где искать одинаковые названия?', ks.map(k => `${DBI.LBL[k][0]} ${DBI.LBL[k][1]} — ${k === 'wiki' ? wikiArts().length : STORE.keys(k + '_').length}`), '🧹 Дубликаты');
+  if (i != null) DUP.scan(ks[i]);
+};
 
 // ── charwiz.js ──
 /* ═══════════════════════════════════════════════════════
@@ -9260,15 +10550,16 @@ VIEWS.saves = {
       <div class="orn left mt2">📦 Перенос и резервные копии</div>
       <div class="save-help well pad">
         <p><b>Как передать персонажа</b> (мастеру, другу или себе на телефон): на листе нажми <b>📤 Поделиться</b> → скопируй код → отправь в Телеграм. Получатель: <b>Главная → 📥 Вставить код</b>.</p>
-        <p class="mt"><b>Резервная копия</b> — один файл со всеми данными этого браузера. Сделай перед чисткой браузера или сменой устройства.</p>
+        <p class="mt"><b>Резервная копия</b> — один файл со всеми данными этого браузера. Сделай перед чисткой браузера или сменой устройства. При загрузке можно <b>добавить</b> её к своим данным или <b>восстановить</b> как было.</p>
+        <p class="mt"><b>Импорт базы</b> — предметы, NPC и статьи из Excel, CSV, 5etools, Foundry, Fight Club 5, JSON от нейросети. Только добавляет: совпавшее по названию приложение покажет и спросит, что оставить.</p>
       </div>
-      <div class="btns mt"><button class="btn gold" data-act="backupDl">💾 Скачать резервную копию</button><button class="btn" data-act="backupLoad">📂 Восстановить из файла</button>
+      <div class="btns mt"><button class="btn gold" data-act="backupDl">💾 Скачать резервную копию</button><button class="btn" data-act="backupLoad">📂 Загрузить из файла</button><button class="btn" data-act="dbImport">📚 Импорт базы</button>
         ${LEGACY.hasOld() ? '<button class="btn" data-act="legacyImport">⇪ Перенести данные V8 из этого браузера</button>' : ''}</div>
       <p class="muted tiny mt">Старые файлы V8 (memo_, char_, loot_, batt_, scene_ .json) тоже можно открыть через «Восстановить из файла» или «Вставить код» — они переведутся автоматически.</p>
 
       ${m ? `<div class="orn left mt2">🎭 Библиотеки мастера</div><div class="lib-grid">${lib.map(([k, ic, l, v]) => `<button class="lib-tile" data-act="go" data-v="${v}"><span>${ic}</span><b>${STORE.keys(k + '_').length}</b><small>${l}</small></button>`).join('')}
         <button class="lib-tile" data-act="go" data-v="wiki"><span>📚</span><b>${STORE.get('wiki', []).length}</b><small>Статей вики</small></button></div>
-        <div class="btns mt"><button class="btn pri" data-act="libManager">🗂 Управление файлами: отметить, удалить, поделиться</button></div>` : ''}
+        <div class="btns mt"><button class="btn pri" data-act="libManager">🗂 Управление файлами: отметить, удалить, поделиться</button><button class="btn" data-act="dupScanPick">🧹 Найти дубликаты</button></div>` : ''}
 
       <div class="orn left mt2">🔎 Поиск на ttg.club</div>
       <p class="small dim mb">Заклинания, предметы, снаряжение и бестиарий с 5e14.ttg.club — прямо в карточки. Нужен свой бесплатный прокси (Cloudflare Worker), инструкция — в файле <b>TTG_PROXY.md</b>.</p>
@@ -9340,12 +10631,15 @@ ACT.pcMenu = el => {
   ]);
 };
 ACT.backupDl = () => BACKUP.download();
+/** Файл копии, выборки, кода или базы: копия — «добавить к моим или восстановить» (SHARE.apply), остальное — как в «Вставить код» */
 ACT.backupLoad = async () => {
   const f = await pickFile('.json,.txt'); if (!f) return;
-  const text = await readFile(f);
-  const r = SHARE.scan(text);
-  if (r.status === 'json') { if (r.json?._dnd9backup) { if (await confirmBox('Восстановить резервную копию? Совпадающие записи перезапишутся.', { ok: 'Восстановить' })) BACKUP.restore(r.json.d); } else SHARE.applyLegacy(r.json); }
-  else SHARE.openImport(text);
+  const B = DBI.batch(); try { await DBI.readFile(B, f); } catch (e) { return toast('Файл не прочитался: ' + e.message, 'err'); }
+  const c = DBI.classic(B);
+  if (c?.packet) return SHARE.apply(c.packet);
+  if (c?.legacy) return SHARE.applyLegacy(c.legacy);
+  if (DBI.total(B)) return DBI.review(B);
+  SHARE.openImport('', { files: [f] });
 };
 /* ═══ Файловый менеджер библиотек: крыжки, массовое удаление и код ═══ */
 const LIBM_KINDS = [['pc', '🧙', 'Персонажи'], ['npc', '👹', 'NPC'], ['item', '📜', 'Лут'], ['batt', '⚔', 'Бои'], ['map', '🗺', 'Сюжеты'], ['wiki', '📚', 'Вики'], ['shop', '🏪', 'Лавки']];
