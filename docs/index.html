@@ -604,6 +604,10 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:grabbing;}
 .abil b{display:block;font-family:var(--f-title);font-size:28px;line-height:1.05;color:var(--tx);}
 .abil i{font-style:normal;font-family:var(--f-label);font-size:12.5px;color:var(--tx3);}
 .chk-list{display:flex;flex-direction:column;}
+.sk-grp{display:flex;align-items:baseline;gap:8px;margin:10px 4px 2px;padding-bottom:3px;border-bottom:1px solid var(--line2);font-family:var(--f-label);font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:var(--gold2);}
+.sk-grp:first-child{margin-top:0;}
+.sk-grp::before{content:'◆';font-size:9px;color:var(--gold3);}
+.sk-grp small{margin-left:auto;color:var(--tx3);letter-spacing:0;}
 .chk-row{display:flex;align-items:center;gap:10px;padding:6px 4px;border-radius:4px;text-align:left;width:100%;}
 .chk-row:hover{background:rgba(200,168,107,.06);}
 .chk-row .dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--line3);flex-shrink:0;}
@@ -2413,7 +2417,7 @@ button.pill{display:block;width:100%;font:inherit;color:inherit;}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '11.2.0';
+const APP_VERSION = '11.2.1';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -4676,15 +4680,21 @@ const SHARE = {
     const body = `
       <p class="dim small mb">Скопируй код и отправь в Телеграм. Получатель: <b>Главная → «Вставить код»</b> — и всё появится у него.</p>
       ${single ? `<textarea class="code-box" readonly rows="5">${esc(parts[0])}</textarea>
-        <div class="btns mt">${tg ? '<button class="btn pri" data-sh-tg="0">📨 Отправить в чат</button>' : ''}<button class="btn ${tg ? '' : 'pri'}" data-sh-copy="0">📋 Копировать код</button>${navigator.share && !tg ? '<button class="btn" data-sh-share>📤 Отправить…</button>' : ''}${tg ? '' : '<button class="btn ghost" data-sh-file>💾 Файлом</button>'}</div>`
-      : `<div class="note warn mb">Код длинный (${total} симв.) — Телеграм не влезет в одно сообщение, поэтому он разбит на <b>${parts.length} ${plural(parts.length, 'часть', 'части', 'частей')}</b>. Отправь каждую отдельным сообщением. При вставке можно скопировать всё подряд вместе с никами и временем — лишнее отсеется.${tg ? '' : ' Или проще — <b>отправь файлом</b>.'}</div>
+        <div class="btns mt">${tg ? '<button class="btn pri" data-sh-tg="0">📨 Отправить в чат</button>' : ''}<button class="btn ${tg ? '' : 'pri'}" data-sh-copy="0">📋 Копировать код</button>${tg ? '' : '<button class="btn" data-sh-tgweb>📨 В Telegram</button>'}${navigator.share && !tg ? '<button class="btn" data-sh-share>📤 Отправить…</button>' : ''}${tg ? '' : '<button class="btn ghost" data-sh-file>💾 Файлом</button>'}</div>`
+      : `<div class="note mb">Код длинный (${total} симв.) — он разбит на <b>${parts.length} ${plural(parts.length, 'часть', 'части', 'частей')}</b>. Нажми <b>«📨 Отправить всё»</b>: Телеграм сам разложит длинный текст на несколько сообщений по строкам, каждая часть останется целой. Получатель копирует их подряд вместе с никами и временем — лишнее отсеется. Если какая-то часть не дошла — её можно отправить отдельно.</div>
+        <div class="btns mb">${tg ? '<button class="btn pri" data-sh-tgall>📨 Отправить всё в чат</button>' : '<button class="btn pri" data-sh-tgall>📨 Отправить всё в Telegram</button>'}<button class="btn" data-sh-copyall>📋 Копировать всё</button></div>
         ${parts.map((p, i) => `<div class="row mb"><span class="badge gold">${i + 1}/${parts.length}</span><input readonly value="${esc(p.slice(0, 40))}…" class="grow">${tg ? `<button class="btn sm pri" data-sh-tg="${i}" title="Отправить в чат">📨</button>` : ''}<button class="btn sm" data-sh-copy="${i}">📋${tg ? '' : ' Копировать'}</button></div>`).join('')}
-        ${tg ? '' : `<div class="btns mt"><button class="btn pri" data-sh-file>💾 Скачать файлом (надёжнее)</button>${navigator.share ? '<button class="btn" data-sh-share>📤 Отправить…</button>' : ''}</div>`}`}
+        ${tg ? '' : `<div class="btns mt"><button class="btn" data-sh-file>💾 Скачать файлом</button>${navigator.share ? '<button class="btn" data-sh-share>📤 Отправить…</button>' : ''}</div>`}`}
       <p class="muted tiny mt">${SHARE.KIND_LABEL[k] || k} · ${total} символов</p>`;
     const m = openModal({ title: '📤 ' + esc(title), body });
     m.addEventListener('click', async e => {
       const tb = e.target.closest('[data-sh-tg]');
       if (tb) { TGX.toChat(parts[int(tb.dataset.shTg)]); tb.classList.add('on'); return; }
+      // все части одним текстом: длинное сообщение клиент Телеграма делит сам — по переводам строк, части не рвутся
+      const all = parts.join('\n\n'), tgUrl = t => 'https://t.me/share/url?url=' + encodeURIComponent(t);
+      if (e.target.closest('[data-sh-tgall]')) { if (tg) TGX.toChat(all); else openExternal(tgUrl(all)); e.target.closest('[data-sh-tgall]').classList.add('on'); return; }
+      if (e.target.closest('[data-sh-tgweb]')) { openExternal(tgUrl(parts[0])); return; }
+      if (e.target.closest('[data-sh-copyall]')) { const ok = await copyText(all); toast(ok ? `📋 Скопированы все части (${parts.length})` : '⚠ Не удалось скопировать', ok ? 'ok' : 'err'); return; }
       const c = e.target.closest('[data-sh-copy]');
       if (c) { const ok = await copyText(parts[int(c.dataset.shCopy)]); toast(ok ? '📋 Скопировано' : '⚠ Не удалось скопировать — выдели вручную', ok ? 'ok' : 'err'); if (ok) c.textContent = '✓ Скопировано'; }
       if (e.target.closest('[data-sh-file]')) download(fname, parts.join('\n\n'), 'text/plain');
@@ -5435,8 +5445,11 @@ SEC.abil = pc => `<section class="sec" id="s-abil"><div class="sec-h t-green">�
 const pcTool = (pc, t) => pcMod(pc, t.attr || 'dex') + (t.exp ? 2 : 1) * pcPB(pc);
 SEC.skills = pc => {
   const tab = pc.ui.tab === 'saves' ? 'saves' : pc.ui.tab === 'tools' && pc.tools.length ? 'tools' : 'skills', sk = tab === 'skills', half = SKILLS.some(x => pcHalfProf(pc, x.attr));
-  const rows = tab === 'skills' ? SKILLS.map((s, i) => { const e = pc.skillExp.includes(i), p = pc.skillProfs.includes(i), h = !e && !p && pcHalfProf(pc, s.attr);
-      return `<button class="chk-row" data-act="pcRollSkill" data-i="${i}"><span class="dot ${e ? 'exp' : p ? 'prof' : h ? 'half' : ''}"></span><b>${sgn(pcSkill(pc, i))}</b><span class="grow">${s.label}${rowMark(skillTb(pc, i))}</span><small>${STAT_SHORT[s.attr]}</small></button>`; }).join('')
+  // навыки — группами по характеристикам (порядок как на бумажном листе: СИЛ, ЛОВ, ИНТ, МУД, ХАР), внутри — по алфавиту; индексы SKILLS не меняются
+  const skRow = i => { const s = SKILLS[i], e = pc.skillExp.includes(i), p = pc.skillProfs.includes(i), h = !e && !p && pcHalfProf(pc, s.attr);
+      return `<button class="chk-row" data-act="pcRollSkill" data-i="${i}"><span class="dot ${e ? 'exp' : p ? 'prof' : h ? 'half' : ''}"></span><b>${sgn(pcSkill(pc, i))}</b><span class="grow">${s.label}${rowMark(skillTb(pc, i))}</span></button>`; };
+  const rows = tab === 'skills' ? STATS.map(st => { const ix = SKILLS.map((s, i) => s.attr === st ? i : -1).filter(i => i >= 0).sort((x, y) => SKILLS[x].label.localeCompare(SKILLS[y].label, 'ru'));
+      return ix.length ? `<div class="sk-grp"><span>${STAT_NAMES[st]}</span><small>${sgn(pcMod(pc, st))}</small></div>${ix.map(skRow).join('')}` : ''; }).join('')
     : tab === 'saves' ? STATS.map(s => `<button class="chk-row" data-act="pcRollSave" data-s="${s}"><span class="dot ${pc.saveProfs.includes(s) ? 'prof' : ''}"></span><b>${sgn(pcSave(pc, s))}</b><span class="grow">${STAT_NAMES[s]}${rowMark(tagBonus(pc, 'save', STAT_SHORT[s]))}</span></button>`).join('')
     : pc.tools.map((t, i) => `<button class="chk-row" data-act="pcRollTool" data-i="${i}"><span class="dot ${t.exp ? 'exp' : 'prof'}"></span><b>${sgn(pcTool(pc, t))}</b><span class="grow">${esc(t.name || 'Инструмент')}${rowMark(tagBonus(pc, 'check', STAT_SHORT[t.attr]))}</span><small>${STAT_SHORT[t.attr] || ''}</small></button>`).join('');
   return `<section class="sec" id="s-skills"><div class="sec-tabs"><button class="${sk ? 'on' : ''}" data-act="pcTab" data-t="skills">Навыки</button><button class="${tab === 'saves' ? 'on' : ''}" data-act="pcTab" data-t="saves">Спасброски</button>${pc.tools.length ? `<button class="${tab === 'tools' ? 'on' : ''}" data-act="pcTab" data-t="tools">Инструменты</button>` : ''}</div><div class="sec-b">
@@ -10100,6 +10113,9 @@ async function cwApply() {
 /** Персонаж создан: проверить в редакторе (мастер учёл не всё) и, если колдует, выбрать заклинания */
 function cwDone(pc, gearN) {
   const spells = pc.hasSpells && TTG.base() && pcClass(pc).spellId;
+  // заклинатель — сразу окно выбора заклинаний (без промежуточного «Персонаж создан»), напоминание о проверке — в нём же
+  if (spells) return setTimeout(() => spellPicker(activePC() || pc, { title: `📚 ${esc(pc.name)}: выбери заклинания`,
+    hint: `✅ Персонаж создан${gearN ? ` · вещей из снаряжения: ${gearN}` : ''}. Отметь заклинания и нажми «＋ Добавить». Потом проверь лист в редакторе — не всё учитывается автоматически.` }), 60);
   openModal({ title: '✅ Персонаж создан', size: 'sm', body: `<p><b class="gold">${esc(pc.name)}</b> · ${esc([pc.race, pc.cls, pc.level + ' ур.'].filter(Boolean).join(' · '))}${gearN ? ` · вещей из снаряжения: ${gearN}` : ''}</p>
       <p class="mt"><b>Проверьте правильность заполнения в редакторе.</b> Не всё может быть автоматически учтено при создании персонажа — статьи, по которым он собран, лежат вверху редактора.</p>
       ${spells ? '<p class="mt muted small">Заклинания класса ещё не выбраны — можно сейчас или потом: «📚 Список класса» в редакторе.</p>' : ''}`,
