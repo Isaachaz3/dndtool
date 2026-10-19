@@ -2417,7 +2417,7 @@ button.pill{display:block;width:100%;font:inherit;color:inherit;}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '11.2.1';
+const APP_VERSION = '11.2.2';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -4585,7 +4585,8 @@ const LEGACY = {
 // ── share.js ──
 /* ═══════════════════════════════════════════════════════
    ОБМЕН КОДАМИ — как ключ VPN: скопировал строку, скинул в телегу, вставил
-   Формат: DND9:<z|j><base64url>   z = deflate-raw, j = без сжатия
+   Формат: DND9:<y|z|j><данные>   y = deflate-raw + base62 (только буквы и цифры — с v11.2.2; Телеграму нечего превращать
+   в курсив, а `__` и `--` он съедал), z = deflate-raw + base64url (старые коды), j = без сжатия
    Длинный код режется: DND9[1/3]…  DND9[2/3]…  (части ищутся в любом тексте)
 ═══════════════════════════════════════════════════════ */
 const SHARE = {
@@ -4613,6 +4614,29 @@ const SHARE = {
     let s = ''; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
     return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   },
+  /** base62: блоки по 8 байт → 11 знаков [0-9A-Za-z]; хвост k байт → B62_LEN[k] знаков (длины разные — хвост узнаётся по длине) */
+  B62: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
+  B62_LEN: [0, 2, 3, 5, 6, 7, 9, 10, 11],
+  b62(bytes) {
+    let out = '';
+    for (let i = 0; i < bytes.length; i += 8) {
+      const blk = bytes.subarray(i, i + 8); let n = 0n;
+      for (const b of blk) n = (n << 8n) | BigInt(b);
+      let c = ''; for (let k = SHARE.B62_LEN[blk.length]; k > 0; k--) { c = SHARE.B62[Number(n % 62n)] + c; n /= 62n; }
+      out += c;
+    }
+    return out;
+  },
+  unb62(s) {
+    const out = [], idx = ch => { const v = SHARE.B62.indexOf(ch); if (v < 0) throw new Error('чужой знак в коде «' + ch + '»'); return BigInt(v); };
+    for (let i = 0; i < s.length; i += 11) {
+      const c = s.slice(i, i + 11), k = SHARE.B62_LEN.indexOf(c.length); if (k < 1) throw new Error('код обрезан');
+      let n = 0n; for (const ch of c) n = n * 62n + idx(ch);
+      const blk = []; for (let j = 0; j < k; j++) { blk.unshift(Number(n & 255n)); n >>= 8n; }
+      out.push(...blk);
+    }
+    return new Uint8Array(out);
+  },
   unb64(s) {
     s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '=';
     const bin = atob(s); const out = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i); return out;
@@ -4623,15 +4647,15 @@ const SHARE = {
     if (window.CompressionStream) {
       try {
         const buf = await new Response(new Blob([raw]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer();
-        return 'z' + SHARE.b64(new Uint8Array(buf));
+        return 'y' + SHARE.b62(new Uint8Array(buf));
       } catch (e) { }
     }
     return 'j' + SHARE.b64(raw);
   },
   async decodePayload(p) {
-    const kind = p[0], bytes = SHARE.unb64(p.slice(1));
+    const kind = p[0], bytes = kind === 'y' ? SHARE.unb62(p.slice(1)) : SHARE.unb64(p.slice(1));
     let json;
-    if (kind === 'z') {
+    if (kind === 'z' || kind === 'y') {
       if (!window.DecompressionStream) throw new Error('Браузер слишком старый для сжатых кодов — обнови его');
       json = await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();
     } else if (kind === 'j') json = new TextDecoder().decode(bytes);
@@ -4681,7 +4705,7 @@ const SHARE = {
       <p class="dim small mb">Скопируй код и отправь в Телеграм. Получатель: <b>Главная → «Вставить код»</b> — и всё появится у него.</p>
       ${single ? `<textarea class="code-box" readonly rows="5">${esc(parts[0])}</textarea>
         <div class="btns mt">${tg ? '<button class="btn pri" data-sh-tg="0">📨 Отправить в чат</button>' : ''}<button class="btn ${tg ? '' : 'pri'}" data-sh-copy="0">📋 Копировать код</button>${tg ? '' : '<button class="btn" data-sh-tgweb>📨 В Telegram</button>'}${navigator.share && !tg ? '<button class="btn" data-sh-share>📤 Отправить…</button>' : ''}${tg ? '' : '<button class="btn ghost" data-sh-file>💾 Файлом</button>'}</div>`
-      : `<div class="note mb">Код длинный (${total} симв.) — он разбит на <b>${parts.length} ${plural(parts.length, 'часть', 'части', 'частей')}</b>. Нажми <b>«📨 Отправить всё»</b>: Телеграм сам разложит длинный текст на несколько сообщений по строкам, каждая часть останется целой. Получатель копирует их подряд вместе с никами и временем — лишнее отсеется. Если какая-то часть не дошла — её можно отправить отдельно.</div>
+      : `<div class="note mb">Код длинный (${total} симв.) — он разбит на <b>${parts.length} ${plural(parts.length, 'часть', 'части', 'частей')}</b>. Нажми <b>«📨 Отправить всё»</b>: Телеграм сам разрежет длинный текст на несколько сообщений, а приложение получателя склеит их обратно — даже с никами, временем и переносами между ними. Если какая-то часть испортится, приложение скажет, какую прислать заново, — у каждой части своя кнопка ниже.</div>
         <div class="btns mb">${tg ? '<button class="btn pri" data-sh-tgall>📨 Отправить всё в чат</button>' : '<button class="btn pri" data-sh-tgall>📨 Отправить всё в Telegram</button>'}<button class="btn" data-sh-copyall>📋 Копировать всё</button></div>
         ${parts.map((p, i) => `<div class="row mb"><span class="badge gold">${i + 1}/${parts.length}</span><input readonly value="${esc(p.slice(0, 40))}…" class="grow">${tg ? `<button class="btn sm pri" data-sh-tg="${i}" title="Отправить в чат">📨</button>` : ''}<button class="btn sm" data-sh-copy="${i}">📋${tg ? '' : ' Копировать'}</button></div>`).join('')}
         ${tg ? '' : `<div class="btns mt"><button class="btn" data-sh-file>💾 Скачать файлом</button>${navigator.share ? '<button class="btn" data-sh-share>📤 Отправить…</button>' : ''}</div>`}`}
@@ -8564,25 +8588,38 @@ document.addEventListener('keydown', e => {
    FMT — разбор форматов · TBL — столбцы таблиц · CONV — чужие схемы → наши · DUP — дубликаты · DBI — сбор, проверка, добавление
 ═══════════════════════════════════════════════════════ */
 const FMT = {
-  /** Все коды DND9 в тексте: одиночные и собранные из частей; partial — кодам не хватает частей */
+  /** Все коды DND9 в тексте → [{cands: [вариант payload…], bad: [{i, have, need}]}] и partial (кодам не хватает частей).
+      Код может быть разорван пробелами, переносами и чужими строками («Ник, 12:00»): Телеграм режет длинное сообщение
+      ровно по 4096 знаков, а при копировании между сообщениями оказываются ник и время. Поэтому тело части — куски
+      из букв кода после метки до следующей метки: первый кусок и дальше длинные (короткие — это ник, время, мусор).
+      Части кроме последней ровно SHARE.PART знаков: длина другая — часть испорчена при пересылке (bad) */
   codes(t) {
-    const grab = s => {
-      const one = [...s.matchAll(/DND9:([A-Za-z0-9_-]{8,}?)(?=DND9[:[]|[^A-Za-z0-9_-]|$)/g)].map(m => m[1]), groups = []; let g = null;
-      for (const m of s.matchAll(/DND9\[(\d+)\/(\d+)\]([A-Za-z0-9_-]+?)(?=DND9[:[]|[^A-Za-z0-9_-]|$)/g)) {
-        const i = int(m[1]), n = int(m[2]);
-        if (!g || g.n !== n || g.p[i]) groups.push(g = { n, p: {} }); // нумерация пошла заново — это следующий код
-        g.p[i] = m[3];
-      }
-      return { one, groups, bad: groups.some(x => Object.keys(x.p).length < x.n) };
+    const s = String(t || ''), marks = [], mk = /DND9(?::|\[(\d+)\/(\d+)\])/g; let m;
+    while ((m = mk.exec(s))) marks.push({ at: m.index, end: mk.lastIndex, i: m[1] ? int(m[1]) : 0, n: m[2] ? int(m[2]) : 0 });
+    const body = (k, need) => {
+      const segs = [...s.slice(marks[k].end, marks[k + 1]?.at ?? s.length).matchAll(/[A-Za-z0-9_-]+/g)].map(x => x[0]);
+      if (!segs.length) return [''];
+      let a = segs[0];
+      for (const x of segs.slice(1)) { if (need && a.length >= need) break; if (x.length >= 24 || need && a.length + x.length === need) a += x; }
+      if (need) return [a];
+      const b = segs.join(''); return b === a ? [a] : [a, b]; // последней части длина неизвестна: сначала без коротких кусков, потом со всеми
     };
-    let r = grab(t);
-    if (r.bad || !r.one.length && !r.groups.length) { // переносы строк внутри кода (так бывает в Телеграме)
-      const r2 = grab(t.replace(/\s+/g, ''));
-      if (!r.one.length && !r.groups.length || !r2.bad && r2.one.length + r2.groups.length) r = r2;
-    }
-    const full = r.groups.filter(g => Object.keys(g.p).length >= g.n);
-    return { payloads: [...r.one, ...full.map(g => Array.from({ length: g.n }, (_, i) => g.p[i + 1]).join(''))],
-      partial: r.groups.filter(g => !full.includes(g)).map(g => ({ have: Object.keys(g.p).length, total: g.n, missing: Array.from({ length: g.n }, (_, i) => i + 1).filter(i => !g.p[i]) })) };
+    const codes = [], groups = []; let g = null;
+    marks.forEach((x, k) => {
+      if (!x.n) { codes.push({ cands: body(k, 0).filter(p => p.length >= 8), bad: [] }); g = null; return; }
+      if (!g || g.n !== x.n || g.p[x.i]) groups.push(g = { n: x.n, p: {} }); // нумерация пошла заново — это следующий код
+      g.p[x.i] = k;
+    });
+    const partial = [];
+    groups.forEach(gr => {
+      const miss = Array.from({ length: gr.n }, (_, i) => i + 1).filter(i => gr.p[i] == null);
+      if (miss.length) return partial.push({ have: gr.n - miss.length, total: gr.n, missing: miss });
+      const bodies = Array.from({ length: gr.n }, (_, i) => body(gr.p[i + 1], i + 1 < gr.n ? SHARE.PART : 0));
+      const bad = bodies.slice(0, -1).map((b, i) => ({ i: i + 1, have: b[0].length, need: SHARE.PART })).filter(x => x.have !== x.need);
+      const head = bodies.slice(0, -1).map(b => b[0]).join('');
+      codes.push({ cands: bodies[gr.n - 1].map(l => head + l), bad, n: gr.n });
+    });
+    return { codes: codes.filter(c => c.cands.length), partial };
   },
   /** JSON в тексте: целиком, из блоков ```json, несколько объектов подряд, JSON Lines (паки Foundry .db).
       Терпит комментарии, лишние запятые, переносы строк внутри строк. Оборванный ответ (нейросеть упёрлась в лимит)
@@ -9560,9 +9597,16 @@ const DBI = {
     const t = String(text || '').replace(/^﻿/, ''); if (!t.trim()) return;
     const ext = ((name.match(/\.(\w+)$/) || [])[1] || '').toLowerCase(), nm = name || 'вставленный текст';
     const c = FMT.codes(t);
-    if (c.payloads.length || c.partial.length) {
+    if (c.codes.length || c.partial.length) {
       B.partial.push(...c.partial);
-      for (const p of c.payloads) { try { DBI.absorb(B, await SHARE.decodePayload(p)); } catch (e) { B.errors.push(`Код повреждён: ${e.message}. Возможно, скопирован не целиком.`); } }
+      for (const code of c.codes) {
+        let o = null, err = null;
+        for (const p of code.cands) { try { o = await SHARE.decodePayload(p); break; } catch (e) { err = err || e; } }
+        if (o) { DBI.absorb(B, o); continue; }
+        B.errors.push(code.bad.length // какие части испортились при пересылке — их и прислать заново
+          ? `Код повреждён при пересылке: ${code.bad.map(x => `часть ${x.i} из ${code.n} — ${x.have < x.need ? `не хватает ${x.need - x.have} ${plural(x.need - x.have, 'знака', 'знаков', 'знаков')}` : `лишние ${x.have - x.need} ${plural(x.have - x.need, 'знак', 'знака', 'знаков')}`}`).join(', ')}. Попроси прислать ${code.bad.length > 1 ? 'эти части' : 'эту часть'} заново (кнопкой 📨 у части) или файлом.`
+          : `Код повреждён: ${err?.message || 'не читается'}. Возможно, скопирован не целиком.`);
+      }
       return;
     }
     if (ext === 'xml' || /^\s*<(\?xml|compendium)/i.test(t)) { DBI.readXml(B, t, nm); return; }
@@ -10113,13 +10157,12 @@ async function cwApply() {
 /** Персонаж создан: проверить в редакторе (мастер учёл не всё) и, если колдует, выбрать заклинания */
 function cwDone(pc, gearN) {
   const spells = pc.hasSpells && TTG.base() && pcClass(pc).spellId;
-  // заклинатель — сразу окно выбора заклинаний (без промежуточного «Персонаж создан»), напоминание о проверке — в нём же
-  if (spells) return setTimeout(() => spellPicker(activePC() || pc, { title: `📚 ${esc(pc.name)}: выбери заклинания`,
-    hint: `✅ Персонаж создан${gearN ? ` · вещей из снаряжения: ${gearN}` : ''}. Отметь заклинания и нажми «＋ Добавить». Потом проверь лист в редакторе — не всё учитывается автоматически.` }), 60);
   openModal({ title: '✅ Персонаж создан', size: 'sm', body: `<p><b class="gold">${esc(pc.name)}</b> · ${esc([pc.race, pc.cls, pc.level + ' ур.'].filter(Boolean).join(' · '))}${gearN ? ` · вещей из снаряжения: ${gearN}` : ''}</p>
       <p class="mt"><b>Проверьте правильность заполнения в редакторе.</b> Не всё может быть автоматически учтено при создании персонажа — статьи, по которым он собран, лежат вверху редактора.</p>
-      ${spells ? '<p class="mt muted small">Заклинания класса ещё не выбраны — можно сейчас или потом: «📚 Список класса» в редакторе.</p>' : ''}`,
-    foot: `${spells ? '<button class="btn gold" data-act="cwDoneSpells">📚 Выбрать заклинания</button>' : ''}<span class="sp"></span><button class="btn pri" data-act="modalClose">Проверить в редакторе</button>` });
+      ${spells ? '<p class="mt muted small">Заклинания класса добавляются в окне поверх этого. Закрыл его раньше времени — «📚 Список класса» в редакторе.</p>' : ''}`,
+    foot: `<span class="sp"></span><button class="btn pri" data-act="modalClose">Проверить в редакторе</button>` });
+  // заклинателю окно выбора заклинаний открывается само, поверх «Персонаж создан»: закрыл его — остаётся это окно с проверкой
+  if (spells) setTimeout(() => spellPicker(activePC() || pc, { title: `📚 ${esc(pc.name)}: выбери заклинания`, hint: 'Отметь заклинания и нажми «＋ Добавить».' }), 120);
 }
 ACT.cwDoneSpells = () => { closeModal(); const pc = activePC(); if (pc) setTimeout(() => spellPicker(pc), 60); };
 
