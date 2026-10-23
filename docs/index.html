@@ -2638,7 +2638,7 @@ button.ae-lk-r:hover{background:rgba(255,255,255,.045);}
 .rn-crumbs{flex:1;min-width:0;display:flex;align-items:center;gap:2px;white-space:nowrap;overflow:hidden;}
 .rn-cr{flex:none;display:inline-flex;align-items:center;min-height:44px;padding:0 6px;font-size:15px;color:var(--tx2);}
 .rn-cr.reg{color:var(--tx3);}
-.rn-cr.cur{flex:0 1 auto;min-width:0;display:block;line-height:44px;overflow:hidden;text-overflow:ellipsis;font-family:'Philosopher',var(--f-title);font-size:21px;font-weight:700;color:var(--gold2);}
+.rn-cr.cur{flex:0 1 auto;min-width:0;display:block;line-height:44px;overflow:hidden;text-overflow:ellipsis;font-family:var(--f-title);font-size:21px;font-weight:700;color:var(--gold2);}
 .rn-sep{flex:none;color:var(--tx3);}
 .rn-sit{flex:none;padding:5px 10px;border:1px solid var(--teal);border-radius:2px;color:var(--teal3);font-size:12px;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;}
 .rn-tbtn{flex:none;display:flex;align-items:center;gap:12px;min-height:50px;padding:0 6px;text-align:right;}
@@ -2686,7 +2686,7 @@ button.ae-lk-r:hover{background:rgba(255,255,255,.045);}
 /* ── Шторки ── */
 .rn-scrim{position:absolute;inset:0;z-index:40;background:rgba(5,4,8,.72);}
 .rn .rn-sheet{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--bar-h) + 10px);width:820px;max-width:calc(100% - 24px);max-height:calc(100% - var(--bar-h) - 76px);overflow-y:auto;z-index:41;padding:4px 10px 14px;}
-.rn-sheet-h{font-family:'Philosopher',var(--f-title);font-size:23px;font-weight:700;color:var(--gold2);margin:2px 0 6px;}
+.rn-sheet-h{font-family:var(--f-title);font-size:23px;font-weight:700;color:var(--gold2);margin:2px 0 6px;}
 .rn-g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 10px;}
 @media (max-width:899px){ .rn-g2{grid-template-columns:minmax(0,1fr);} }
 .rn-btns{display:flex;flex-wrap:wrap;gap:8px 0;}
@@ -2701,9 +2701,9 @@ button.ae-lk-r:hover{background:rgba(255,255,255,.045);}
 
 /* ── Заголовок карточки, ромбы ── */
 .rn-ttl{display:flex;align-items:center;gap:14px;margin:2px 0 12px;}
-.rn-ttl h1{font-family:'Philosopher',var(--f-title);font-size:29px;font-weight:700;line-height:1.15;color:var(--gold2);letter-spacing:.01em;}
+.rn-ttl h1{font-family:var(--f-title);font-size:29px;font-weight:700;line-height:1.15;color:var(--gold2);letter-spacing:.01em;}
 .rn-ttl-s{margin-top:3px;font-size:14px;color:var(--tx2);}
-.rn-dv{position:relative;isolation:isolate;width:50px;height:50px;flex:none;display:flex;align-items:center;justify-content:center;font-family:'Philosopher',var(--f-title);font-size:14px;font-weight:700;color:var(--tx);}
+.rn-dv{position:relative;isolation:isolate;width:50px;height:50px;flex:none;display:flex;align-items:center;justify-content:center;font-family:var(--f-title);font-size:14px;font-weight:700;color:var(--tx);}
 .rn-dv::before{content:'';position:absolute;inset:8px;z-index:-1;transform:rotate(45deg);border:1px solid var(--line3);background:var(--bg2);box-shadow:inset 0 0 0 3px var(--bg2),inset 0 0 0 4px var(--line-in);}
 .rn-dv.big{width:66px;height:66px;font-size:18px;}
 .rn-dv.big::before{inset:10px;}
@@ -2716,7 +2716,7 @@ button.ae-lk-r:hover{background:rgba(255,255,255,.045);}
 .rn .rn-rdp{margin:0 0 12px;padding:6px 10px 10px;}
 :root:root .rn .rn-rdp{border-image-source:var(--fr-panel-gold);box-shadow:var(--panel-shadow),0 0 60px -26px var(--glow);}
 .rn-rl{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--teal3);}
-.rn-rd{font-family:'Philosopher',var(--f-text);font-size:var(--rd);line-height:1.55;color:var(--tx);overflow-wrap:break-word;}
+.rn-rd{font-family:var(--f-text);font-size:var(--rd);line-height:1.55;color:var(--tx);overflow-wrap:break-word;}
 .rn-rd.sm{font-size:calc(var(--rd) - 3px);}
 .rn-ask{color:var(--gold2);font-weight:700;}
 .rn-mini{min-height:38px;padding:0 10px;border:1px solid var(--line2);border-radius:2px;font-size:12.5px;color:var(--tx2);letter-spacing:.03em;text-transform:none;background:var(--bg1);}
@@ -2758,7 +2758,7 @@ button.ae-lk-r:hover{background:rgba(255,255,255,.045);}
 .rn-if-t{padding:10px 16px 12px;border:1px solid var(--line2);border-top:0;background:var(--bg1);font-size:16px;line-height:1.5;}
 .rn-tbl{margin-bottom:8px;}
 .rn-tbl .rn-row{margin-bottom:0;}
-.rn-tres{padding:10px 14px;border:1px solid var(--line2);border-top:0;background:var(--bg1);font-family:'Philosopher',var(--f-text);font-size:17px;color:var(--gold2);}
+.rn-tres{padding:10px 14px;border:1px solid var(--line2);border-top:0;background:var(--bg1);font-family:var(--f-text);font-size:17px;color:var(--gold2);}
 
 /* ── Проверки: диапазоны вместо ввода числа ── */
 .rn-ck{margin-bottom:10px;border:1px solid var(--line2);border-radius:2px;background:var(--bg2);box-shadow:inset 0 0 0 2px var(--bg2),inset 0 0 0 3px var(--line-in);}
@@ -2785,7 +2785,7 @@ button.ae-lk-r:hover{background:rgba(255,255,255,.045);}
 .rn-out.o-fail{border-color:var(--red);} .rn-out.o-ok{border-color:var(--green);} .rn-out.o-sup{border-color:var(--gold);}
 .rn-out-l{margin-bottom:6px;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;}
 .o-fail .rn-out-l{color:var(--red2);} .o-ok .rn-out-l{color:var(--green2);} .o-sup .rn-out-l{color:var(--gold2);}
-.rn-out-t{font-family:'Philosopher',var(--f-text);font-size:calc(var(--rd) - 2px);line-height:1.5;}
+.rn-out-t{font-family:var(--f-text);font-size:calc(var(--rd) - 2px);line-height:1.5;}
 .rn-peek{display:flex;flex-direction:column;gap:6px;margin:2px 7px 0;font-size:14.5px;color:var(--tx2);}
 .rn-peek b{font-weight:600;color:var(--tx);}
 
@@ -2797,7 +2797,7 @@ button.ae-lk-r:hover{background:rgba(255,255,255,.045);}
 .rn-ln-w{font-size:12.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--teal3);}
 .rn-ln.clue .rn-ln-w{color:var(--purple2);}
 .rn-ln-w i{font-style:normal;color:var(--tx3);}
-.rn-ln-t{font-family:'Philosopher',var(--f-text);font-size:calc(var(--rd) - 1px);line-height:1.45;color:var(--tx);}
+.rn-ln-t{font-family:var(--f-text);font-size:calc(var(--rd) - 1px);line-height:1.45;color:var(--tx);}
 .rn-ln-t.sm{font-size:calc(var(--rd) - 4px);}
 .rn-to-l{font-size:14px;color:var(--purple2);}
 .rn-to{display:inline-block;margin:3px 4px 0 0;padding:5px 9px;border:1px solid var(--purple);border-radius:2px;}
@@ -2847,7 +2847,7 @@ button.ae-lk-r:hover{background:rgba(255,255,255,.045);}
 .rn-roll.bad .rn-rl{color:var(--red2);}
 
 /* ── Дерево мест ── */
-.rn-tr-h{margin:0 0 8px 6px;font-family:'Philosopher',var(--f-title);font-size:21px;font-weight:700;color:var(--gold2);}
+.rn-tr-h{margin:0 0 8px 6px;font-family:var(--f-title);font-size:21px;font-weight:700;color:var(--gold2);}
 .rn-tn{display:flex;align-items:center;gap:10px;width:100%;min-height:46px;padding:6px 8px;border-radius:2px;font-size:15.5px;color:var(--tx);text-align:left;}
 .rn-tn.d1{padding-left:24px;} .rn-tn.d2{padding-left:42px;} .rn-tn.d3{padding-left:60px;} .rn-tn.d4{padding-left:78px;}
 .rn-tn-c{flex:none;min-width:34px;font-size:13.5px;font-weight:700;color:var(--gold);}
@@ -2865,7 +2865,7 @@ button.ae-lk-r:hover{background:rgba(255,255,255,.045);}
   border:1px solid var(--gold3);border-radius:2px;background:var(--bg1);box-shadow:0 14px 40px -12px rgba(0,0,0,.85),0 0 40px -18px var(--glow);animation:rnBn .28s ease-out;}
 @keyframes rnBn{from{opacity:0;transform:translate(-50%,-14px);}to{opacity:1;transform:translate(-50%,0);}}
 .rn-bn-t{flex:1;min-width:0;}
-.rn-bn-t b{display:block;font-family:'Philosopher',var(--f-title);font-size:20px;color:var(--gold2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rn-bn-t b{display:block;font-family:var(--f-title);font-size:20px;color:var(--gold2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .rn-bn-t span{display:block;font-size:13.5px;color:var(--tx2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .rn-bn .btn{min-height:50px;}
 @media (max-width:899px){ .rn-bn{flex-wrap:wrap;} .rn-bn-t{flex-basis:calc(100% - 60px);} .rn-bn .btn{flex:1;} }
@@ -2898,7 +2898,7 @@ button.ae-lk-r:hover{background:rgba(255,255,255,.045);}
 .rn-fslot{padding:10px 0 12px;border-bottom:1px solid var(--line);}
 .rn-fslot:last-child{border-bottom:0;}
 .rn-fs-h{display:flex;align-items:baseline;gap:10px;margin-bottom:8px;}
-.rn-fs-h b{font-family:'Philosopher',var(--f-title);font-size:19px;color:var(--gold2);}
+.rn-fs-h b{font-family:var(--f-title);font-size:19px;color:var(--gold2);}
 .rn-fs-h small{font-size:14px;color:var(--tx3);}
 .rn-fslot.on .rn-fs-h small{color:var(--teal3);font-weight:600;}
 .rn-hand .rn-btns .btn{min-height:46px;min-width:0;}
@@ -2911,6 +2911,17 @@ button.ae-lk-r:hover{background:rgba(255,255,255,.045);}
 .rn-var b{min-width:36px;text-align:center;font-size:19px;color:var(--gold2);font-variant-numeric:tabular-nums;}
 .rn-vb{width:44px;height:44px;flex:none;border:1px solid var(--line2);border-radius:2px;background:var(--bg2);font-size:20px;color:var(--tx);}
 .rn-var.flag.on{color:var(--green2);}
+
+/* ── v11.10: «Куда» — свёрнутые разделы, бой без наложения шапки, подсветка дерева на ПК ── */
+.rn-folds{margin-top:14px;}
+.rn-fold{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;margin-top:6px;padding:6px 12px;border:1px solid var(--line2);border-radius:2px;background:var(--bg1);
+  font-family:var(--f-title);font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);text-align:left;}
+.rn-fold small{color:var(--tx3);letter-spacing:0;}
+.rn-fold.open{border-color:var(--gold3);}
+.rn-fold-b{margin-top:8px;}
+.rn .trk-head{top:0;}
+.rn-tree.flash{animation:rnFlash 1.4s ease-out;}
+@keyframes rnFlash{0%,40%{box-shadow:inset 0 0 0 2px var(--gold),0 0 30px -6px var(--glow);}100%{box-shadow:none;}}
 
 </style>
 </head>
@@ -2935,7 +2946,7 @@ button.ae-lk-r:hover{background:rgba(255,255,255,.045);}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '11.9.0';
+const APP_VERSION = '11.10.0';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -5446,6 +5457,22 @@ function advMergeCard(m, c) {
   });
 }
 
+/** Старые карты сцен (map_<id>) — легаси (v11.10): сцена = приключение. При запуске и после любой записи в обход (cachesReset)
+    каждая карта становится приключением, её запись удаляется, исходник остаётся в legacy_maps — на случай отката */
+function advLegacyMaps() {
+  const maps = STORE.list('map'); if (!maps.length) return 0;
+  const keep = STORE.get('legacy_maps', []) || [], ids = new Set(keep.map(m => m?.id)); let n = 0, last = null;
+  maps.forEach(m => {
+    if ((m.nodes || []).length && !STORE.list('adv').some(a => a.fromMap === m.id)) { const a = ADVIO.fromMap(m); if (!STORE.put('adv', a)) return; n++; last = a; }
+    if ((m.nodes || []).length && !ids.has(m.id)) { keep.push(m); ids.add(m.id); } // пустые карты не храним
+    STORE.drop('map', m.id);
+  });
+  STORE.set('legacy_maps', keep);
+  if (last && !STORE.one('adv', SETTINGS.adv)) { SETTINGS.adv = last.id; saveSettings(); }
+  ADV = null; MAP = null;
+  return n;
+}
+
 /* ── Хранилище и кэш: ADV — текущее приключение (SETTINGS.adv). Изменил — advSave(); записал в обход — ADV = null ── */
 let ADV = null;
 function curAdv() {
@@ -5561,7 +5588,7 @@ const ADVIO = {
     return [r.merged != null && `глава: дополнено карточек — ${r.merged}`, `${r.places} ${plural(r.places, 'место', 'места', 'мест')}`, r.people && `персонажей: ${r.people}`, r.events && `событий: ${r.events}`, r.goals && `целей: ${r.goals}`,
       r.npc && `NPC: ${r.npc}`, r.item && `предметов: ${r.item}`, r.batt && `боёв: ${r.batt}`, r.wiki && `статей: ${r.wiki}`].filter(Boolean).join(', ');
   },
-  /** Старая карта сцен → приключение. Карта не удаляется: остаётся резервом, пока ширма на ней (до этапа 2) */
+  /** Старая карта сцен → приключение (легаси: зовёт advLegacyMaps) */
   fromMap(m0) {
     const m = normMap(clone(m0)), a = newAdv(m.title); a.fromMap = m.id;
     const pid = id => 'p_' + id, people = new Map();
@@ -5854,12 +5881,12 @@ const SHARE = {
     if (o.k === 'map') {
       await DUP.mapLib(d); // NPC, предметы и статьи сюжета, которые уже есть, — спросить, какие оставить
       const { map: mp, rep } = MAPIO.import(d || {});
-      STORE.put('map', mp); SETTINGS.map = mp.id; saveSettings(); MAP = null;
+      STORE.put('map', mp); advLegacyMaps(); // сюжет старого формата сразу становится приключением
       if (rep.lost.length || rep.fixed.length) await confirmBox(`Сюжет «${mp.title}» загружен: ${MAPIO.summary(rep)}.` +
         (rep.lost.length ? `\n\n⚠ Не нашлось (ссылки убраны):\n• ${rep.lost.slice(0, 12).join('\n• ')}${rep.lost.length > 12 ? `\n…и ещё ${rep.lost.length - 12}` : ''}` : '') +
-        (rep.fixed.length ? `\n\n🔧 Исправлено:\n• ${rep.fixed.slice(0, 8).join('\n• ')}` : ''), { title: '🗺 Сюжет загружен', ok: 'Понятно' });
-      else toast(`🗺 Сюжет «${mp.title}»: ${MAPIO.summary(rep)}`, 'ok', 4500);
-      go('scenes'); return;
+        (rep.fixed.length ? `\n\n🔧 Исправлено:\n• ${rep.fixed.slice(0, 8).join('\n• ')}` : ''), { title: '📖 Загружено как приключение', ok: 'Понятно' });
+      else toast(`📖 «${mp.title}» — приключением: ${MAPIO.summary(rep)}`, 'ok', 4500);
+      go('adv'); return;
     }
     if (o.k === 'adv') { // приключение (v11.4): дубликаты в библиотеке (lib) — спросить до добавления, одноимённое приключение — «мой / новый / оба»
       const B = recs(); await DBI.prepMaps(B, 'ask'); DBI.report(await DBI.commit(B), 'adv'); return;
@@ -7893,7 +7920,7 @@ function trkHTML({ embedded = false } = {}) {
   return `<div class="trk ${embedded ? 'emb' : ''}">
     <div class="trk-head">
     <div class="trk-bar">
-      ${embedded ? '<button class="btn sm" data-act="gmCenter" data-c="scene">‹ Сцена</button>' : ''}
+      ${embedded ? '<button class="btn sm" data-act="gmCenter" data-c="scene">‹ Назад</button>' : ''}
       <div class="round-box"><small>раунд</small><b id="bt-round">${b.round}</b></div>
       ${main}
       <button class="btn" data-act="btAdd">＋ <span class="tl">Участник</span></button><button class="btn icon" data-act="btInit" title="Авто-инициатива: d20 + ЛОВ">🎲</button>
@@ -9312,7 +9339,7 @@ function aeMoreHTML(a) {
 
 /* ── Центр: обзор приключения, карточка места, карточка персонажа ── */
 function aeOverviewHTML(a) {
-  const maps = STORE.list('map').filter(m => (m.nodes || []).length), stat = (n, l) => `<div class="ae-stat"><b>${n}</b><small>${l}</small></div>`;
+  const stat = (n, l) => `<div class="ae-stat"><b>${n}</b><small>${l}</small></div>`;
   return `<div class="ae-card" data-model="advMeta">
     <div class="fld"><label>Название приключения</label><input class="ae-title-in" data-bind="title" value="${esc(a.title)}"></div>
     <div class="fld mt"><label>О чём оно — для мастера</label><textarea class="auto" data-bind="about" placeholder="Завязка, уровни, тон, что важно помнить…">${esc(a.about)}</textarea></div>
@@ -9324,8 +9351,6 @@ function aeOverviewHTML(a) {
     <div class="btns mt"><button class="btn pri" data-act="aeNewPlace">＋ Место</button><button class="btn" data-act="aeNewPerson">＋ Персонаж</button><button class="btn" data-act="aeNewEvent">＋ Событие</button><button class="btn" data-act="aeNewGoal">＋ Цель</button><button class="btn gold" data-act="aeSchema">🕸 Схема</button><button class="btn" data-act="aeLint">🩺 Проверка${aeLintBadge(a)}</button><button class="btn" data-act="advShare">📤 Поделиться</button><button class="btn" data-act="shareImport">📥 Импорт</button></div>
     <p class="small muted mt">Места — деревом: регион → поселение → здание → комната. Чтобы вложить место в другое, перетащи его за ⠿ или нажми «⤴ Перенести» в карточке.
       Карточка собирается из блоков: что зачитать, реплики, проверки, зацепки. Ширма потом покажет только нужное в данный момент.</p>
-    ${maps.length ? `<div class="orn mt2"><i>◆</i> Старые карты сцен <i>◆</i></div><p class="small dim">Перенос не трогает карту: она остаётся для нынешней ширмы.</p>
-      <div class="btns">${maps.map(m => { const done = STORE.list('adv').some(x => x.fromMap === m.id); return `<button class="btn" data-act="advFromMap" data-id="${esc(m.id)}">🗺 ${esc(m.title)} <small class="muted">${m.nodes.length} сцен${done ? ' · уже перенесена' : ''}</small></button>`; }).join('')}</div>` : ''}
   </div>`;
 }
 function aeCardHTML(a, c) { const k = aeKind(a, c); return k === 'place' ? aePlaceHTML(a, c) : k === 'event' ? aeEventHTML(a, c) : k === 'goal' ? aeGoalHTML(a, c) : k === 'fate' ? aeFateHTML(a, c) : k === 'table' ? aeTableHTML(a, c) : k === 'var' ? aeVarHTML(a, c) : aePersonHTML(a, c); }
@@ -9700,12 +9725,10 @@ function aeLinksHTML(a, c) {
 
 /* ── Экран ── */
 function aeHeroHTML() {
-  const maps = STORE.list('map').filter(m => (m.nodes || []).length);
   return `<div class="ae-hero"><div class="empty-hero frame"><div class="big">📖</div><h2 class="t-title">Приключение</h2>
     <p class="dim">Здесь готовится модуль: места деревом, персонажи с репликами, проверки, зацепки. Ведётся игра — на ширме.</p>
     <button class="hexbtn pri mt" data-act="advNew">＋ Новое приключение</button>
     <div class="btns mt" style="justify-content:center"><button class="btn" data-act="shareImport">📥 Вставить код или JSON</button><button class="btn" data-act="advTemplate">📋 Шаблон для нейросети</button></div>
-    ${maps.length ? `<div class="orn mt2"><i>◆</i> Перенести карту сцен <i>◆</i></div><div class="btns" style="justify-content:center">${maps.map(m => `<button class="btn" data-act="advFromMap" data-id="${esc(m.id)}">🗺 ${esc(m.title)} <small class="muted">${m.nodes.length} сцен</small></button>`).join('')}</div>` : ''}
   </div></div>`;
 }
 VIEWS.adv = {
@@ -9921,7 +9944,7 @@ ACT.aeCardMenu = el => {
       a.people = a.people.filter(x => x !== c); AE.sel = null; aeSanitize(); aeRender(); } }]);
 };
 
-/* ── Приключения: выбор, создание, обмен, перенос карт сцен ── */
+/* ── Приключения: выбор, создание, обмен ── */
 function aeAdvMenuItems() {
   const a = curAdv(), all = STORE.list('adv');
   return [{ hd: 'Приключения' }, ...all.map(x => ({ icon: a && x.id === a.id ? '✓' : '📖', label: `${x.title} (${(x.places || []).length})`, fn: () => { advSaveNow(); advOpen(x.id); AE.sel = null; AE.q = ''; aeRender(); } })),
@@ -9931,7 +9954,6 @@ function aeAdvMenuItems() {
     a && { icon: '📄', label: 'Скачать JSON', fn: ACT.advJson },
     { icon: '📥', label: 'Импорт: код, JSON, файл', fn: () => SHARE.openImport() },
     { icon: '📋', label: 'Шаблон JSON для нейросети', fn: ACT.advTemplate },
-    STORE.list('map').some(m => (m.nodes || []).length) && { icon: '🗺', label: 'Перенести карту сцен…', fn: ACT.advMigrate },
     a && { sep: 1 }, a && { icon: '⧉', label: 'Дублировать приключение', fn: () => { advSaveNow(); const d = clone(a); d.id = uid('adv'); d.title += ' (копия)'; d.created = Date.now(); STORE.put('adv', d); advOpen(d.id); AE.sel = null; aeRender(); } },
     a && { icon: '🗑', label: 'Удалить приключение', danger: true, fn: async () => {
       if (!await confirmBox(`Удалить приключение «${a.title}» целиком? NPC, лут, бои и статьи вики останутся в библиотеках.`, { ok: 'Удалить', danger: true })) return;
@@ -9946,18 +9968,6 @@ ACT.advNew = async () => {
 ACT.advShare = () => { const a = curAdv(); if (!a) return; advSaveNow(); SHARE.open('adv', ADVIO.bundle(a), a.title); };
 ACT.advJson = () => { const a = curAdv(); if (!a) return; download(`приключение_${fileSafe(a.title)}.json`, JSON.stringify({ v: 9, k: 'adv', d: ADVIO.bundle(a) }, null, 1)); };
 ACT.advTemplate = () => download('шаблон_приключения.json', JSON.stringify({ v: 9, k: 'adv', d: TEMPLATE_ADV }, null, 2));
-ACT.advFromMap = async el => {
-  const m = STORE.one('map', el.dataset.id); if (!m) return;
-  if (STORE.list('adv').some(x => x.fromMap === m.id) && !await confirmBox(`Карту «${m.title}» уже переносили. Перенести ещё раз — получится второе приключение.`, { ok: 'Перенести ещё раз' })) return;
-  advSaveNow(); const a = ADVIO.fromMap(m); STORE.put('adv', a); advOpen(a.id); AE.sel = null; AE.tab = 'places'; AE.q = '';
-  toast(`📖 «${a.title}»: ${a.places.length} мест, ${a.people.length} персонажей. Карта сцен не тронута.`, 'ok', 4500);
-  if (CUR_VIEW === 'adv') aeRender(); else go('adv');
-};
-ACT.advMigrate = async () => {
-  const maps = STORE.list('map').filter(m => (m.nodes || []).length);
-  const id = await pickBox('🗺 Какую карту перенести', maps.map(m => ({ id: m.id, label: m.title, sub: `${m.nodes.length} сцен${STORE.list('adv').some(x => x.fromMap === m.id) ? ' · уже перенесена' : ''}`, icon: '🗺' })));
-  if (id) ACT.advFromMap({ dataset: { id } });
-};
 
 // ── advschema.js ──
 /* ═══════════════════════════════════════════════════════
@@ -10132,7 +10142,7 @@ ACT.schUnpin = el => { const a = curAdv(); delete a.pos[el.dataset.id]; advSave(
    ШИРМА (v11.5, события и цели — v11.6, тайны и раздатки — v11.7) — ведение приключения с планшета и ПК. Книгу (adv.js) ширма только читает;
    всё, что случилось в игре, — в состоянии advst_<id>: где отряд, ситуация, часы локаций, люди, события, цели, журнал, черновики.
    Часы мира — часы экспедиции (EXP.time) и её готовые функции: expAdvance, expTravel, expPhase, expRollEnc. Каркас экспедиции не меняется.
-   Проект — ADVENTURE_DESIGN.md §4.3, §5–7. Старая ширма (gm.js) пока остаётся запасным выходом.
+   Проект — ADVENTURE_DESIGN.md §4.3, §5–7. Из gm.js (старой ширмы — легаси) берутся только инструменты: gmToolsHTML, gmLoot, gmSetCenter.
 ═══════════════════════════════════════════════════════ */
 const RN_SIT = { place: { icon: '🏰', label: 'в месте' }, talk: { icon: '💬', label: 'разговор' }, travel: { icon: '🧭', label: 'в пути' }, wild: { icon: '🌲', label: 'в глуши' },
   fight: { icon: '⚔', label: 'бой' }, event: { icon: '⚡', label: 'событие' }, rest: { icon: '🛌', label: 'отдых' } };
@@ -10144,7 +10154,7 @@ const RN_OUT = { fail: '✗ Провал', ok: '✓ Успех', sup: '★ Су�
 const rnEnc = () => curAdv()?.enc || ADV_ENC;
 const RN_STEP = 5; // переход внутри локации: в соседнюю комнату, наружу — 5 минут
 /** Что на экране, кроме самой игры: открытая шторка, раскрытые проверки, результаты таблиц */
-const RUN = { drawer: null, open: {}, peek: {}, alt: false, tres: {}, got: false, ask: false, skip: false };
+const RUN = { drawer: null, open: {}, peek: {}, alt: false, tres: {}, got: false, ask: false, skip: false, go: new Set() };
 
 /* ── Состояние игры: advst_<id>, id — как у приключения ── */
 const rnOkKey = k => !!k && k.length < 200 && !/^(__proto__|constructor|prototype)$/.test(k);
@@ -10453,11 +10463,11 @@ function rnArrive(id, { mins = 0 } = {}) {
   if (id !== from) rnEvEnter(st, id, from);
   rnSave();
 }
-/** Дороги отсюда: свои у места и у тех, во что оно вложено (глубже — раньше), и чужие, ведущие сюда, — в обратную сторону */
+/** Дороги: own — у самого места (ровно те, что в редакторе), outer — у мест, в которые оно вложено, back — чужие, ведущие сюда, в обратную сторону */
 function rnRoutes(st) {
   const chain = rnChain(st.place), ids = new Set(chain.map(p => p.id)), seen = new Set(), out = [];
-  chain.slice().reverse().forEach(p => p.routes.forEach(r => { if (!ids.has(r.to) && rnP(r.to) && !seen.has(r.to)) { seen.add(r.to); out.push({ ...r, from: p.id }); } }));
-  curAdv().places.forEach(p => p.routes.forEach(r => { if (ids.has(r.to) && !ids.has(p.id) && !seen.has(p.id)) { seen.add(p.id); out.push({ ...r, to: p.id, from: r.to }); } }));
+  chain.slice().reverse().forEach(p => p.routes.forEach(r => { if (!ids.has(r.to) && rnP(r.to) && !seen.has(r.to)) { seen.add(r.to); out.push({ ...r, from: p.id, kind: p.id === st.place ? 'own' : 'outer' }); } }));
+  curAdv().places.forEach(p => p.routes.forEach(r => { if (ids.has(r.to) && !ids.has(p.id) && !seen.has(p.id)) { seen.add(p.id); out.push({ ...r, to: p.id, from: r.to, kind: 'back' }); } }));
   return out;
 }
 const rnTer = t => EXP_TERRAINS.find(x => x.id === (t.terrain || (t.road ? 'road' : 'forest'))) || EXP_TERRAINS[0];
@@ -10500,9 +10510,8 @@ function rnRender(keep = true) {
 }
 function rnHTML(a, st) {
   if (!a) return `<div class="page narrow"><div class="empty-hero frame mt"><div class="big">📖</div><h2 class="t-title">Нет приключения</h2>
-    <p class="dim">Ширма ведёт игру по книге приключения: места, люди, реплики, проверки. Собери книгу в редакторе, вставь код или перенеси старую карту сцен.</p>
-    <div class="btns mt" style="justify-content:center"><button class="btn pri" data-act="go" data-v="adv">📖 Открыть редактор</button><button class="btn" data-act="shareImport">📥 Вставить код</button></div>
-    <button class="btn ghost sm mt" data-act="go" data-v="gm">🗺 Старая ширма со сценами</button></div></div>`;
+    <p class="dim">Ширма ведёт игру по книге приключения: места, люди, реплики, проверки. Собери книгу в редакторе или вставь код.</p>
+    <div class="btns mt" style="justify-content:center"><button class="btn pri" data-act="go" data-v="adv">📖 Открыть редактор</button><button class="btn" data-act="shareImport">📥 Вставить код</button></div></div></div>`;
   if (!a.places.length) return `<div class="page narrow"><div class="empty-hero frame mt"><div class="big">🏰</div><h2 class="t-title">${esc(a.title)}</h2>
     <p class="dim">В книге пока нет мест — ширме некуда поставить отряд.</p><button class="btn pri mt" data-act="go" data-v="adv">📖 Открыть редактор</button></div></div>`;
   if (!st.place) return rnStartHTML(a, st);
@@ -10846,13 +10855,21 @@ function rnGoHTML(st) {
   const par = p.parent && rnP(p.parent) && !rnP(p.parent).region ? rnP(p.parent) : null;
   const inner = rnKids(p.id).map(q => row(q, `внутри · ${RN_STEP} мин`)).join('');
   const near = par ? row(par, `выйти наружу · ${RN_STEP} мин`) + rnKids(par.id).filter(q => q.id !== p.id).map(q => row(q, `по соседству · ${RN_STEP} мин`)).join('') : '';
-  const roads = rnRoutes(st).map((r, i) => `<button class="rn-row" data-act="rnRoad" data-i="${i}"><span class="rn-dv sm on">${esc(rnP(r.to).code || '🧭')}</span><span class="rn-rt"><b>${esc(rnP(r.to).title)}</b>
-    <small>${esc([r.label, r.mins ? '≈ ' + rnDur(r.mins) : 'время пути не указано — час', r.road ? 'дорога' : 'тропа'].filter(Boolean).join(' · '))}</small></span><span class="rn-chev">›</span></button>`).join('');
-  return `<div class="rn-sheet-h">🧭 Куда</div>${rnSec('Внутри', inner && `<div class="rn-g2">${inner}</div>`, true)}${rnSec('Рядом', near && `<div class="rn-g2">${near}</div>`, !inner)}
-    ${rnSec('Дороги', roads && `<div class="rn-g2">${roads}</div>`, !inner && !near)}
-    <div class="rn-sh">Ещё</div><div class="rn-g2"><button class="rn-row" data-act="rnWild"><span class="rn-ic">🌲</span><span class="rn-rt"><b>В глушь</b><small>сойти с дорог — экспедиция: гексы, лагерь, охота</small></span></button>
-      <button class="rn-row" data-act="rnDrawer" data-d="places"><span class="rn-ic">☰</span><span class="rn-rt"><b>Все места</b><small>игроки прыгнули неожиданно</small></span></button></div>`;
+  const all = rnRoutes(st), road = r => `<button class="rn-row" data-act="rnRoad" data-i="${all.indexOf(r)}"><span class="rn-dv sm on">${esc(rnP(r.to).code || '🧭')}</span><span class="rn-rt"><b>${esc(rnP(r.to).title)}</b>
+    <small>${esc([r.label, r.mins ? '≈ ' + rnDur(r.mins) : 'время пути не указано — час', r.road ? 'дорога' : 'тропа'].filter(Boolean).join(' · '))}</small></span><span class="rn-chev">›</span></button>`;
+  const own = all.filter(r => r.kind === 'own'), outer = all.filter(r => r.kind === 'outer'), back = all.filter(r => r.kind === 'back');
+  const nIn = rnKids(p.id).length, nNear = par ? rnKids(par.id).length : 0;
+  // главное — дороги самого места, как в редакторе; остальное свёрнуто, чтобы не мельтешило
+  const fold = (k, title, n, html) => n ? `<button class="rn-fold ${RUN.go.has(k) ? 'open' : ''}" data-act="rnGoFold" data-k="${k}"><span>${title}</span><small>${n}</small><span class="sp"></span><span>${RUN.go.has(k) ? '▾' : '▸'}</span></button>
+    ${RUN.go.has(k) ? `<div class="rn-g2 rn-fold-b">${html}</div>` : ''}` : '';
+  return `<div class="rn-sheet-h">🧭 Куда</div><div class="rn-sh first">Дороги отсюда</div>
+    ${own.length ? `<div class="rn-g2">${own.map(road).join('')}</div>` : '<div class="rn-hint">У этого места своих дорог нет — загляни ниже: внутрь, по соседству или по дорогам снаружи.</div>'}
+    <div class="rn-folds">${fold('in', '🏰 Внутри', nIn, inner)}${fold('near', '↔ Рядом и наружу', nNear, near)}
+    ${fold('outer', `🧭 Дороги снаружи${par ? ' — от «' + esc(par.title) + '» и выше' : ''}`, outer.length, outer.map(road).join(''))}${fold('back', '↩ Обратно по дорогам, ведущим сюда', back.length, back.map(road).join(''))}
+    ${fold('more', '☰ Ещё: в глушь, все места', 2, `<button class="rn-row" data-act="rnWild"><span class="rn-ic">🌲</span><span class="rn-rt"><b>В глушь</b><small>сойти с дорог — экспедиция: гексы, лагерь, охота</small></span></button>
+      <button class="rn-row" data-act="rnDrawer" data-d="places"><span class="rn-ic">☰</span><span class="rn-rt"><b>Все места</b><small>игроки прыгнули неожиданно</small></span></button>`)}</div>`;
 }
+ACT.rnGoFold = el => { const k = el.dataset.k; RUN.go.has(k) ? RUN.go.delete(k) : RUN.go.add(k); rnRender(); };
 function rnTimeHTML(st) {
   const e = exp(), [r, s] = EXP_SUN[e.season] || EXP_SUN.winter, ph = EXP_PH[expPhase(e.time, e.season)], L = rnHereLoc(st), u = h => Math.round(expUntil(e, h) * 60);
   const btn = (l, m) => `<button class="btn" data-act="rnWait" data-m="${m}">${l}</button>`;
@@ -11133,7 +11150,10 @@ ACT.rnRestEnc = () => rnDo(st => {
 });
 ACT.rnDrawer = el => {
   const d = el.dataset.d || null;
-  if (d === 'places' && window.matchMedia('(min-width:1500px)').matches) return; // на ПК дерево мест — постоянная колонка
+  if (d === 'places' && window.matchMedia('(min-width:1500px)').matches) { // на ПК дерево мест — постоянная колонка: подсветить её и показать, где выбрать
+    const t = $('#rn-tree'); if (t) { t.classList.remove('flash'); void t.offsetWidth; t.classList.add('flash'); t.querySelector('.rn-tn.cur')?.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+    RUN.drawer = null; $$('.rn-sheet, .rn-scrim').forEach(e => e.remove()); return toast('📍 Выбери место в дереве слева');
+  }
   RUN.drawer = d && RUN.drawer !== d ? d : null; rnRender();
   const s = document.getElementById('rn-sheet'); if (s) s.scrollTop = 0;
 };
@@ -11215,7 +11235,7 @@ function rnMenuItems() {
   return [a && { icon: '⚡', label: 'Все события', fn: d('events') }, a && { icon: '🎯', label: 'Цели и замыслы', fn: d('goals') }, a?.fates.length && { icon: '🔮', label: 'Тайны', fn: d('fates') }, a && { icon: '📜', label: 'Журнал игры', fn: ACT.rnJournal },
     list.length > 1 && { hd: 'Приключение' }, ...(list.length > 1 ? list.map(x => ({ icon: x.id === a?.id ? '✓' : '📖', label: x.title || 'Без названия', fn: () => { SETTINGS.adv = x.id; saveSettings(); ADV = null; RNST = null; RUN.drawer = null; rnRender(false); } })) : []),
     { hd: 'Размер текста «Зачитать»' }, ...[['M', 'Средний'], ['L', 'Крупный'], ['XL', 'Очень крупный']].map(([k, l]) => ({ icon: (SETTINGS.rnSize || 'L') === k ? '✓' : 'Aa', label: l, fn: () => { SETTINGS.rnSize = k; saveSettings(); rnRender(); } })),
-    { sep: 1 }, a && { icon: '⟳', label: 'Начать игру заново', danger: true, fn: ACT.rnReset }, { icon: '🗺', label: 'Старая ширма со сценами', fn: () => go('gm') }];
+    { sep: 1 }, a && { icon: '⟳', label: 'Начать игру заново', danger: true, fn: ACT.rnReset }];
 }
 ACT.rnReset = async () => {
   const a = curAdv(); if (!a || !await confirmBox(`Начать «${a.title}» заново? Сотрутся отметки, часы локаций, события, цели, журнал и черновики этой игры. Книга и экспедиция не меняются.`, { ok: 'Начать заново', danger: true })) return;
@@ -13142,7 +13162,7 @@ const DBI = {
     SETTINGS.adv = adv.id; saveSettings(); ADV = null;
     return adv;
   },
-  viewOf(s) { const ks = DBI.KINDS.filter(k => s.add[k]); return s.add.pack ? 'inv' : ks.length === 1 ? { item: 'loot', npc: 'npc', wiki: 'wiki', map: 'scenes', adv: 'adv', shop: 'shops', batt: 'tracker', pc: 'saves' }[ks[0]] : null; },
+  viewOf(s) { const ks = DBI.KINDS.filter(k => s.add[k]); return s.add.pack ? 'inv' : ks.length === 1 ? { item: 'loot', npc: 'npc', wiki: 'wiki', map: 'adv', adv: 'adv', shop: 'shops', batt: 'tracker', pc: 'saves' }[ks[0]] : null; },
   /** Итог: перейти к добавленному, показать сводку (тостом, если всё просто) */
   report(s, view) {
     const lines = [...DBI.KINDS.filter(k => s.add[k]).map(k => `${DBI.LBL[k][0]} ${DBI.LBL[k][1]} — добавлено ${s.add[k]}`), s.add.pack && `🎒 В рюкзак — ${s.add.pack}`, s.took && `✨ Заменено новыми — ${s.took}`,
@@ -13994,7 +14014,7 @@ VIEWS.saves = {
   render(el) {
     const pcs = STORE.list('pc'), act = activePC(), m = isMaster();
     const kb = Math.round(STORE.bytes() / 1024);
-    const lib = [['npc', '👹', 'NPC', 'npc'], ['item', '📜', 'Предметов в библиотеке', 'loot'], ['batt', '⚔', 'Сохранённых боёв', 'tracker'], ['map', '🗺', 'Карт сцен', 'scenes'], ['adv', '📖', 'Приключений', 'adv']];
+    const lib = [['npc', '👹', 'NPC', 'npc'], ['item', '📜', 'Предметов в библиотеке', 'loot'], ['batt', '⚔', 'Сохранённых боёв', 'tracker'], ['adv', '📖', 'Приключений', 'adv']];
     el.innerHTML = `<div class="page mid saves">
       <div class="orn left">🧙 Мои персонажи</div>
       <div class="pc-list">${pcs.map(p => `<div class="pc-card ${act && act.id === p.id ? 'on' : ''}">
@@ -14103,7 +14123,7 @@ ACT.backupLoad = async () => {
   SHARE.openImport('', { files: [f] });
 };
 /* ═══ Файловый менеджер библиотек: крыжки, массовое удаление и код ═══ */
-const LIBM_KINDS = [['pc', '🧙', 'Персонажи'], ['npc', '👹', 'NPC'], ['item', '📜', 'Лут'], ['batt', '⚔', 'Бои'], ['map', '🗺', 'Сюжеты'], ['adv', '📖', 'Приключения'], ['wiki', '📚', 'Вики'], ['shop', '🏪', 'Лавки']];
+const LIBM_KINDS = [['pc', '🧙', 'Персонажи'], ['npc', '👹', 'NPC'], ['item', '📜', 'Лут'], ['batt', '⚔', 'Бои'], ['adv', '📖', 'Приключения'], ['wiki', '📚', 'Вики'], ['shop', '🏪', 'Лавки']];
 const LIBM = { kind: 'npc', q: '', sel: new Set() };
 function libmList(k) {
   if (k === 'wiki') return wikiArts().map(a => ({ id: a.id, name: a.title, ic: WIKI_CATS[a.category]?.icon || '📄', sub: (a.tags || []).join(', '), _ts: a._ts, o: a }));
@@ -14199,13 +14219,12 @@ const NAV = [
   { id: 'tracker', icon: '⚔', label: 'Бой', master: true },
   { id: 'npc', icon: '👹', label: 'NPC', master: true },
   { id: 'loot', icon: '📜', label: 'Лут', master: true },
-  { id: 'scenes', icon: '🗺', label: 'Сцены', master: true },
   { id: 'exped', icon: '🧭', label: 'Экспедиция', master: true },
   { id: 'wiki', icon: '📚', label: 'Вики', master: true },
   { g: 'Данные' },
   { id: 'saves', icon: '⚙️', label: 'Настройки' },
 ];
-const TABS = { player: ['home', 'sheet', 'inv', 'creator', 'saves'], master: ['home', 'run', 'tracker', 'scenes', 'more'] };
+const TABS = { player: ['home', 'sheet', 'inv', 'creator', 'saves'], master: ['home', 'run', 'adv', 'tracker', 'more'] };
 let CUR_VIEW = null;
 const isMaster = () => SETTINGS.mode === 'master';
 
@@ -14214,13 +14233,13 @@ function renderNav() {
   $('#nav').innerHTML = `<div class="nav-brand" data-act="go" data-v="home"><span class="logo">🎲</span><div><b>DnD Multitool</b><small>by Haze · V${APP_VERSION}</small></div></div>    ${NAV.filter(n => !n.master || m).map(n => n.g ? `<div class="nav-group">${n.g}</div><div class="nav-sep"></div>` : `<div class="nav-item ${CUR_VIEW === n.id ? 'on' : ''}" data-act="go" data-v="${n.id}" title="${n.label}"><span class="ni">${n.icon}</span><span class="nl">${n.label}</span></div>`).join('')}
     <div class="nav-foot">${TGX.on ? 'Данные копируются в облако Telegram.<br>Состояние — в «Настройках».' : 'Всё хранится в этом браузере.<br>Резервная копия — в «Настройках».'}</div>`;
   const tabs = TABS[m ? 'master' : 'player'];
-  const masterExtra = ['adv', 'npc', 'loot', 'exped', 'wiki', 'sheet', 'inv', 'creator', 'shops', 'saves'];
+  const masterExtra = ['npc', 'loot', 'exped', 'wiki', 'sheet', 'inv', 'creator', 'shops', 'saves'];
   $('#tabbar').innerHTML = tabs.map(t => {
     if (t === 'more') { const on = masterExtra.includes(CUR_VIEW); return `<button class="tab ${on ? 'on' : ''}" data-act="tabMore"><span class="ti">☰</span><span class="tl2">${on ? NAV.find(n => n.id === CUR_VIEW).label : 'Ещё'}</span></button>`; }
     const n = NAV.find(x => x.id === t); return `<button class="tab ${CUR_VIEW === t ? 'on' : ''}" data-act="go" data-v="${t}"><span class="ti">${n.icon}</span><span class="tl2">${n.label}</span></button>`;
   }).join('');
 }
-ACT.tabMore = el => openMenu(el, [{ hd: 'Мастер' }, ...['adv', 'npc', 'loot', 'exped', 'wiki'].map(id => { const n = NAV.find(x => x.id === id); return { icon: n.icon, label: n.label, fn: () => go(id) }; }), { icon: '🌐', label: 'ttg.club ↗', fn: () => ACT.ttgSite() },
+ACT.tabMore = el => openMenu(el, [{ hd: 'Мастер' }, ...['npc', 'loot', 'exped', 'wiki'].map(id => { const n = NAV.find(x => x.id === id); return { icon: n.icon, label: n.label, fn: () => go(id) }; }), { icon: '🌐', label: 'ttg.club ↗', fn: () => ACT.ttgSite() },
   { hd: 'Игрок' }, ...['sheet', 'inv', 'creator', 'shops'].map(id => { const n = NAV.find(x => x.id === id); return { icon: n.icon, label: n.label, fn: () => go(id) }; }), { sep: 1 }, { icon: '⚙️', label: 'Настройки', fn: () => go('saves') }]);
 ACT.setMode = el => {
   SETTINGS.mode = el.dataset.m; saveSettings(); renderNav();
@@ -14239,7 +14258,7 @@ function go(v) {
 ACT.go = el => go(el.dataset.v);
 ACT.navBack = () => { const p = VIEWS[CUR_VIEW]?.parent; if (p) go(p); else history.back(); };
 function route() {
-  const v = (location.hash.match(/^#\/([\w-]+)/) || [])[1] || 'home';
+  const v0 = (location.hash.match(/^#\/([\w-]+)/) || [])[1] || 'home', v = { gm: 'run', scenes: 'adv' }[v0] || v0; // старые ширма и карта сцен — легаси
   const view = VIEWS[v] || VIEWS.home;
   const changed = CUR_VIEW !== v;
   if (changed && CUR_VIEW && VIEWS[CUR_VIEW]?.leave) VIEWS[CUR_VIEW].leave();
@@ -14299,7 +14318,7 @@ VIEWS.home = {
         ${pc ? `<button class="hexbtn" data-act="newViaWizard">🧙 Новый персонаж</button>` : ''}
         <button class="hexbtn" data-act="shareImport">📥 Вставить код</button>
         ${m ? `<div class="orn"><i>◆</i> Мастерская <i>◆</i></div><div class="home-gm">
-          ${['run', 'adv', 'tracker', 'scenes', 'npc', 'loot', 'exped', 'wiki'].map(id => { const n = NAV.find(x => x.id === id); return `<button class="gm-tile" data-act="go" data-v="${id}"><span>${n.icon}</span>${n.label}</button>`; }).join('')}
+          ${['run', 'adv', 'tracker', 'npc', 'loot', 'exped', 'wiki'].map(id => { const n = NAV.find(x => x.id === id); return `<button class="gm-tile" data-act="go" data-v="${id}"><span>${n.icon}</span>${n.label}</button>`; }).join('')}
           <button class="gm-tile" data-act="ttgSite" title="Открыть 5e14.ttg.club"><span>🌐</span>ttg.club ↗</button></div>` : ''}
         <button class="hexbtn" data-act="go" data-v="saves">⚙ Настройки и копии</button>
       </div>
@@ -14336,7 +14355,7 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) UPD.
 
 /** Кэши в памяти (персонаж, бой, карта, вики, экспедиция, открытые редакторы). Сбрасывать после записи в хранилище «в обход»:
     восстановление, импорт, очистка — иначе экран покажет старое, а следующее сохранение затрёт новое */
-function cachesReset() { _pc = null; BT = null; MAP = null; ADV = null; RNST = null; WIKI = null; EXP = null; _npcObj = null; _lootObj = null; _gmw = null; }
+function cachesReset() { _pc = null; BT = null; MAP = null; ADV = null; RNST = null; WIKI = null; EXP = null; _npcObj = null; _lootObj = null; _gmw = null; advLegacyMaps(); }
 ACT.legacyImport = async () => {
   const s = LEGACY.fromBrowser(); SETTINGS.legacyDone = true; saveSettings(); cachesReset();
   await confirmBox('Перенесено: ' + LEGACY.summary(s) + '.\n\nСтарые данные V8 не удалены — старый файл продолжит работать.', { title: '✓ Готово', ok: 'Отлично' });
@@ -14349,6 +14368,7 @@ ACT.legacyHide = () => { SETTINGS.legacyDone = true; saveSettings(); route(); };
 (function boot() {
   applyFont(); applyTheme();
   renderNav();
+  try { advLegacyMaps(); } catch (e) { console.warn('legacy maps', e); } // сцены — легаси: сразу в приключения
   route();
   // Открыли по ссылке с кодом в адресе: …#code=DND9:…
   const m = location.href.match(/[#&?]code=([^&]+)/);
