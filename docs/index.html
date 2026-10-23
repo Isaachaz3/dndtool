@@ -768,6 +768,8 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:grabbing;}
 @media (min-width:900px){ .inv-zones{grid-template-columns:repeat(3,minmax(0,1fr));align-items:start;} }
 .izone{border:1px solid var(--line2);border-radius:var(--r);background:linear-gradient(180deg,rgba(30,26,21,.95),rgba(18,16,13,.95));overflow:hidden;transition:outline .1s;}
 .izone.compact{border:none;background:none;margin-bottom:8px;}
+.izone[data-zone="away"]:not(.compact){border-style:dashed;}
+.izone[data-zone="away"] .izone-b{opacity:.85;}
 .izone-h{display:flex;align-items:center;gap:7px;padding:9px 12px;background:var(--bg3);border-bottom:1px solid var(--line2);cursor:pointer;user-select:none;min-height:42px;}
 .izone.compact .izone-h{cursor:default;background:none;border-bottom:1px solid var(--line);padding:4px 2px 6px;min-height:0;}
 .izone-h b{font-family:var(--f-title);font-size:18px;color:var(--gold2);}
@@ -814,7 +816,7 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:grabbing;}
 @media (max-width:420px){ .irow-txt small{display:none;} .ctr button{width:26px;height:26px;} }
 
 /* Окно предмета */
-.zone-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px;}
+.zone-pick{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px;}
 .zone-pick button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border:1px solid var(--line2);border-radius:6px;background:rgba(0,0,0,.25);font-family:var(--f-label);font-weight:700;font-size:13.5px;color:var(--tx2);}
 .zone-pick button span{font-size:22px;}
 .zone-pick button.on{border-color:var(--teal2);background:rgba(36,96,111,.3);color:#eaf6f8;box-shadow:inset 0 0 12px rgba(95,168,184,.15);}
@@ -2335,11 +2337,6 @@ button.pill{display:block;width:100%;font:inherit;color:inherit;}
 @media (pointer:coarse){ .jr-chk{width:32px;height:32px;} .jr-kind{min-width:32px;min-height:32px;} }
 
 /* ── Лавки ── */
-.shop-list{display:flex;flex-direction:column;gap:6px;}
-.shop-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 8px;border:1px solid var(--line2);border-radius:5px;background:rgba(0,0,0,.2);}
-.shop-row.out{opacity:.5;}
-.shop-n{display:flex;flex-direction:column;align-items:flex-start;min-width:120px;text-align:left;}
-.shop-p{width:110px;} .shop-s{width:64px;}
 
 /* ── Генераторы, справка, поиск ── */
 .gen-btns{display:flex;flex-wrap:wrap;gap:6px;align-items:center;} .gen-btns select{max-width:150px;}
@@ -2946,7 +2943,7 @@ button.ae-lk-r:hover{background:rgba(255,255,255,.045);}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '11.10.0';
+const APP_VERSION = '11.11.0';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -3343,7 +3340,7 @@ const CLOUD = {
     if (s[0] === 'j') return new TextDecoder().decode(bytes);
     return new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();
   },
-  hasData() { return STORE.keys('').some(k => /^(pc|npc|item|batt|map|adv|advst|shop)_|^(wiki|exp|battle_cur)$/.test(k)); },
+  hasData() { return STORE.keys('').some(k => /^(pc|npc|item|batt|map|adv|advst)_|^(wiki|exp|battle_cur)$/.test(k)); },
   dump() { const o = {}; STORE.keys('').forEach(k => { o[k] = localStorage.getItem(STORE.P + k); }); return o; },
   async meta() { try { const s = await CLOUD.api('getItem', 'm'); return s ? JSON.parse(s) : null; } catch (e) { return null; } },
   synced() { return int(localStorage.getItem('dnd9c_sync'), 0); },
@@ -3934,7 +3931,7 @@ const SIZES = ['Крошечный', 'Маленький', 'Средний', 'Б
 const SIZE_CARRY = { 'Крошечный': 0.5, 'Маленький': 1, 'Средний': 1, 'Большой': 2, 'Огромный': 4, 'Громадный': 8 };
 // вес одного снаряда, если у вещи свой вес не указан (PHB: стрелы 20 шт. — 1 фнт., болты и пули 20 шт. — 1,5 фнт., иглы 50 шт. — 1 фнт.)
 const AMMO_LB = [[/игл/i, 1 / 50], [/болт|пул|снаряд/i, 1.5 / 20], [/стрел/i, 1 / 20]];
-// что считать снарядами со счётчиком (стартовое снаряжение, наборы, лавки)
+// что считать снарядами со счётчиком (стартовое снаряжение, наборы)
 const AMMO_RE = /стрел|болт|игл[аы]|пул[ья]/i;
 
 /* ═══ Теги бросков ═══ */
@@ -4831,8 +4828,9 @@ const EXP_NIGHT_QUIET = {
 ═══════════════════════════════════════════════════════ */
 const statsDefault = () => ({ str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 });
 const coinsDefault = () => ({ cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 });
-const ZONES = { equip: { icon: '⚔', label: 'Надето', hint: 'бонусы активны' }, belt: { icon: '👝', label: 'На поясе', hint: 'под рукой' }, pack: { icon: '🎒', label: 'Рюкзак', hint: 'глубоко' } };
-const ZONE_KEYS = ['equip', 'belt', 'pack'];
+const ZONES = { equip: { icon: '⚔', label: 'Надето', hint: 'бонусы активны' }, belt: { icon: '👝', label: 'На поясе', hint: 'под рукой' }, pack: { icon: '🎒', label: 'Рюкзак', hint: 'глубоко' },
+  away: { icon: '📌', label: 'Отложено', hint: 'не весит' } };
+const ZONE_KEYS = ['equip', 'belt', 'pack', 'away']; // away — вещи вне инвентаря (оставлены в таверне, у кузнеца, в повозке): помнить, но в ношу не считать
 
 /* ── Данные «со стороны» (коды из чатов, файлы, ответы нейросети) попадают в разметку. Нормализаторы — единственный вход,
       поэтому здесь всё приводится к безопасному виду: id — только [\w.:-], числа — числа, перечисления — из списка,
@@ -5640,7 +5638,7 @@ const TEMPLATE_ADV = { title: 'Мельничный Брод (пример)', ab
 ═══════════════════════════════════════════════════════ */
 const SHARE = {
   PART: 3500,
-  KIND_LABEL: { pc: 'Персонаж', items: 'Предметы', npc: 'NPC', npcs: 'NPC', batt: 'Бой', map: 'Карта сцен', adv: 'Приключение', wiki: 'Вики', shop: 'Лавка', all: 'Резервная копия', db: 'База' },
+  KIND_LABEL: { pc: 'Персонаж', items: 'Предметы', npc: 'NPC', npcs: 'NPC', batt: 'Бой', map: 'Карта сцен', adv: 'Приключение', wiki: 'Вики', all: 'Резервная копия', db: 'База' },
 
   /** Убираем пустые значения — код короче, нормализаторы вернут умолчания */
   compact(v) {
@@ -5844,7 +5842,6 @@ const SHARE = {
         const extra = [n('people') && `персонажей ${n('people')}`, n('events') && `событий ${n('events')}`, l.npc?.length && `NPC ${l.npc.length}`, l.item?.length && `предм. ${l.item.length}`, l.wiki?.length && `статей ${l.wiki.length}`].filter(Boolean);
         return `Приключение «${d.title || 'без названия'}» · ${n('places')} ${plural(n('places'), 'место', 'места', 'мест')}${extra.length ? ' · ' + extra.join(', ') : ''}`; }
       case 'wiki': return `Статей вики: ${arr.length}`;
-      case 'shop': return `Лавка «${d.name || '?'}» · товаров: ${(d.items || []).length}`;
       case 'all': { const n = [['pc', 'перс.'], ['npc', 'NPC'], ['item', 'предм.'], ['batt', 'боёв'], ['map', 'сюжетов'], ['adv', 'приключений'], ['wiki', 'статей']].filter(([k]) => d[k]?.length).map(([k, l]) => `${l} ${d[k].length}`);
         return 'Набор данных' + (n.length ? ': ' + n.join(', ') : ''); }
       case 'db': { const B = DBI.batch(); DBI.packet(B, o); return `База${d.title ? ` «${d.title}»` : ''}: ${DBI.describe(B) || 'пусто'}`; }
@@ -5891,7 +5888,6 @@ const SHARE = {
     if (o.k === 'adv') { // приключение (v11.4): дубликаты в библиотеке (lib) — спросить до добавления, одноимённое приключение — «мой / новый / оба»
       const B = recs(); await DBI.prepMaps(B, 'ask'); DBI.report(await DBI.commit(B), 'adv'); return;
     }
-    if (o.k === 'shop') { const sh = normShop({ ...d, id: uid('shop') }); STORE.put('shop', sh); SHOPV.id = sh.id; toast(`🏪 Лавка «${sh.name}» открыта`, 'ok'); go('shops'); return; }
     if (o.k === 'wiki') { DBI.report(await DBI.commit(recs()), 'wiki'); return; }
     if (o.k === 'db') { await DBI.review(recs(), { title: `📚 База${d.title ? ' «' + esc(d.title) + '»' : ''}` }); return; }
     if (o.k === 'all') {
@@ -5928,7 +5924,7 @@ function choiceBox(text, options, title = 'Выбор') {
 /* ═══ Резервная копия всего ═══ */
 const BACKUP = {
   collect() {
-    return { pc: STORE.list('pc'), npc: STORE.list('npc'), item: STORE.list('item'), batt: STORE.list('batt'), map: STORE.list('map'), adv: STORE.list('adv'), advst: STORE.list('advst'), shop: STORE.list('shop'),
+    return { pc: STORE.list('pc'), npc: STORE.list('npc'), item: STORE.list('item'), batt: STORE.list('batt'), map: STORE.list('map'), adv: STORE.list('adv'), advst: STORE.list('advst'),
       wiki: STORE.get('wiki', []), exp: STORE.get('exp'), battle_cur: STORE.get('battle_cur') };
   },
   download() {
@@ -5938,7 +5934,7 @@ const BACKUP = {
   },
   /** Резервная копия — тоже данные «со стороны»: каждая запись проходит свой нормализатор */
   restore(d) {
-    let n = 0; const norm = { pc: normPC, npc: normNPC, item: normItem, batt: normBattle, map: normMap, adv: x => normAdv(x), advst: x => normAdvSt(x), shop: normShop };
+    let n = 0; const norm = { pc: normPC, npc: normNPC, item: normItem, batt: normBattle, map: normMap, adv: x => normAdv(x), advst: x => normAdvSt(x) };
     Object.entries(norm).forEach(([k, f]) => (Array.isArray(d[k]) ? d[k] : []).filter(o => o && typeof o === 'object').forEach(o => { const x = f(o); STORE.set(k + '_' + x.id, x); n++; }));
     if (Array.isArray(d.wiki)) n += LEGACY.mergeWiki(d.wiki);
     if (d.exp && typeof d.exp === 'object') STORE.set('exp', d.exp);
@@ -7226,10 +7222,10 @@ function itemLb(it) {
 /** Вес одной позиции: 1 шт. (у вещи со снарядами — весь счётчик) и всей стопки */
 const itemUnitLb = it => itemLb(it) * (it.ammo ? it.ammo.cur : 1);
 const itemTotalLb = it => it.ammo ? itemUnitLb(it) : itemLb(it) * Math.max(0, it.qty);
-/** Ноша персонажа: вещи всех зон + монеты (50 шт. = 1 фнт.). Грузоподъёмность — СИЛ × 15 (× размер, × мощное телосложение) */
+/** Ноша персонажа: вещи с собой (всё, кроме «Отложено») + монеты (50 шт. = 1 фнт.). Грузоподъёмность — СИЛ × 15 (× размер, × мощное телосложение) */
 function pcCarry(pc) {
   const str = int(pc.stats.str, 10), k = (SIZE_CARRY[pc.size] ?? 1) * (pc.powerBuild ? 2 : 1);
-  const gear = invAll(pc).reduce((s, { it }) => s + itemTotalLb(it), 0);
+  const gear = invAll(pc).reduce((s, { it, z }) => s + (z === 'away' ? 0 : itemTotalLb(it)), 0);
   const coins = COINS.reduce((s, c) => s + Math.max(0, int(pc.coins[c.k])), 0) / 50;
   const lb = gear + coins, cap = str * 15 * k, enc = !!SETTINGS.encumb;
   // 0 — налегке, 1 — обременён (вариант, > 5×СИЛ), 2 — сильно обременён (> 10×СИЛ), 3 — больше грузоподъёмности, 4 — больше, чем можно сдвинуть
@@ -7283,7 +7279,7 @@ function invQuickAddHTML(zone, { zones = false } = {}) {
     ${zones ? `<div class="seg qz">${ZONE_KEYS.map(k => `<button class="${k === z ? 'on' : ''}" data-act="invQZ" data-z="${k}" title="${ZONES[k].label}">${ZONES[k].icon}<span class="qz-l"> ${ZONES[k].label}</span></button>`).join('')}</div>` : ''}
     <div class="qadd-row"><input class="qadd-in" placeholder="Быстро: меч, 3 факела, зелье ×2…" data-enter="invQuick" data-z="${z}" list="dl-items" autocomplete="off" enterkeyhint="done">
     <button class="btn pri icon" data-act="invQuick" data-z="${z}" title="Добавить">＋</button><button class="btn icon" data-act="invNewFull" data-z="${z}" title="Подробный предмет">✎</button><button class="btn icon" data-act="ttgInv" data-z="${z}" title="Найти на ttg.club">🔎</button></div>
-    <datalist id="dl-items">${[...new Set([...STORE.list('item').map(x => x.name), ...invAll(activePC() || { inv: { equip: [], belt: [], pack: [] } }).map(x => x.it.name)])].slice(0, 300).map(n => `<option value="${esc(n)}">`).join('')}</datalist>
+    <datalist id="dl-items">${[...new Set([...STORE.list('item').map(x => x.name), ...invAll(activePC() || { inv: { equip: [], belt: [], pack: [], away: [] } }).map(x => x.it.name)])].slice(0, 300).map(n => `<option value="${esc(n)}">`).join('')}</datalist>
   </div>`;
 }
 ACT.invQZ = el => { SETTINGS.qz = el.dataset.z; saveSettings(); const w = el.closest('.qadd'); $$('.qz button', w).forEach(b => b.classList.toggle('on', b === el)); $$('[data-z]', w).forEach(b => { if (!b.closest('.qz')) b.dataset.z = el.dataset.z; }); $('.qadd-in', w)?.focus(); };
@@ -7485,7 +7481,7 @@ VIEWS.inv = {
     el.innerHTML = `<div class="page inv-page">
       <div class="inv-top"><div id="inv-load">${loadHTML(pc)}${attuneHTML(pc)}</div>${invQuickAddHTML('pack', { zones: true })}
         ${n > 6 ? `<div class="row mt"><input type="search" id="inv-q" placeholder="🔍 Поиск по вещам…" data-in="invSearch" class="grow"><button class="btn icon" data-act="invSort" title="Сортировка">⇅</button></div>` : ''}
-        <p class="muted tiny mt">Тяни за <b>⠿</b> между зонами, или нажми на вещь → выбери зону. «Надето» и «На поясе» видны на листе персонажа.</p></div>
+        <p class="muted tiny mt">Тяни за <b>⠿</b> между зонами, или нажми на вещь → выбери зону. «Надето» и «На поясе» видны на листе персонажа, «Отложено» — вещи не с собой, в ношу не идут.</p></div>
       <div class="inv-zones" id="inv-zones">${invZonesHTML()}</div></div>`;
   },
   title2: () => activePC() ? 'Инвентарь · ' + activePC().name : 'Инвентарь',
@@ -7634,7 +7630,7 @@ async function trCommit() {
   const pay = [fmtCoins(TR.pay, ''), ...TR.payItems.map(x => (x.qty > 1 ? x.qty + '× ' : '') + x.name)].filter(Boolean).join(', ');
   const get = [fmtCoins(TR.get, ''), ...TR.getItems.map(x => (x.qty > 1 ? x.qty + '× ' : '') + x.name)].filter(Boolean).join(', ');
   pc.trades.unshift({ ts: Date.now(), who: ($('#tr-who')?.value || '').trim(), pay, get }); pc.trades = pc.trades.slice(0, 50);
-  TR.onCommit?.(); savePC(pc); closeModal(); toast(`⇄ Сделка: ${pay ? '−' + pay : ''} ${get ? '+' + get : ''}`, 'ok', 4000);
+  savePC(pc); closeModal(); toast(`⇄ Сделка: ${pay ? '−' + pay : ''} ${get ? '+' + get : ''}`, 'ok', 4000);
   if (CUR_VIEW === 'sheet') sheetRefresh('money', 'items'); else invRefresh();
 }
 
@@ -11732,115 +11728,6 @@ function offlHTML() {
     <p class="muted tiny mt">Полные разделы качаются долго (сотни карточек, ttg.club не любит спешку) — можно остановить и продолжить потом: уже скачанное не пропадёт.</p>`;
 }
 
-// ── shop.js ──
-/* ═══════════════════════════════════════════════════════
-   ЛАВКИ (v11.1): мастер собирает ассортимент с ценами (ttg.club, библиотека лута, вручную или готовым набором),
-   отдаёт кодом — игрок открывает лавку и покупает через обычную «Торговлю» (сдача, история сделок).
-   Хранение: shop_<id> {id, name, keeper, note, markup %, items: [{it (предмет), price {gp, sp, cp}, stock|null}]}
-═══════════════════════════════════════════════════════ */
-function normShop(d) {
-  const s = Object.assign({ name: 'Лавка', keeper: '', note: '', markup: 100, items: [] }, d || {});
-  s.id = safeId(s.id, 'shop'); s.name = asStr(s.name) || 'Лавка'; s.keeper = asStr(s.keeper); s.note = asStr(s.note);
-  s.markup = clamp(int(s.markup, 100), 10, 1000);
-  s.items = (Array.isArray(s.items) ? s.items : []).filter(x => x && x.it).map(x => ({ it: normItem(x.it), price: cpCoins(Math.max(0, coinsCp(x.price))), stock: x.stock == null || x.stock === '' ? null : Math.max(0, int(x.stock)) }));
-  return s;
-}
-/* Готовые наборы товаров — цены и вес по PHB (фунты). Оружие и доспехи — с костями и КБ, чтобы на листе сразу считались атака и защита */
-const GW = (n, d, t, sub, props, w, gp) => ({ name: n, type: 'Оружие', subtype: sub, w, gp, rows: [['Свойства', props]], dice: d, dt: t });
-const GA = (n, ac, sub, w, gp, extra = []) => ({ name: n, type: 'Доспех', subtype: sub, w, gp, rows: [['КБ', ac], ...extra] });
-const GG = (n, w, gp, type = 'Снаряжение', extra = {}) => ({ name: n, type, w, gp, ...extra });
-const SHOP_GOODS = {
-  general: { icon: '🎒', label: 'Снаряжение', items: [GG('Верёвка пеньковая (50 фт)', 10, 1), GG('Факел', 1, 0.01), GG('Рацион (1 день)', 2, 0.05, 'Еда'), GG('Бурдюк', 5, 0.02), GG('Спальник', 7, 1), GG('Трутница', 1, 0.5),
-    GG('Палатка двухместная', 20, 2), GG('Фонарь закрытый', 2, 5), GG('Масло (фляга)', 1, 0.1), GG('Ломик', 5, 2), GG('Крюк-кошка', 4, 2), GG('Молоток', 3, 1), GG('Железные шипы (10)', 5, 1), GG('Мел', 0, 0.01),
-    GG('Мешок', 0.5, 0.01), GG('Рюкзак', 5, 2), GG('Набор целителя', 3, 5, 'Инструмент'), GG('Воровские инструменты', 1, 25, 'Инструмент'), GG('Свеча', 0, 0.01), GG('Стальное зеркальце', 0.5, 5), GG('Цепь (10 фт)', 10, 5), GG('Колокольчик', 0, 1),
-    GG('Стрелы (20)', 1, 1, 'Оружие', { ammo: 20 }), GG('Арбалетные болты (20)', 1.5, 1, 'Оружие', { ammo: 20 })] },
-  smith: { icon: '⚒️', label: 'Кузница', items: [GW('Кинжал', 4, 'Колющий', 'Простое рукопашное', 'Фехтовальное, лёгкое, метательное (20/60)', 1, 2), GW('Короткий меч', 6, 'Колющий', 'Воинское рукопашное', 'Фехтовальное, лёгкое', 2, 10),
-    GW('Длинный меч', 8, 'Рубящий', 'Воинское рукопашное', 'Универсальное (1к10)', 3, 15), GW('Боевой топор', 8, 'Рубящий', 'Воинское рукопашное', 'Универсальное (1к10)', 4, 10), GW('Копьё', 6, 'Колющий', 'Простое рукопашное', 'Метательное (20/60), универсальное (1к8)', 3, 1),
-    GW('Булава', 6, 'Дробящий', 'Простое рукопашное', '', 4, 5), GW('Короткий лук', 6, 'Колющий', 'Простое дальнобойное', 'Боеприпас (80/320), двуручное', 2, 25), GW('Длинный лук', 8, 'Колющий', 'Воинское дальнобойное', 'Боеприпас (150/600), тяжёлое, двуручное', 2, 50),
-    GW('Лёгкий арбалет', 8, 'Колющий', 'Простое дальнобойное', 'Боеприпас (80/320), перезарядка, двуручное', 5, 25), GA('Кожаный доспех', '11 + Лов', 'Лёгкий доспех', 10, 10), GA('Проклёпанный кожаный доспех', '12 + Лов', 'Лёгкий доспех', 13, 45),
-    GA('Кольчужная рубаха', '13 + Лов (макс. 2)', 'Средний доспех', 20, 50), GA('Чешуйчатый доспех', '14 + Лов (макс. 2)', 'Средний доспех', 45, 50, [['Скрытность', 'помеха']]),
-    GA('Кольчуга', '16', 'Тяжёлый доспех', 55, 75, [['Сила', '13'], ['Скрытность', 'помеха']]), GA('Щит', '+2', 'Щит', 6, 10)] },
-  alch: { icon: '⚗️', label: 'Алхимик и травник', items: [GG('Зелье лечения', 0.5, 50, 'Зелье', { heal: [2, 4, '2'] }), GG('Противоядие (флакон)', 0, 50, 'Зелье'), GG('Кислота (флакон)', 1, 25, 'Зелье'),
-    GG('Алхимический огонь (флакон)', 1, 50, 'Зелье'), GG('Святая вода (флакон)', 1, 25, 'Зелье'), GG('Набор травника', 3, 5, 'Инструмент'), GG('Пустой флакон', 0, 1), GG('Мешочек с компонентами', 2, 25)] },
-  tavern: { icon: '🍺', label: 'Таверна', items: [GG('Эль (кружка)', 0, 0.04, 'Еда'), GG('Вино (бутылка)', 0, 0.2, 'Еда'), GG('Хлеб (буханка)', 0, 0.02, 'Еда'), GG('Сыр (кусок)', 0, 0.1, 'Еда'), GG('Мясо (кусок)', 0, 0.3, 'Еда'),
-    GG('Еда на день (скромно)', 0, 0.3, 'Еда'), GG('Еда на день (богато)', 0, 2, 'Еда'), GG('Комната на ночь (скромно)', 0, 0.5, 'Прочее'), GG('Комната на ночь (богато)', 0, 2, 'Прочее'), GG('Конюшня (день)', 0, 0.05, 'Прочее')] },
-};
-const gpCoins = gp => cpCoins(Math.round(gp * 100));
-function goodsItem(g) {
-  const rows = [...(g.rows || []).map(([key, val]) => ({ key, val })), { key: 'Цена', val: fmtPrice(gpCoins(g.gp)) }];
-  const blocks = [{ type: 'properties', rows }];
-  if (g.dice) blocks.push({ type: 'dice', label: 'Урон', count: '1', die: String(g.dice), mod: '', dmgtype: g.dt });
-  if (g.heal) blocks.push({ type: 'dice', label: 'Лечение', count: String(g.heal[0]), die: String(g.heal[1]), mod: g.heal[2], dmgtype: 'Лечение' });
-  const it = normItem({ name: g.name, type: g.type, subtype: g.subtype || '', emoji: guessEmoji(g.name) || TTG.TYPE_EMOJI[g.type] || '📦', blocks, ammo: g.ammo ? { name: g.name.replace(/\s*\(\d+\)/, ''), cur: g.ammo } : null });
-  if (g.w && !g.ammo) it.weight = g.w; if (g.ammo) it.weight = g.w / g.ammo;
-  return it;
-}
-
-/* ── Экран «Лавки» ── */
-const SHOPV = { id: null };
-const shopCur = () => { const d = SHOPV.id && STORE.one('shop', SHOPV.id); return d ? normShop(d) : null; };
-const shopPut = s => { STORE.put('shop', s); };
-const shopPriceCp = (s, x) => Math.round(coinsCp(x.price) * s.markup / 100);
-function shopHTML(s) {
-  const pc = activePC();
-  return `<div class="shop"><div class="g3"><div class="fld"><label>Название</label><input data-in="shopF" data-k="name" value="${esc(s.name)}"></div><div class="fld"><label>Хозяин</label><input data-in="shopF" data-k="keeper" value="${esc(s.keeper)}" placeholder="Гретта Кривой Гвоздь"></div>
-    <div class="fld"><label>Наценка, %</label><input type="number" min="10" max="1000" data-in="shopF" data-k="markup" value="${s.markup}"></div></div>
-    <div class="fld mt"><label>Заметка</label><input data-in="shopF" data-k="note" value="${esc(s.note)}" placeholder="Торгуется, если похвалить кошку"></div>
-    <div class="btns mt"><button class="btn sm" data-act="shopAddTtg">🔎 ttg.club</button>${STORE.keys('item_').length ? '<button class="btn sm" data-act="shopAddLoot">📜 Из лута</button>' : ''}<button class="btn sm" data-act="shopAddQuick">✎ Вручную</button><button class="btn sm gold" data-act="shopGoods">🎲 Набор товаров</button></div>
-    <div class="shop-list mt">${s.items.map((x, i) => { const cp = shopPriceCp(s, x), w = itemUnitLb(x.it);
-      return `<div class="shop-row ${x.stock === 0 ? 'out' : ''}"><span class="irow-em">${esc(x.it.emoji || '▪')}</span><button class="grow shop-n" data-act="shopView" data-i="${i}"><b>${esc(x.it.name)}</b><small class="muted">${[x.it.type !== 'Прочее' ? x.it.type : '', w ? fmtW(w) : ''].filter(Boolean).join(' · ')}</small></button>
-        <input class="shop-p" value="${esc(fmtCoins(x.price, ''))}" placeholder="цена" data-ch="shopPrice" data-i="${i}" title="Базовая цена: 15 ЗЗ, 2 СЗ 5 МЗ…">${s.markup !== 100 ? `<small class="gold">${fmtGp(cp)} ЗЗ</small>` : ''}
-        <input class="shop-s" type="number" min="0" value="${x.stock ?? ''}" placeholder="∞" data-ch="shopStock" data-i="${i}" title="Сколько в наличии (пусто — без счёта)">
-        <button class="btn sm pri" data-act="shopBuy" data-i="${i}" ${!pc || x.stock === 0 ? 'disabled' : ''} title="${pc ? 'Купить — откроется торговля' : 'Выбери персонажа'}">Купить</button><button class="btn xs ghost" data-act="shopDel" data-i="${i}">✕</button></div>`; }).join('') || '<div class="empty small">Пусто — добавь товары кнопками выше</div>'}</div></div>`;
-}
-const shopRe = () => { const b = $('#shop-body'), s = shopCur(); if (b && s) b.innerHTML = shopHTML(s); };
-IN.shopF = debounce(el => { const s = shopCur(); if (!s) return; s[el.dataset.k] = el.dataset.k === 'markup' ? clamp(int(el.value, 100), 10, 1000) : el.value; shopPut(s); if (el.dataset.k === 'name') $('#shop-list') && ($('#shop-list').innerHTML = shopListHTML()); if (el.dataset.k === 'markup') shopRe(); }, 300);
-CH.shopPrice = el => { const s = shopCur(), x = s.items[int(el.dataset.i)], p = parseCoins(el.value); if (!p) return toast('Цена: например «15 ЗЗ» или «2 СЗ 5 МЗ»', 'err'); x.price = p; shopPut(s); shopRe(); };
-CH.shopStock = el => { const s = shopCur(), x = s.items[int(el.dataset.i)]; x.stock = el.value === '' ? null : Math.max(0, int(el.value)); shopPut(s); shopRe(); };
-ACT.shopDel = el => { const s = shopCur(); s.items.splice(int(el.dataset.i), 1); shopPut(s); shopRe(); };
-ACT.shopView = el => { const x = shopCur().items[int(el.dataset.i)]; openModal({ title: `${esc(x.it.emoji || '📦')} ${esc(x.it.name)}`, size: 'wide', body: lootCardHTML(x.it, { empty: '' }) }); };
-const shopAdd = (it, price, stock = null) => { const s = shopCur(); if (!s) return; s.items.push({ it: itemCopy(it), price: price || {}, stock }); shopPut(s); shopRe(); };
-ACT.shopAddTtg = () => TTG.open({ kinds: ITEM_KINDS, title: '🔎 Товар с ttg.club', onPick: it => { shopAdd(it, ttgPrice(it)); toast(`🏪 «${it.name}» на прилавке${ttgPrice(it) ? '' : ' — впиши цену'}`, 'ok'); } });
-ACT.shopAddLoot = async () => { const lib = STORE.list('item'); const id = await pickBox('📜 Из библиотеки лута', lib.map(x => ({ id: x.id, label: x.name, sub: [x.type, RARITY[x.rarity]].join(' · '), icon: x.emoji || '📜' })), { empty: 'Библиотека пуста' });
-  if (!id) return; const it = normItem(lib.find(x => x.id === id)); shopAdd(it, ttgPrice(it)); };
-ACT.shopAddQuick = async () => { const v = await promptBox('Товар и цена: «Верёвка 1 ЗЗ», «Факел 1 МЗ»', ''); if (!v) return;
-  const m = v.match(/^(.*?)\s+(\d[\d.,]*\s*(?:пз|пм|зз|зм|эз|эм|сз|см|мз|мм)?(?:\s+\d[\d.,]*\s*(?:пз|пм|зз|зм|эз|эм|сз|см|мз|мм))*)\s*$/i);
-  const name = (m ? m[1] : v).trim(), tpl = itemTemplate(name); shopAdd(tpl ? normItem(tpl) : newItem(name, { emoji: guessEmoji(name) }), m ? parseCoins(m[2]) : {}); };
-ACT.shopGoods = el => openMenu(el, [{ hd: 'Добавить набор (цены PHB)' }, ...Object.entries(SHOP_GOODS).map(([k, g]) => ({ icon: g.icon, label: `${g.label} — ${g.items.length}`, fn: () => {
-  const s = shopCur(); g.items.forEach(x => s.items.push({ it: goodsItem(x), price: gpCoins(x.gp), stock: null })); shopPut(s); shopRe(); toast(`🏪 +${g.items.length}: ${g.label}`, 'ok'); } }))]);
-/** Купить: открыть торговлю с товаром в «Я получаю» и ценой в «Я плачу»; после сделки — минус со склада */
-ACT.shopBuy = el => {
-  const s = shopCur(), i = int(el.dataset.i), x = s.items[i]; if (!x || !activePC()) return;
-  ACT.trade(); const cp = shopPriceCp(s, x);
-  TR.getItems.push({ name: x.it.name, qty: 1, emoji: x.it.emoji, full: x.it }); TR.who = s.name;
-  addCoins(TR.pay, cpCoins(cp));
-  const c = $('.tr-side.pay .tr-coins'); if (c) c.outerHTML = trCoinsEd('pay'); $('#tr-get-items').innerHTML = trItemsHTML('get'); const w = $('#tr-who'); if (w) w.value = s.name + (s.keeper ? ' · ' + s.keeper : '');
-  TR.onCommit = () => { const t = shopCur(); const y = t?.items[i]; if (y && y.stock != null) { y.stock = Math.max(0, y.stock - (TR.getItems.find(g => g.full === x.it)?.qty || 1)); shopPut(t); shopRe(); } };
-  trSummary();
-};
-function shopListHTML() { return STORE.list('shop').map(x => `<button class="lib-row ${x.id === SHOPV.id ? 'on' : ''}" data-act="shopPick" data-id="${x.id}" style="--h:35"><span class="lib-em">🏪</span><span class="grow" style="min-width:0"><b class="ellip">${esc(x.name)}</b><small>${(x.items || []).length} товаров${x.keeper ? ' · ' + esc(x.keeper) : ''}</small></span></button>`).join('') || '<div class="empty small">Лавок пока нет</div>'; }
-ACT.shopPick = el => { SHOPV.id = el.dataset.id; VIEWS.shops.render($('#view')); renderTop(); };
-ACT.shopNew = () => { const s = normShop({ name: 'Новая лавка' }); shopPut(s); SHOPV.id = s.id; VIEWS.shops.render($('#view')); renderTop(); setTimeout(() => $('[data-k="name"]')?.select(), 60); };
-ACT.shopBack = () => { SHOPV.id = null; VIEWS.shops.render($('#view')); renderTop(); };
-VIEWS.shops = {
-  title: 'Лавки', icon: '🏪',
-  render(el) {
-    const s = shopCur(); if (SHOPV.id && !s) SHOPV.id = null;
-    el.innerHTML = `<div class="lib-layout ${s ? 'has-sel' : ''}">
-      <aside class="lib-side ${isPhone() && s ? 'hide-phone' : ''}"><div class="row"><b class="grow t-title">🏪 Лавки</b><button class="btn pri icon" data-act="shopNew" title="Новая лавка">＋</button></div>
-        <div class="lib-list" id="shop-list">${shopListHTML()}</div></aside>
-      <section class="lib-main ${!s ? 'hide-phone' : ''}">${s ? `${isPhone() ? '<button class="btn sm ghost mb" data-act="shopBack">‹ Все лавки</button>' : ''}<div id="shop-body">${shopHTML(s)}</div>`
-        : `<div class="empty-hero frame"><div class="big">🏪</div><h2 class="t-title">Лавки</h2><p class="dim">Мастер собирает прилавок — из ttg.club, лута или готового набора товаров с ценами — и отдаёт кодом. Игрок открывает лавку и покупает: сдача и история сделок — как в «Торговле».</p><button class="hexbtn pri mt" data-act="shopNew">＋ Новая лавка</button></div>`}</section></div>`;
-  },
-  actions() {
-    const s = shopCur(); if (!s) return [{ icon: '＋', label: 'Новая', act: 'shopNew', pri: true }];
-    return [{ icon: '📤', label: 'Поделиться', act: 'shopShare', pri: true }, { menu: [{ icon: '＋', label: 'Новая лавка', fn: ACT.shopNew },
-      { icon: '⧉', label: 'Дублировать', fn: () => { const c = clone(s); c.id = uid('shop'); c.name += ' (копия)'; shopPut(c); SHOPV.id = c.id; route(); } },
-      { sep: 1 }, { icon: '🗑', label: 'Удалить', danger: true, fn: async () => { if (!await confirmBox(`Удалить «${s.name}»?`, { ok: 'Удалить', danger: true })) return; STORE.drop('shop', s.id); SHOPV.id = null; route(); } }] }];
-  },
-};
-ACT.shopShare = () => { const s = shopCur(); if (s) SHARE.open('shop', s, s.name); };
-
 // ── gen.js ──
 /* ═══════════════════════════════════════════════════════
    ГЕНЕРАТОРЫ МАСТЕРА (v11.1): имена по расам, таверны, слухи, NPC с чертой, манерой и секретом.
@@ -11917,7 +11804,7 @@ ACT.genToNpc = el => { const r = GEN.log[int(el.dataset.i)]; if (!r) return; con
 // ── search.js ──
 /* ═══════════════════════════════════════════════════════
    ГЛОБАЛЬНЫЙ ПОИСК (v11.1): 🔍 в шапке, Ctrl+K или «/». Персонажи, вещи и заклинания активного персонажа,
-   журнал и черты; у мастера — NPC, лут, сцены, вики; лавки — у всех. Только чтение: выбор открывает нужный экран.
+   журнал и черты; у мастера — NPC, лут, сцены, вики. Только чтение: выбор открывает нужный экран.
 ═══════════════════════════════════════════════════════ */
 const gsNorm = s => String(s || '').toLowerCase().replace(/ё/g, 'е');
 function gsIndex() {
@@ -11938,7 +11825,6 @@ function gsIndex() {
       (a.people || []).forEach(w => add(`Приключение · ${a.title}`, '👤', w.name, w.role || w.aka || '', [w.how, w.wants, txt(w)].join(' '), open('people', w.id))); });
     wikiArts().forEach(a => add('Вики', WIKI_CATS[a.category]?.icon || '📖', a.title, (a.tags || []).join(', '), a.body, () => { WK.id = a.id; WK.edit = null; go('wiki'); }));
   }
-  STORE.list('shop').forEach(s => { add('Лавки', '🏪', s.name, s.keeper, '', () => { SHOPV.id = s.id; go('shops'); }); (s.items || []).forEach(x => add(`Лавка · ${s.name}`, x.it?.emoji || '▪', x.it?.name, fmtCoins(x.price, ''), '', () => { SHOPV.id = s.id; go('shops'); })); });
   return out;
 }
 let GS = [];
@@ -11948,7 +11834,7 @@ function gsResults(q) {
     .filter(x => x.sc < 9).sort((a, b) => a.sc - b.sc).slice(0, 60).map(x => x.r);
 }
 function gsHTML(q) {
-  GS = gsResults(q); if (!q.trim()) return '<div class="muted small">Ищет по персонажам, вещам, заклинаниям, журналу' + (isMaster() ? ', NPC, луту, сценам и вики' : '') + ' и лавкам.</div>';
+  GS = gsResults(q); if (!q.trim()) return '<div class="muted small">Ищет по персонажам, вещам, заклинаниям, журналу' + (isMaster() ? ', NPC, луту, сценам и вики' : '') + '.</div>';
   if (!GS.length) return '<div class="empty small">Ничего не нашлось</div>';
   let grp = '';
   return GS.map((r, i) => { const h = r.grp !== grp ? `<div class="gs-g">${esc(r.grp)}</div>` : ''; grp = r.grp;
@@ -12314,7 +12200,7 @@ const CONV = {
   crStr(v) { if (v == null || v === '') return ''; if (/\//.test(String(v))) return String(v).trim(); const n = num(v, NaN); return !Number.isFinite(n) ? String(v) : n === 0.125 ? '1/8' : n === 0.25 ? '1/4' : n === 0.5 ? '1/2' : String(n); },
   CR_XP: { 0: 10, '1/8': 25, '1/4': 50, '1/2': 100, 1: 200, 2: 450, 3: 700, 4: 1100, 5: 1800, 6: 2300, 7: 2900, 8: 3900, 9: 5000, 10: 5900, 11: 7200, 12: 8400, 13: 10000, 14: 11500, 15: 13000,
     16: 15000, 17: 18000, 18: 20000, 19: 22000, 20: 25000, 21: 33000, 22: 41000, 23: 50000, 24: 62000, 25: 75000, 26: 90000, 27: 105000, 28: 120000, 29: 135000, 30: 155000 },
-  /** Медь → «50 зм» / «5 см» / «7 мм» (одна единица — так цену понимают лавки и торговля) */
+  /** Медь → «50 зм» / «5 см» / «7 мм» (одна единица — так цену понимает торговля) */
   cpText(cp) { cp = Math.round(num(cp)); return cp <= 0 ? '' : cp % 100 === 0 ? `${cp / 100} зм` : cp % 10 === 0 ? `${cp / 10} см` : `${cp} мм`; },
   /** Цена из чужих форматов: «50 gp», «1,500 gp», «5 sp», «10 зм», «15» (золото) → строка «Цена» как у ttg */
   price(v) {
@@ -12697,7 +12583,7 @@ const CONV = {
 const DUP = {
   name: (kind, o) => asStr(kind === 'wiki' || kind === 'map' || kind === 'adv' ? o?.title : o?.name),
   key: (kind, o) => CONV.low(DUP.name(kind, o)).replace(/\[[^\]]*\]/g, ' ').replace(/\(\s*копия\s*\d*\s*\)/g, ' ').replace(/[^a-zа-я0-9]+/g, ' ').trim(),
-  NORM: { item: normItem, npc: normNPC, wiki: normArticle, batt: normBattle, shop: normShop, map: x => normMap(x), adv: x => normAdv(x), pc: normPC },
+  NORM: { item: normItem, npc: normNPC, wiki: normArticle, batt: normBattle, map: x => normMap(x), adv: x => normAdv(x), pc: normPC },
   list: kind => kind === 'wiki' ? wikiArts() : STORE.list(kind),
   /** Отпечаток для «точная копия»: нормализованная запись без id, времени и количества, ключи по алфавиту */
   DROP: new Set(['id', '_ts', '_ref', '_st', '_on', '_dupOf', 'created', 'updated', 'qty', 'uid']),
@@ -12731,7 +12617,6 @@ const DUP = {
     if (kind === 'pc') return [['Класс', [o.cls, o.subclass].filter(Boolean).join(' · ') || '—'], ['Уровень', String(o.level || 1)], ['Раса', o.race || '—'], ['Хиты', `${o.hp?.cur ?? '?'}/${o.hp?.max ?? '?'}`],
       ['Вещей', String(ZONE_KEYS.reduce((a, z) => a + (o.inv?.[z]?.length || 0), 0))]];
     if (kind === 'batt') return [['Участники', (o.list || []).map(c => c.name).join(', ') || '—', 1], ['Раунд', String(o.round || 1)]];
-    if (kind === 'shop') return [['Хозяин', o.keeper || '—'], ['Товаров', String((o.items || []).length)], ['Наценка', (o.markup || 100) + '%'], ['Товары', cut((o.items || []).map(x => x.it?.name).join(', ')) || '—', 1]];
     if (kind === 'map') return [['Сцен', String((o.nodes || []).length)], ['Связей', String((o.edges || []).length)], ['Сцены', cut((o.nodes || []).map(n => n.title).join(', ')) || '—', 1]];
     if (kind === 'adv') return [['Мест', String((o.places || []).length)], ['Персонажей', String((o.people || []).length)], ['Событий', String((o.events || []).length)], ['Целей', String((o.goals || []).length)],
       ['Места', cut((o.places || []).map(p => p.title).join(', ')) || '—', 1]];
@@ -12760,7 +12645,7 @@ const DUP = {
   },
   /** Дубликат при добавлении: old — что уже есть, neu — новое → {ch: 'old'|'new'|'both', all} | null (окно закрыли) */
   async ask(kind, old, neu, { left = 0, inv = false, batch = false } = {}) {
-    const where = inv ? 'в инвентаре' : batch ? 'выше в этой же базе' : { pc: 'среди твоих персонажей', wiki: 'в вики', map: 'среди сюжетов', adv: 'среди приключений', shop: 'среди лавок', batt: 'среди боёв' }[kind] || 'в библиотеке';
+    const where = inv ? 'в инвентаре' : batch ? 'выше в этой же базе' : { pc: 'среди твоих персонажей', wiki: 'в вики', map: 'среди сюжетов', adv: 'среди приключений', batt: 'среди боёв' }[kind] || 'в библиотеке';
     const r = await DUP.dialog({ kind, title: '⧉ Такое уже есть', left,
       text: `«<b>${esc(DUP.name(kind, neu))}</b>» уже есть ${where}. Какой оставить?${inv ? ' Количество сложится в любом случае.' : ''}`,
       vars: [{ o: old, tag: inv ? '🎒 Мой' : batch ? '📦 Из этой базы' : '📦 Уже есть', sub: old._ts ? 'изменён ' + fmtDate(old._ts) : '' }, { o: neu, tag: '✨ Новый', cls: 'new' }],
@@ -12862,10 +12747,10 @@ const DUP = {
    СБОР БАЗЫ (batch) → окно проверки → добавление
 ═══════════════════════════════════════════════════════ */
 const DBI = {
-  KINDS: ['npc', 'item', 'wiki', 'batt', 'shop', 'map', 'adv', 'pc'], // порядок добавления: сначала то, на что ссылаются бои, сюжеты, приключения и лавки
-  LBL: { item: ['📜', 'Предметы'], npc: ['👹', 'NPC'], wiki: ['📚', 'Статьи вики'], batt: ['⚔', 'Бои'], shop: ['🏪', 'Лавки'], map: ['🗺', 'Сюжеты'], adv: ['📖', 'Приключения'], pc: ['🧙', 'Персонажи'] },
-  PFX: { item: 'it', npc: 'npc', wiki: 'w', batt: 'b', shop: 'shop', map: 'map', adv: 'adv', pc: 'pc' },
-  batch: () => ({ rec: { npc: [], item: [], wiki: [], batt: [], shop: [], map: [], adv: [], pc: [] }, packets: [], legacy: [], pkRecs: 0, skip: {}, fmt: {}, partial: [], errors: [], unknown: 0, cut: false }),
+  KINDS: ['npc', 'item', 'wiki', 'batt', 'map', 'adv', 'pc'], // порядок добавления: сначала то, на что ссылаются бои, сюжеты и приключения
+  LBL: { item: ['📜', 'Предметы'], npc: ['👹', 'NPC'], wiki: ['📚', 'Статьи вики'], batt: ['⚔', 'Бои'], map: ['🗺', 'Сюжеты'], adv: ['📖', 'Приключения'], pc: ['🧙', 'Персонажи'] },
+  PFX: { item: 'it', npc: 'npc', wiki: 'w', batt: 'b', map: 'map', adv: 'adv', pc: 'pc' },
+  batch: () => ({ rec: { npc: [], item: [], wiki: [], batt: [], map: [], adv: [], pc: [] }, packets: [], legacy: [], pkRecs: 0, skip: {}, fmt: {}, partial: [], errors: [], unknown: 0, cut: false }),
   total: B => DBI.KINDS.reduce((s, k) => s + B.rec[k].length, 0),
   /** Запись в пакет: новый id (своё никогда не перезапишется), исходный id — в _ref (по нему сцены и бои найдут её новый id) */
   add(B, kind, rec, fmt, ref) {
@@ -12902,7 +12787,6 @@ const DBI = {
     else if (o.k === 'npc' || o.k === 'npcs') arr(d).filter(x => x.name).forEach(x => DBI.add(B, 'npc', DBI.npcOf(x), F, x.id));
     else if (o.k === 'wiki') arr(d).filter(x => x.title).forEach(x => DBI.add(B, 'wiki', normArticle(x), F, x.id));
     else if (o.k === 'batt') DBI.add(B, 'batt', DBI.battOf(d), F, d.id);
-    else if (o.k === 'shop') DBI.add(B, 'shop', normShop(d), F, d.id);
     else if (o.k === 'map') DBI.add(B, 'map', clone(d), F, d.id);
     else if (o.k === 'adv') DBI.add(B, 'adv', clone(d), F, d.id);
     else DBI.skip(B, `неизвестный вид кода «${asStr(o.k)}»`);
@@ -12915,7 +12799,6 @@ const DBI = {
     pick('item', 'items', 'loot').filter(x => x.name).forEach(x => DBI.add(B, 'item', DBI.itemOf(x), F, x.id));
     pick('wiki', 'articles').filter(x => x.title || x.name).forEach(x => DBI.add(B, 'wiki', normArticle({ ...x, title: x.title || x.name }), F, x.id));
     pick('batt', 'battles').forEach(x => DBI.add(B, 'batt', DBI.battOf(x), F, x.id));
-    pick('shop', 'shops').forEach(x => DBI.add(B, 'shop', normShop(x), F, x.id));
     pick('map', 'maps').forEach(x => DBI.add(B, 'map', clone(x), F, x.id));
     pick('adv', 'adventures').forEach(x => DBI.add(B, 'adv', clone(x), F, x.id));
     pick('pc', 'pcs').forEach(x => DBI.add(B, 'pc', normPC(x), F, x.id));
@@ -12956,7 +12839,6 @@ const DBI = {
     if (Array.isArray(o.nodes)) return { kind: 'map', rec: clone(o), fmt: 'сюжет (JSON)', ref: o.id };
     if (Array.isArray(o.saveProfs) || Array.isArray(o.skillProfs) || o.inv && o.stats) return { kind: 'pc', rec: normPC(o), fmt: 'персонаж (JSON)', ref: o.id };
     if (Array.isArray(o.fighters) || Array.isArray(o.list) && o.list.some(c => c && c.uid)) return { kind: 'batt', rec: DBI.battOf(o), fmt: 'бой (JSON)', ref: o.id };
-    if (Array.isArray(o.items) && o.items.some(x => x && x.it)) return { kind: 'shop', rec: normShop(o), fmt: 'лавка (JSON)', ref: o.id };
     if (typeof nm === 'string' && Array.isArray(o.blocks)) return { kind: 'item', rec: DBI.itemOf(o), fmt: 'предметы (JSON)', ref: o.id };
     if (typeof nm === 'string' && o.hp != null && (Array.isArray(o.actions) || o.maxActions != null || Array.isArray(o.customCards))) return { kind: 'npc', rec: DBI.npcOf(o), fmt: 'NPC (JSON)', ref: o.id };
     if (typeof o.title === 'string' && typeof o.body === 'string') return { kind: 'wiki', rec: normArticle(o), fmt: 'статьи вики (JSON)', ref: o.id };
@@ -13162,7 +13044,7 @@ const DBI = {
     SETTINGS.adv = adv.id; saveSettings(); ADV = null;
     return adv;
   },
-  viewOf(s) { const ks = DBI.KINDS.filter(k => s.add[k]); return s.add.pack ? 'inv' : ks.length === 1 ? { item: 'loot', npc: 'npc', wiki: 'wiki', map: 'adv', adv: 'adv', shop: 'shops', batt: 'tracker', pc: 'saves' }[ks[0]] : null; },
+  viewOf(s) { const ks = DBI.KINDS.filter(k => s.add[k]); return s.add.pack ? 'inv' : ks.length === 1 ? { item: 'loot', npc: 'npc', wiki: 'wiki', map: 'adv', adv: 'adv', batt: 'tracker', pc: 'saves' }[ks[0]] : null; },
   /** Итог: перейти к добавленному, показать сводку (тостом, если всё просто) */
   report(s, view) {
     const lines = [...DBI.KINDS.filter(k => s.add[k]).map(k => `${DBI.LBL[k][0]} ${DBI.LBL[k][1]} — добавлено ${s.add[k]}`), s.add.pack && `🎒 В рюкзак — ${s.add.pack}`, s.took && `✨ Заменено новыми — ${s.took}`,
@@ -14123,12 +14005,12 @@ ACT.backupLoad = async () => {
   SHARE.openImport('', { files: [f] });
 };
 /* ═══ Файловый менеджер библиотек: крыжки, массовое удаление и код ═══ */
-const LIBM_KINDS = [['pc', '🧙', 'Персонажи'], ['npc', '👹', 'NPC'], ['item', '📜', 'Лут'], ['batt', '⚔', 'Бои'], ['adv', '📖', 'Приключения'], ['wiki', '📚', 'Вики'], ['shop', '🏪', 'Лавки']];
+const LIBM_KINDS = [['pc', '🧙', 'Персонажи'], ['npc', '👹', 'NPC'], ['item', '📜', 'Лут'], ['batt', '⚔', 'Бои'], ['adv', '📖', 'Приключения'], ['wiki', '📚', 'Вики']];
 const LIBM = { kind: 'npc', q: '', sel: new Set() };
 function libmList(k) {
   if (k === 'wiki') return wikiArts().map(a => ({ id: a.id, name: a.title, ic: WIKI_CATS[a.category]?.icon || '📄', sub: (a.tags || []).join(', '), _ts: a._ts, o: a }));
   return STORE.list(k).map(o => ({ id: o.id, name: o.name || o.title || 'Без названия', ic: o.emoji || LIBM_KINDS.find(x => x[0] === k)[1],
-    sub: k === 'pc' ? [o.race, o.cls, o.level && o.level + ' ур.'].filter(Boolean).join(' · ') : k === 'map' ? (o.nodes || []).length + ' сцен' : k === 'adv' ? `${(o.places || []).length} мест · ${(o.people || []).length} перс.` : k === 'batt' ? (o.list || []).length + ' участн.' : k === 'shop' ? (o.items || []).length + ' товаров' : (o.type || o.cr || ''), _ts: o._ts, o }))
+    sub: k === 'pc' ? [o.race, o.cls, o.level && o.level + ' ур.'].filter(Boolean).join(' · ') : k === 'map' ? (o.nodes || []).length + ' сцен' : k === 'adv' ? `${(o.places || []).length} мест · ${(o.people || []).length} перс.` : k === 'batt' ? (o.list || []).length + ' участн.' : (o.type || o.cr || ''), _ts: o._ts, o }))
     .sort((a, b) => (b._ts || 0) - (a._ts || 0));
 }
 const libmKey = (k, id) => k + ':' + id;
@@ -14175,7 +14057,7 @@ ACT.libManager = el => {
       if (by.pc?.some(p => p.id === SETTINGS.pc)) setActivePC(STORE.list('pc')[0]?.id || null);
       if (by.map?.some(p => p.id === SETTINGS.map)) { SETTINGS.map = null; saveSettings(); }
       if (by.adv?.some(p => p.id === SETTINGS.adv)) { SETTINGS.adv = null; saveSettings(); }
-      if (by.npc?.some(x => x.id === NPCV.id)) NPCV.id = null; if (by.item?.some(x => x.id === LOOT.id)) LOOT.id = null; if (by.shop?.some(x => x.id === SHOPV.id)) SHOPV.id = null;
+      if (by.npc?.some(x => x.id === NPCV.id)) NPCV.id = null; if (by.item?.some(x => x.id === LOOT.id)) LOOT.id = null;
       cachesReset(); LIBM.sel.clear(); libmRender(m); toast(`🗑 Удалено: ${total}`, 'ok'); return;
     }
     const bundle = Object.fromEntries(kinds.map(k => [k, clone(by[k])]));
@@ -14190,7 +14072,6 @@ ACT.libManager = el => {
       if (l.length === 1 && k === 'batt') return SHARE.open('batt', l[0], l[0].name || 'Бой');
       if (l.length === 1 && k === 'map') return SHARE.open('map', MAPIO.bundle(l[0]), l[0].title);
       if (l.length === 1 && k === 'adv') return SHARE.open('adv', ADVIO.bundle(normAdv(l[0])), l[0].title);
-      if (l.length === 1 && k === 'shop') return SHARE.open('shop', l[0], l[0].name);
     }
     SHARE.open('all', bundle, `Выборка: ${total} шт.`);
   });
@@ -14212,7 +14093,6 @@ const NAV = [
   { id: 'sheet', icon: '🧙', label: 'Персонаж' },
   { id: 'inv', icon: '🎒', label: 'Инвентарь' },
   { id: 'creator', icon: '📝', label: 'Редактор' },
-  { id: 'shops', icon: '🏪', label: 'Лавки' },
   { g: 'Мастер', master: true },
   { id: 'run', icon: '🎭', label: 'Ширма', master: true },
   { id: 'adv', icon: '📖', label: 'Приключение', master: true },
@@ -14233,14 +14113,14 @@ function renderNav() {
   $('#nav').innerHTML = `<div class="nav-brand" data-act="go" data-v="home"><span class="logo">🎲</span><div><b>DnD Multitool</b><small>by Haze · V${APP_VERSION}</small></div></div>    ${NAV.filter(n => !n.master || m).map(n => n.g ? `<div class="nav-group">${n.g}</div><div class="nav-sep"></div>` : `<div class="nav-item ${CUR_VIEW === n.id ? 'on' : ''}" data-act="go" data-v="${n.id}" title="${n.label}"><span class="ni">${n.icon}</span><span class="nl">${n.label}</span></div>`).join('')}
     <div class="nav-foot">${TGX.on ? 'Данные копируются в облако Telegram.<br>Состояние — в «Настройках».' : 'Всё хранится в этом браузере.<br>Резервная копия — в «Настройках».'}</div>`;
   const tabs = TABS[m ? 'master' : 'player'];
-  const masterExtra = ['npc', 'loot', 'exped', 'wiki', 'sheet', 'inv', 'creator', 'shops', 'saves'];
+  const masterExtra = ['npc', 'loot', 'exped', 'wiki', 'sheet', 'inv', 'creator', 'saves'];
   $('#tabbar').innerHTML = tabs.map(t => {
     if (t === 'more') { const on = masterExtra.includes(CUR_VIEW); return `<button class="tab ${on ? 'on' : ''}" data-act="tabMore"><span class="ti">☰</span><span class="tl2">${on ? NAV.find(n => n.id === CUR_VIEW).label : 'Ещё'}</span></button>`; }
     const n = NAV.find(x => x.id === t); return `<button class="tab ${CUR_VIEW === t ? 'on' : ''}" data-act="go" data-v="${t}"><span class="ti">${n.icon}</span><span class="tl2">${n.label}</span></button>`;
   }).join('');
 }
 ACT.tabMore = el => openMenu(el, [{ hd: 'Мастер' }, ...['npc', 'loot', 'exped', 'wiki'].map(id => { const n = NAV.find(x => x.id === id); return { icon: n.icon, label: n.label, fn: () => go(id) }; }), { icon: '🌐', label: 'ttg.club ↗', fn: () => ACT.ttgSite() },
-  { hd: 'Игрок' }, ...['sheet', 'inv', 'creator', 'shops'].map(id => { const n = NAV.find(x => x.id === id); return { icon: n.icon, label: n.label, fn: () => go(id) }; }), { sep: 1 }, { icon: '⚙️', label: 'Настройки', fn: () => go('saves') }]);
+  { hd: 'Игрок' }, ...['sheet', 'inv', 'creator'].map(id => { const n = NAV.find(x => x.id === id); return { icon: n.icon, label: n.label, fn: () => go(id) }; }), { sep: 1 }, { icon: '⚙️', label: 'Настройки', fn: () => go('saves') }]);
 ACT.setMode = el => {
   SETTINGS.mode = el.dataset.m; saveSettings(); renderNav();
   toast(isMaster() ? '🎭 Режим мастера: открыты ширма, бой, сцены, NPC, лут, экспедиция и вики' : '🎮 Режим игрока', 'ok', 3000);
