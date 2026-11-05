@@ -2994,7 +2994,7 @@ button.ae-lk-r:hover{background:rgba(255,255,255,.045);}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '11.12.0';
+const APP_VERSION = '11.12.1';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -5479,7 +5479,8 @@ function normAdv(d, { raw = false } = {}) {
   const blocks = x => arr(x).map(b => normAdvBlock(b, raw)).filter(Boolean);
   a.places = arr(a.places).map(p => ({ id: iid(p.id, 'p'), ...oid(p), code: asStr(p.code), title: asStr(p.title ?? p.name) || 'Место', parent: ref(p.parent) || null,
     region: !!p.region, lvl: asStr(p.lvl), tag: oneOf(p.tag, Object.keys(SM_TAGS), ''), color: safeColor(p.color),
-    routes: arr(p.routes).map(r => ({ to: ref(r.to), label: asStr(r.label), mins: Math.max(0, int(r.mins)), road: !!r.road, terrain: oneOf(r.terrain, EXP_TERRAINS.map(x => x.id), ''), if: advCond(r.if, ref) })).filter(r => r.to),
+    routes: arr(p.routes).map(r => ({ to: ref(r.to), label: asStr(r.label), mins: Math.max(0, int(r.mins)), road: !!r.road, terrain: oneOf(r.terrain, EXP_TERRAINS.map(x => x.id), ''), if: advCond(r.if, ref),
+      step: !!(r.step ?? r.instant) })).filter(r => r.to), // step — переход (дверь, лестница): сразу на месте, без пути и столкновений
     tables: refs(p.tables), blocks: blocks(p.blocks), x: int(p.x), y: int(p.y) }));
   a.people = arr(a.people).map(w => ({ id: iid(w.id, 'w'), ...oid(w), name: asStr(w.name ?? w.title) || 'Персонаж', aka: asStr(w.aka), role: asStr(w.role), group: !!w.group,
     home: ref(w.home) || null, npc: (raw ? asStr(w.npc).trim() : cleanId(w.npc)) || null, stat: asStr(w.stat), how: asStr(w.how), wants: asStr(w.wants), joins: asStr(w.joins),
@@ -9371,6 +9372,8 @@ const aeKids = (a, id) => a.places.filter(p => (p.parent || null) === (id || nul
 function aeChain(a, id) { const out = []; let p = a.places.find(x => x.id === id), g = 0; while (p && g++ < 60) { out.unshift(p); p = a.places.find(x => x.id === p.parent); } return out; }
 /** id лежит внутри anc (на любой глубине) */
 function aeInside(a, id, anc) { let p = a.places.find(x => x.id === id), g = 0; while (p && g++ < 60) { if (p.parent === anc) return true; p = a.places.find(x => x.id === p.parent); } return false; }
+/** Локация места — первое не-регион в цепочке (как rnLocOf на ширме): дороги внутри одной локации — переходы */
+const aeLocOf = (a, id) => aeChain(a, id).find(p => !p.region)?.id || null;
 function aeLabel(a, id) { const x = aeCards(a).find(c => c.id === id); return x ? (x.code ? x.code + ' · ' : '') + (x.title || x.name) : '?'; }
 const aeIni = s => String(s || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() || '?';
 const aeCut = (s, n = 60) => { s = asStr(s).replace(/\s+/g, ' ').trim(); return s.length > n ? s.slice(0, n) + '…' : s; };
@@ -9492,8 +9495,9 @@ function aePlaceHTML(a, p) {
       ${p.routes.map((r, i) => `<div class="ae-route"><select data-bind="routes.${i}.to" data-ch="aeLinks" aria-label="Куда">${aePlaceOpts(a, r.to, p.id)}</select>
         <input class="grow" data-bind="routes.${i}.label" value="${esc(r.label)}" placeholder="по тракту на запад" aria-label="Подпись">
         <label class="ae-mins"><input type="number" min="0" data-bind="routes.${i}.mins" value="${r.mins || ''}" placeholder="0" aria-label="Минут в пути"> мин</label>
-        <label class="chk"><input type="checkbox" data-bind="routes.${i}.road" ${r.road ? 'checked' : ''}> дорога</label>
-        <select data-bind="routes.${i}.terrain" aria-label="Местность для броска экспедиции" title="Местность — для броска столкновений экспедиции, если у модуля нет своих таблиц"><option value="">местность: ${r.road ? 'тракт' : 'лес'}</option>${EXP_TERRAINS.map(t => `<option value="${t.id}" ${r.terrain === t.id ? 'selected' : ''}>${esc(t.label)}</option>`).join('')}</select>
+        <label class="chk" title="Дверь, лестница, соседняя комната: отряд сразу на месте — без пути и столкновений, часы идут на указанные минуты"><input type="checkbox" data-bind="routes.${i}.step" data-ch="aeRe" ${r.step ? 'checked' : ''}> 🚪 переход</label>
+        ${r.step ? '' : `<label class="chk"><input type="checkbox" data-bind="routes.${i}.road" ${r.road ? 'checked' : ''}> дорога</label>
+        <select data-bind="routes.${i}.terrain" aria-label="Местность для броска экспедиции" title="Местность — для броска столкновений экспедиции, если у модуля нет своих таблиц"><option value="">местность: ${r.road ? 'тракт' : 'лес'}</option>${EXP_TERRAINS.map(t => `<option value="${t.id}" ${r.terrain === t.id ? 'selected' : ''}>${esc(t.label)}</option>`).join('')}</select>`}
         ${r.if ? '' : `<button class="btn xs ghost ae-ifb" data-act="aeCondAdd" data-p="routes.${i}" title="Дорога есть только в ветке…" aria-label="Условие ветки">⑂</button>`}
         <button class="btn xs danger" data-act="aeArrDel" data-arr="routes" data-i="${i}" aria-label="Убрать дорогу">✕</button></div>${aeCondHTML(a, r.if, `routes.${i}`, { lead: 'дорога есть, если' })}`).join('')
         || '<div class="muted small mb">Нет дорог. Дорога — путь в другое место со временем в пути: на ширме по ней пойдёт проверка столкновений.</div>'}
@@ -9706,7 +9710,7 @@ function aeLint(a) {
     const top = !p.parent || a.places.find(x => x.id === p.parent)?.region;
     if (top && !p.region && !into.has(p.id) && !roads.has(p.id)) add('warn', p, 'сюда не ведёт ни зацепка, ни дорога — игроки могут не узнать об этом месте');
     if (!p.region && !p.blocks.some(b => b.t === 'read' && b.text.trim())) add('info', p, 'нет описания «Зачитать»');
-    p.routes.forEach(r => { if (!r.mins) add('info', p, `дорога в «${aeLabel(a, r.to)}» без времени пути — ширма посчитает час`); });
+    p.routes.forEach(r => { if (!r.mins && !r.step && aeLocOf(a, p.id) !== aeLocOf(a, r.to)) add('info', p, `дорога в «${aeLabel(a, r.to)}» без времени пути — ширма посчитает час`); });
   });
   ADV_KINDS.forEach(k => a[k].forEach(c => (c.blocks || []).forEach(b => {
     if (b.t === 'check') { if (b.dc == null) add('warn', c, `проверка «${b.skill || '?'}» без СЛ — кнопки-диапазоны не посчитать`); if (!b.fail || !b.success) add('warn', c, `проверка «${b.skill || '?'}»: не описан ${!b.fail ? 'провал' : 'успех'}`); }
@@ -10807,6 +10811,8 @@ function rnRoutes(st) {
   curAdv().places.forEach(p => p.routes.forEach(r => { if (rnCondOk(st, r.if) && ids.has(r.to) && !ids.has(p.id) && !seen.has(p.id)) { seen.add(p.id); out.push({ ...r, to: p.id, from: r.to, kind: 'back' }); } }));
   return out;
 }
+/** Переход без пути: отмечен в книге «переход» или ведёт в ту же локацию (комнаты замка, дома деревни) */
+const rnInstant = r => !!r.step || (!!rnLocOf(r.from) && rnLocOf(r.from) === rnLocOf(r.to));
 const rnTer = t => EXP_TERRAINS.find(x => x.id === (t.terrain || (t.road ? 'road' : 'forest'))) || EXP_TERRAINS[0];
 /** Таблицы столкновений модуля у мест (use: enc / day / night): для дороги — по обе её стороны, для ночёвки — здесь */
 function rnEncTables(ids) {
@@ -11235,7 +11241,7 @@ function rnGoHTML(st) {
   const inner = rnKids(p.id).map(q => row(q, `внутри · ${RN_STEP} мин`)).join('');
   const near = par ? row(par, `выйти наружу · ${RN_STEP} мин`) + rnKids(par.id).filter(q => q.id !== p.id).map(q => row(q, `по соседству · ${RN_STEP} мин`)).join('') : '';
   const all = rnRoutes(st), road = r => `<button class="rn-row" data-act="rnRoad" data-i="${all.indexOf(r)}"><span class="rn-dv sm on">${esc(rnP(r.to).code || '🧭')}</span><span class="rn-rt"><b>${esc(rnP(r.to).title)}</b>
-    <small>${esc([r.label, r.mins ? '≈ ' + rnDur(r.mins) : 'время пути не указано — час', r.road ? 'дорога' : 'тропа'].filter(Boolean).join(' · '))}</small></span><span class="rn-chev">›</span></button>`;
+    <small>${esc((rnInstant(r) ? [r.label, `🚪 переход · ${rnDur(r.mins || RN_STEP)}`] : [r.label, r.mins ? '≈ ' + rnDur(r.mins) : 'время пути не указано — час', r.road ? 'дорога' : 'тропа']).filter(Boolean).join(' · '))}</small></span><span class="rn-chev">›</span></button>`;
   const own = all.filter(r => r.kind === 'own'), outer = all.filter(r => r.kind === 'outer'), back = all.filter(r => r.kind === 'back');
   const nIn = rnKids(p.id).length, nNear = par ? rnKids(par.id).length : 0;
   // главное — дороги самого места, как в редакторе; остальное свёрнуто, чтобы не мельтешило
@@ -11436,6 +11442,7 @@ ACT.rnGoalDone = el => rnDo(st => { const g = rnGoal(el.dataset.g); if (g) rnGoa
 ACT.rnRoad = el => rnDo(st => {
   const r = rnRoutes(st)[int(el.dataset.i)]; if (!r) return;
   RUN.drawer = null; RUN.open = {};
+  if (rnInstant(r)) return rnArrive(r.to, { mins: r.mins || RN_STEP }); // переход: сразу на месте, минуты — только часам
   st.trip = { from: r.from, to: r.to, label: r.label, mins: r.mins || 60, done: 0, road: r.road, terrain: r.terrain || '', enc: 0, rolls: [] };
   st.place = r.from; st.sit = 'travel'; st.who = null;
   rnLog(`🧭 В путь: ${rnP(r.from)?.title} → ${rnP(r.to)?.title}${r.label ? ' · ' + r.label : ''}`);
