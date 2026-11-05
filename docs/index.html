@@ -2994,7 +2994,7 @@ button.ae-lk-r:hover{background:rgba(255,255,255,.045);}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '11.12.1';
+const APP_VERSION = '11.13.0';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -6054,7 +6054,7 @@ function choiceBox(text, options, title = 'Выбор') {
 const BACKUP = {
   collect() {
     return { pc: STORE.list('pc'), npc: STORE.list('npc'), item: STORE.list('item'), batt: STORE.list('batt'), map: STORE.list('map'), adv: STORE.list('adv'), advst: STORE.list('advst'),
-      wiki: STORE.get('wiki', []), exp: STORE.get('exp'), battle_cur: STORE.get('battle_cur') };
+      wiki: STORE.get('wiki', []), exp: STORE.get('exp'), expsave: STORE.list('expsave'), battle_cur: STORE.get('battle_cur') };
   },
   download() {
     const d = BACKUP.collect();
@@ -6067,6 +6067,7 @@ const BACKUP = {
     Object.entries(norm).forEach(([k, f]) => (Array.isArray(d[k]) ? d[k] : []).filter(o => o && typeof o === 'object').forEach(o => { const x = f(o); STORE.set(k + '_' + x.id, x); n++; }));
     if (Array.isArray(d.wiki)) n += LEGACY.mergeWiki(d.wiki);
     if (d.exp && typeof d.exp === 'object') STORE.set('exp', d.exp);
+    (Array.isArray(d.expsave) ? d.expsave : []).filter(o => o && o.data && typeof o.data === 'object').forEach(o => { const id = safeId(o.id, 'es'); STORE.set('expsave_' + id, { id, name: asStr(o.name) || 'Экспедиция', _ts: int(o._ts, Date.now()), data: o.data }); n++; });
     if (d.battle_cur && typeof d.battle_cur === 'object') STORE.set('battle_cur', normBattle(d.battle_cur));
     cachesReset(); toast(`✓ Восстановлено записей: ${n}`, 'ok'); route();
   },
@@ -8588,9 +8589,9 @@ function expDayBar(e) {
 }
 function expHTML({ embedded = false } = {}) {
   const e = exp();
-  const bar = embedded ? '<div class="exp-embar"><button class="btn sm" data-act="gmCenter" data-c="scene">‹ Сцена</button><b class="t-title">🧭 Экспедиция</b></div>' : '';
+  const bar = embedded ? '<div class="exp-embar"><button class="btn sm" data-act="gmCenter" data-c="scene">‹ Сцена</button><b class="t-title">🧭 Экспедиция</b><span class="sp"></span><button class="btn sm" data-act="expSaves" title="Сохранения экспедиции">💾 Сохранения</button></div>' : '';
   if (!e.started) return `<div class="exp ${embedded ? 'emb' : ''}">${bar}
-    <div class="empty-hero frame" style="max-width:520px;margin:30px auto"><div class="big">🧭</div><h2 class="t-title">Новая экспедиция</h2><p class="dim">Укажи, сколько человек идёт и сколько рационов взяли с собой — дальше инструмент сам считает время, расход еды и броски энкаунтеров.</p><button class="hexbtn pri mt" data-act="expInit">Собрать отряд</button></div></div>`;
+    <div class="empty-hero frame" style="max-width:520px;margin:30px auto"><div class="big">🧭</div><h2 class="t-title">Новая экспедиция</h2><p class="dim">Укажи, сколько человек идёт и сколько рационов взяли с собой — дальше инструмент сам считает время, расход еды и броски энкаунтеров.</p><button class="hexbtn pri mt" data-act="expInit">Собрать отряд</button><button class="btn mt" data-act="expSaves">📂 Загрузить сохранение</button></div></div>`;
   const ph = EXP_PH[expPhase(e.time, e.season)], an = expAnimals(e), days = e.supplies / Math.max(1, e.party + an);
   const mt = expMount(e), canGo = expCanGo(e), galloped = e.gallopDay === dayOf(e.time);
   const sc0 = e.last?.kind === 'enc' && e.last.ev && !e.last.scouted;
@@ -8840,7 +8841,7 @@ ACT.expQbGo = async el => {
 VIEWS.exped = {
   title: 'Экспедиция', icon: '🧭',
   render(el) { el.innerHTML = `<div class="page exp-page">${expHTML()}</div>`; if (!exp().started && !this._asked) { this._asked = true; setTimeout(() => expTeamModal(true), 150); } },
-  actions: () => exp().started ? [{ icon: '⏩', label: 'Быстрое путешествие', act: 'expFast', pri: true }, { icon: '⚙', label: 'Отряд', act: 'expParty' }, { menu: [{ icon: '⟳', label: 'Новая экспедиция', fn: ACT.expInit }] }] : [],
+  actions: () => exp().started ? [{ icon: '⏩', label: 'Быстрое путешествие', act: 'expFast', pri: true }, { icon: '⚙', label: 'Отряд', act: 'expParty' }, { icon: '💾', label: 'Сохранения', act: 'expSaves' }, { menu: [{ icon: '⟳', label: 'Новая экспедиция', fn: ACT.expInit }] }] : [{ icon: '📂', label: 'Загрузить сохранение', act: 'expSaves' }],
 };
 
 // ── expfast.js ──
@@ -9119,6 +9120,91 @@ function fastBarHTML(e) {
   return `<div class="note fast-bar"><b>⏩ В пути:</b> позади ${f.days.length} из ${total} ${plural(total, 'дня', 'дней', 'дней')} · ${esc(fastTerr(f.legs[Math.min(f.leg, f.legs.length - 1)].t).label)}<span class="sp"></span>
     <button class="btn sm pri" data-act="expFast">▶ Продолжить путь</button><button class="btn sm ghost" data-act="fastEnd">Завершить</button></div>`;
 }
+
+// ── expsave.js ──
+/* ═══════════════════════════════════════════════════════
+   СОХРАНЕНИЯ ЭКСПЕДИЦИИ: слоты expsave_<id> в браузере + файлы .json
+   Каркас экспедиции не трогает: пишет в STORE 'exp' и перечитывает через exp().
+═══════════════════════════════════════════════════════ */
+const EXPSAVE_FMT = 'dnd9_expedition', EXPSAVE_AUTO = 'auto';
+const expSaveDay = d => d.time != null ? dayOf(num(d.time)) : int(d.day, 1);
+function expSaveSum(d) {
+  if (!d || !d.started) return 'отряд не собран';
+  const n = (Array.isArray(d.names) && d.names.length) || int(d.party, 1);
+  return `день ${expSaveDay(d)}${d.time != null ? ', ' + expClock(num(d.time)) : ''} · ${int(d.hexTotal) * 6} км · 🍖 ${int(d.supplies)} · 👥 ${n}${d.terrain?.label ? ' · ' + d.terrain.label : ''}`;
+}
+/** Слот: { id, name, _ts, data } — data это копия состояния экспедиции как есть */
+function expSlots() { return STORE.list('expsave').filter(s => s && s.data && typeof s.data === 'object'); }
+function expSlotPut(name, data, id) { const s = { id: id || uid('es'), name: asStr(name).trim() || `Экспедиция · день ${expSaveDay(data)}`, data: clone(data) }; return STORE.put('expsave', s) ? s : null; }
+/** Что угодно похожее на экспедицию: наш файл, резервная копия целиком или «голое» состояние */
+function expFromFile(j) {
+  if (!j || typeof j !== 'object') return null;
+  if (j._format === EXPSAVE_FMT && j.data && typeof j.data === 'object') return { name: j.name, data: j.data };
+  if (j._dnd9backup && j.d?.exp && typeof j.d.exp === 'object') return { name: 'Из резервной копии', data: j.d.exp };
+  if (Array.isArray(j.log) && (j.terrain || j.time != null || j.day != null)) return { name: '', data: j };
+  return null;
+}
+function expLoadData(data) {
+  STORE.set('exp', clone(data)); EXP = null; exp(); expSave();
+  EXP_QB.length = 0; closeModal(); route();
+  toast('📂 Экспедиция загружена: ' + expSaveSum(EXP), 'ok', 3500);
+}
+
+function expSavesHTML() {
+  const e = exp(), slots = expSlots();
+  const row = s => `<div class="pc-card${s.id === EXPSAVE_AUTO ? ' es-auto' : ''}">
+      <div class="grow" style="min-width:0"><b class="ellip">${s.id === EXPSAVE_AUTO ? '↺ ' : ''}${esc(s.name)}</b><small class="muted ellip">${esc(expSaveSum(s.data))} · ${fmtDate(s._ts)}</small></div>
+      <button class="btn sm pri" data-act="expSlotLoad" data-id="${esc(s.id)}">Загрузить</button>
+      <button class="btn sm icon" data-act="expSlotMenu" data-id="${esc(s.id)}" title="Ещё">⋯</button></div>`;
+  return `<div class="well pad"><div class="lbl">Сейчас</div><p class="mt">🧭 ${esc(expSaveSum(e))}</p>
+      ${e.started ? `<div class="row wrap mt"><input id="es-name" class="grow" style="min-width:180px" placeholder="Название, напр. «Перевал, ночь перед бурей»" value="" data-enter="expSlotNew"><button class="btn gold" data-act="expSlotNew">💾 Сохранить</button></div>` : ''}</div>
+    <div class="orn left mt2">📜 Сохранения</div>
+    <div class="pc-list">${slots.map(row).join('') || '<div class="empty"><span class="big">💾</span>Сохранений пока нет</div>'}</div>
+    <p class="muted tiny mt">Сохранения лежат в этом браузере и входят в общую резервную копию. Чтобы перенести на другое устройство или отдать другому мастеру — «⋯ → В файл».</p>`;
+}
+const expSavesDraw = () => { const b = $('#es-body'); if (b) b.innerHTML = expSavesHTML(); };
+
+ACT.expSaves = () => {
+  openModal({ title: '💾 Сохранения экспедиции', body: '<div id="es-body"></div>',
+    foot: `<button class="btn" data-act="expFileLoad">📂 Загрузить из файла</button>${exp().started ? '<button class="btn" data-act="expFileDl">📤 Текущую в файл</button>' : ''}<span class="sp"></span><button class="btn ghost" data-act="modalClose">Закрыть</button>` });
+  expSavesDraw(); setTimeout(() => $('#es-name')?.focus(), 60);
+};
+ACT.expSlotNew = () => {
+  const e = exp(); if (!e.started) return toast('Сначала собери отряд', 'err');
+  const s = expSlotPut($('#es-name')?.value, e); if (!s) return;
+  toast('💾 Сохранено: ' + s.name, 'ok'); expSavesDraw();
+};
+ACT.expSlotLoad = async (el, ev, ask = true) => {
+  const s = STORE.one('expsave', el.dataset.id); if (!s) return;
+  const e = exp();
+  if (e.started && ask && !await confirmBox(`Загрузить «${s.name}»?\n${expSaveSum(s.data)}\n\nТекущий прогресс заменится — его копия сама ляжет в слот «↺ Перед последней загрузкой».`, { ok: 'Загрузить' })) return;
+  if (e.started && s.id !== EXPSAVE_AUTO) expSlotPut('Перед последней загрузкой', e, EXPSAVE_AUTO);
+  expLoadData(s.data);
+};
+ACT.expSlotMenu = el => {
+  const s = STORE.one('expsave', el.dataset.id); if (!s) return;
+  openMenu(el, [
+    exp().started && { icon: '💾', label: 'Перезаписать текущей', fn: async () => { if (await confirmBox(`Записать текущую экспедицию поверх «${s.name}»?`, { ok: 'Перезаписать' })) { expSlotPut(s.name, exp(), s.id); toast('💾 Перезаписано', 'ok'); expSavesDraw(); } } },
+    { icon: '✎', label: 'Переименовать', fn: async () => { const n = await promptBox('Название сохранения', s.name, { ok: 'Сохранить' }); if (n == null || !n.trim()) return; s.name = n.trim(); STORE.put('expsave', s); expSavesDraw(); } },
+    { icon: '📤', label: 'В файл', fn: () => expFileOut(s.name, s.data) },
+    { sep: 1 },
+    { icon: '🗑', label: 'Удалить', danger: true, fn: async () => { if (await confirmBox(`Удалить сохранение «${s.name}»?`, { ok: 'Удалить', danger: true })) { STORE.drop('expsave', s.id); expSavesDraw(); } } },
+  ]);
+};
+function expFileOut(name, data) {
+  download(`expedition_${fileSafe(name || 'den_' + expSaveDay(data))}.json`, JSON.stringify({ _format: EXPSAVE_FMT, v: 1, name, date: Date.now(), data }, null, 1));
+  toast('📤 Файл экспедиции скачан', 'ok');
+}
+ACT.expFileDl = () => { const e = exp(); expFileOut(`Экспедиция · день ${expSaveDay(e)}`, e); };
+ACT.expFileLoad = async () => {
+  const f = await pickFile('.json,.txt'); if (!f) return;
+  let j; try { j = JSON.parse(await readFile(f)); } catch (err) { return toast('Не получилось прочитать файл — это не JSON', 'err'); }
+  const got = expFromFile(j); if (!got) return toast('В файле нет экспедиции', 'err');
+  const s = expSlotPut(got.name || f.name.replace(/\.(json|txt)$/i, ''), got.data); if (!s) return;
+  expSavesDraw();
+  const tail = exp().started ? '\n\nТекущий прогресс заменится — его копия ляжет в слот «↺ Перед последней загрузкой».' : '';
+  if (await confirmBox(`Файл добавлен в сохранения: «${s.name}»\n${expSaveSum(s.data)}\n\nЗагрузить его прямо сейчас?${tail}`, { ok: 'Загрузить', title: '📂 Сохранение из файла' })) ACT.expSlotLoad({ dataset: { id: s.id } }, null, false);
+};
 
 // ── wiki.js ──
 /* ═══════════════════════════════════════════════════════
