@@ -2610,6 +2610,29 @@ button.ae-lk-r:hover{background:rgba(255,255,255,.045);}
 .ae .ae-enc input{width:66px;text-align:center;}
 .ae-ckout{margin-top:8px;}
 .ae-ckout .ae-set{margin-top:4px;}
+/* ⑂ Сюжетные ветки (v11.12) */
+.ae-blk.b-pick{--bc:#8d5cc4;}
+.ae-blk.has-if{box-shadow:inset 3px 0 0 #8d5cc4;}
+.ae-blk.ae-off{opacity:.38;}
+.ae-blk.ae-off:hover,.ae-blk.ae-off:focus-within{opacity:.8;}
+.ae-ifb{color:#c8a8ec;font-weight:700;}
+.ae-if{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 8px;border-bottom:1px dashed rgba(141,92,196,.45);background:rgba(141,92,196,.08);}
+.ae-route+.ae-if,.ae-out .ae-if{border:1px dashed rgba(141,92,196,.45);border-radius:4px;margin:2px 0 8px;}
+.ae-if.empty{background:none;}
+.ae-if-k{font-family:var(--f-label);font-size:12.5px;letter-spacing:.06em;color:#c8a8ec;white-space:nowrap;}
+.ae-ct{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px;padding:2px 4px;border:1px solid rgba(141,92,196,.5);border-radius:4px;background:var(--bg1);}
+.ae-ct select,.ae-ct input{min-height:34px;padding:2px 6px;font-size:13.5px;max-width:200px;}
+.ae-ct.not{border-color:var(--red2,#c0564d);}
+.ae-ct-not{min-width:34px;min-height:34px;border-radius:3px;font-size:12px;font-weight:700;color:#c8a8ec;}
+.ae-ct.not .ae-ct-not{color:var(--red2,#c0564d);}
+.ae-ct-x{min-width:30px;min-height:34px;color:var(--tx3);}
+.ae-ct-and{min-height:30px;padding:0 8px;border:1px solid var(--line2);border-radius:3px;font-size:12.5px;color:var(--tx2);}
+.ae-as{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 6px;padding:8px 10px;border:1px solid rgba(141,92,196,.45);border-radius:6px;background:rgba(141,92,196,.07);}
+.ae-as select{min-height:38px;}
+.ae-pk{margin:6px 0;}
+.ae-if .ae-ct select,.ae-if .ae-ct input{width:auto;flex:0 1 auto;}
+.ae-as select{width:auto;flex:0 1 auto;}
+.ae-ct{flex-wrap:wrap;max-width:100%;}
 
 /* ── run.css ── */
 /* ═══════════════════════════════════════════════════════
@@ -2919,6 +2942,34 @@ button.ae-lk-r:hover{background:rgba(255,255,255,.045);}
 .rn .trk-head{top:0;}
 .rn-tree.flash{animation:rnFlash 1.4s ease-out;}
 @keyframes rnFlash{0%,40%{box-shadow:inset 0 0 0 2px var(--gold),0 0 30px -6px var(--glow);}100%{box-shadow:none;}}
+/* 👥 Персонажи приключения — по местам */
+.rn-pc .rn-sh{margin-bottom:4px;}
+.rn-pc-p{margin:0 0 8px 18px;font-size:12.5px;color:var(--tx3);}
+.rn-pc-m{margin-left:4px;padding:1px 7px;border:1px solid var(--teal);border-radius:2px;font-family:var(--f-body,inherit);font-size:11px;letter-spacing:.06em;color:var(--teal3);}
+.rn-pc.cur .rn-sh{color:var(--gold2);}
+.rn-row.off{opacity:.55;}
+.rn-rt b i{font-style:italic;font-weight:400;font-size:14px;}
+/* ⑂ Сюжетные ветки (v11.12) */
+.rn-brt{display:inline-flex;align-items:center;gap:4px;margin:0 0 6px 8px;padding:1px 8px;border:1px solid rgba(141,92,196,.55);border-radius:2px;background:rgba(141,92,196,.12);font-size:12px;letter-spacing:.02em;text-transform:none;color:#c8a8ec;vertical-align:middle;}
+.rn-brt.off{opacity:.7;border-style:dashed;}
+.rn-brw>.rn-brt{margin-left:0;}
+.rn-ln-w .rn-brt{margin:0 0 0 8px;}
+.rn-brl{color:#c8a8ec;text-decoration-color:rgba(200,168,236,.45);}
+.rn-broff{margin:0 0 10px;padding:8px 12px;border:1px dashed var(--line2);border-radius:2px;opacity:.6;}
+.rn-broff-h{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx3);margin-bottom:4px;}
+.rn-pick{border-color:rgba(141,92,196,.6);box-shadow:inset 0 0 0 2px var(--bg1),inset 0 0 0 3px rgba(141,92,196,.25);}
+.rn-pick .rn-blk-h{color:#c8a8ec;font-size:14px;}
+.rn-pk{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;}
+.rn-pk-b{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-height:58px;padding:10px 14px;border:1px solid var(--line3);border-radius:2px;background:var(--bg2);text-align:left;}
+.rn-pk-b b{font-size:17px;color:var(--tx);}
+.rn-pk-b small{font-size:12.5px;color:var(--tx2);}
+.rn-pk-b.on{border-color:#a77fd6;background:rgba(141,92,196,.2);box-shadow:0 0 12px rgba(141,92,196,.35);}
+.rn-pk-b.on b::before{content:'⑂ ';color:#c8a8ec;}
+.rn-pk-b.dim{opacity:.5;}
+.rn-pk-n{margin-top:8px;font-size:13px;color:var(--tx3);}
+.rn-var.pick .grow{color:var(--tx);}
+.rn-vpk{min-height:40px;padding:4px 12px;border:1px solid var(--line2);border-radius:2px;background:var(--bg2);font-size:14px;color:var(--tx2);max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rn-vpk.on{border-color:#a77fd6;color:#d9c2f2;}
 
 </style>
 </head>
@@ -2943,7 +2994,7 @@ button.ae-lk-r:hover{background:rgba(255,255,255,.045);}
 /* ═══════════════════════════════════════════════════════
    ЯДРО: утилиты, хранилище, события, модалки, меню, тосты, драг
 ═══════════════════════════════════════════════════════ */
-const APP_VERSION = '11.11.0';
+const APP_VERSION = '11.12.0';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const ESC_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -5280,7 +5331,7 @@ const ADV_BLOCKS = {
   read: { icon: '📢', label: 'Зачитать' }, line: { icon: '💬', label: 'Реплика' }, check: { icon: '🎲', label: 'Проверка' },
   if: { icon: '🎭', label: 'Если → то' }, note: { icon: '🔒', label: 'Заметка мастера' }, clue: { icon: '🧭', label: 'Зацепка' },
   loot: { icon: '💰', label: 'Лут' }, fight: { icon: '⚔', label: 'Бой' }, wiki: { icon: '📚', label: 'Вики' },
-  handout: { icon: '📜', label: 'Раздатка' }, fate: { icon: '🔮', label: 'Тайна здесь' }, table: { icon: '📋', label: 'Таблица' },
+  handout: { icon: '📜', label: 'Раздатка' }, fate: { icon: '🔮', label: 'Тайна здесь' }, table: { icon: '📋', label: 'Таблица' }, pick: { icon: '🔀', label: 'Развилка' },
 };
 /** Когда зачитывать — ширма сама выберет вариант по состоянию игры */
 const ADV_READ = { always: 'всегда', first: 'первый раз', again: 'снова', near: 'подход', day: 'днём', night: 'ночью', custom: 'своя пометка' };
@@ -5313,8 +5364,66 @@ const ADV_SKILL_ALIAS = { 'восприятие': 'Внимательность'
   'интуиция': 'Проницательность', 'артистизм': 'Выступление', 'исполнение': 'Выступление', 'незаметность': 'Скрытность', 'обращение с животными': 'Уход за животными' };
 const advSkill = v => asStr(v).replace(/(^|[^а-яё])(восприятие|внимание|расследование|тайная магия|тайные знания|аркана|интуиция|артистизм|исполнение|незаметность|обращение с животными)(?=$|[^а-яё])/gi,
   (m, pre, w) => pre + ADV_SKILL_ALIAS[w.toLowerCase()]);
-/** Действие на ширме (последствие события, исход проверки): состояние или место персонажа, включить событие, шаг цели, изменить счётчик */
-const advSet = (x, ref) => ({ who: ref(x.who), status: advStatus(x.status), at: ref(x.at), ev: ref(x.ev), goal: ref(x.goal), v: ref(x.v ?? x.var), n: clamp(int(x.n), -9999, 9999), op: oneOf(x.op, ['add', 'set'], 'add') });
+/** Действие на ширме (последствие события, исход проверки): состояние или место персонажа, включить событие, шаг цели, изменить счётчик, поставить развилку (is — вариант) */
+const advSet = (x, ref) => ({ who: ref(x.who), status: advStatus(x.status), at: ref(x.at), ev: ref(x.ev), goal: ref(x.goal), v: ref(x.v ?? x.var), n: clamp(int(x.n), -9999, 9999), op: oneOf(x.op, ['add', 'set'], 'add'),
+  is: asStr(x.is ?? x.pick).trim() });
+
+/* ── Сюжетные ветки (v11.12, ADVENTURE_DESIGN.md §13). Условие — {any, l: [условия]}, пусто — null («всегда»).
+   Условие: k 'v' — счётчик, флаг или развилка (развилка: is — вариант; число: op, val), 'who' + status, 'ev' (сыграно), 'seen' (отряд был в месте), 'goal' (выполнена); not — наоборот.
+   Короткая запись для импорта: «mill=burned & taren:dead & !seen:M2», «|» — хотя бы одно ── */
+const ADV_COND_K = { v: '⑂ Ветка, флаг или счётчик', who: '👤 Состояние персонажа', ev: '⚡ Событие сыграно', seen: '📍 Отряд был в месте', goal: '🎯 Цель выполнена' };
+function advCondTerm(x, ref) {
+  if (typeof x === 'string') {
+    let s = x.trim(), not = false; if (!s) return null; if (s[0] === '!') { not = true; s = s.slice(1).trim(); }
+    const m = s.match(/^(seen|ev|goal|был|событие|цель)\s*:\s*(.+)$/i);
+    if (m) { const k = { был: 'seen', событие: 'ev', цель: 'goal' }[m[1].toLowerCase()] || m[1].toLowerCase(); return advCondTerm({ [k]: m[2], not }, ref); }
+    const c = s.match(/^(.+?)\s*(>=|<=|!=|=|>|<|:)\s*(.+)$/);
+    if (!c) return advCondTerm({ v: s, op: '=', val: 1, not }, ref); // просто «флаг»
+    if (c[2] === ':') return advCondTerm({ who: c[1], status: c[3], not }, ref);
+    const val = c[3].trim(), isNum = /^-?\d+$/.test(val), ne = c[2] === '!=';
+    return advCondTerm({ v: c[1], op: ne ? '=' : c[2], val: isNum ? int(val) : 0, is: isNum ? '' : val, not: ne ? !not : not }, ref);
+  }
+  if (!x || typeof x !== 'object') return null;
+  const not = !!x.not, v = x.v ?? x.var;
+  if (v) return { k: 'v', v: ref(v), op: oneOf(x.op, Object.keys(ADV_OPS), '='), val: clamp(int(x.val ?? (x.is == null || x.is === '' ? 1 : 0)), -9999, 9999), is: asStr(x.is).trim(), not };
+  if (x.who) { const st = advStatus(x.status); return st ? { k: 'who', who: ref(x.who), status: st, not } : null; }
+  if (x.ev) return { k: 'ev', ev: ref(x.ev), not: x.done === false ? !not : not };
+  if (x.seen ?? x.at) return { k: 'seen', seen: ref(x.seen ?? x.at), not };
+  if (x.goal) return { k: 'goal', goal: ref(x.goal), not: x.done === false ? !not : not };
+  return null;
+}
+/** Условие из импорта или из книги: строка, список (все), {all}/{any}, {l, any} или одно условие */
+function advCond(c, ref) {
+  if (c == null || c === '' || c === true) return null;
+  let any = false, l;
+  if (typeof c === 'string') { any = c.includes('|'); l = c.split(any ? '|' : '&'); }
+  else if (Array.isArray(c)) l = c;
+  else if (typeof c === 'object') { if (Array.isArray(c.any)) { any = true; l = c.any; } else if (Array.isArray(c.all)) l = c.all; else if (Array.isArray(c.l)) { any = !!c.any; l = c.l; } else l = [c]; }
+  else return null;
+  l = l.map(x => advCondTerm(x, ref)).filter(Boolean).slice(0, 12);
+  return l.length ? { any, l } : null;
+}
+/** Вариант развилки по id или названию */
+function advPickOpt(v, s) {
+  const k = String(s ?? '').trim().toLowerCase(); if (!k || !v?.opts) return null;
+  const kk = advKey(s).toLowerCase(); return v.opts.find(o => o.id.toLowerCase() === k || o.id.toLowerCase() === kk || o.title.trim().toLowerCase() === k) || null;
+}
+/** Ветки после разбора ссылок: вариант развилки — id её варианта, у флага и числа — op/val; неизвестный вариант — условие убрать */
+function advBranchFix(a) {
+  const V = new Map(a.vars.map(v => [v.id, v]));
+  const term = t => { if (t.k !== 'v') return true; const v = V.get(t.v); if (!v) return false;
+    if (v.kind === 'pick') { const o = advPickOpt(v, t.is || (t.val ? String(t.val) : '')); if (!o) return false; t.is = o.id; t.op = '='; t.val = 0; return true; }
+    if (t.is) { if (v.kind !== 'flag') return false; t.val = /^(нет|no|false|0|off)$/i.test(t.is) ? 0 : 1; t.is = ''; t.op = '='; }
+    if (v.kind === 'flag') { t.op = '='; t.val = t.val ? 1 : 0; } return true; };
+  const cond = c => { if (!c) return null; c.l = c.l.filter(term); return c.l.length ? c : null; };
+  const sets = l => (l || []).forEach(s => { const v = V.get(s.v); s.is = v?.kind === 'pick' ? advPickOpt(v, s.is)?.id || v.opts[0]?.id || '' : ''; });
+  const blk = b => { b.if = cond(b.if); if (b.t === 'check') ['fail', 'ok', 'sup'].forEach(k => sets(b.out[k]));
+    if (b.t === 'pick') { const v = V.get(b.v); if (v?.kind !== 'pick') b.v = ''; const o = {}; Object.entries(b.out || {}).forEach(([k, l]) => { const op = v && advPickOpt(v, k); if (op) { sets(l); o[op.id] = l; } }); b.out = o; } };
+  a.places.forEach(p => { p.routes.forEach(r => { r.if = cond(r.if); }); p.blocks.forEach(blk); });
+  a.people.forEach(w => { w.posts.forEach(q => { q.if = cond(q.if); }); w.blocks.forEach(blk); });
+  a.events.forEach(e => { e.if = cond(e.if); e.out.forEach(o => sets(o.set)); e.blocks.forEach(blk); });
+  a.goals.forEach(g => g.blocks.forEach(blk));
+}
 
 /* ── id внутри приключения: латиница. Кириллица из нейросети («К84», «ирина») — в похожие латинские буквы, остальное — транслитом ── */
 const ADV_TR = { А: 'A', В: 'B', Е: 'E', Ё: 'E', К: 'K', М: 'M', Н: 'H', О: 'O', Р: 'P', С: 'C', Т: 'T', Х: 'X', У: 'Y', а: 'a', е: 'e', ё: 'e', о: 'o', р: 'p', с: 'c', у: 'y', х: 'x', к: 'k', м: 'm', т: 't', н: 'h',
@@ -5329,7 +5438,7 @@ function normAdvBlock(b, raw = false) {
   const s = asStr, ref = v => raw ? asStr(v).trim() : advKey(v), lref = v => raw ? asStr(v).trim() : cleanId(v);
   const list = v => Array.isArray(v) ? v : v != null && v !== '' ? [v] : [];
   const refs = v => [...new Set(list(v).map(ref).filter(Boolean))], lrefs = (v, dup) => { const l = list(v).map(lref).filter(Boolean); return dup ? l : [...new Set(l)]; };
-  const o = { t, id: cleanId(b.id) || uid('k') };
+  const o = { t, id: cleanId(b.id) || uid('k'), if: advCond(b.if, ref) };
   switch (t) {
     case 'read': return { ...o, k: oneOf(b.k, Object.keys(ADV_READ), 'always'), w: s(b.w), text: s(b.text) };
     case 'line': return { ...o, who: ref(b.who), k: oneOf(b.k, Object.keys(ADV_LINE), 'topic'), w: s(b.w), text: s(b.text), to: refs(b.to) };
@@ -5347,6 +5456,9 @@ function normAdvBlock(b, raw = false) {
     case 'handout': return { ...o, title: s(b.title), text: s(b.text) };
     case 'fate': return { ...o, slot: ref(b.slot), text: s(b.text) };
     case 'table': return { ...o, table: ref(b.table) };
+    case 'pick': { // развилка: кнопки — варианты развилки v; у варианта — свои действия на ширме (out[вариант])
+      const out = b.out && typeof b.out === 'object' && !Array.isArray(b.out) ? b.out : {}, sets = v => (Array.isArray(v) ? v : []).filter(x => x && typeof x === 'object').map(x => advSet(x, ref));
+      return { ...o, v: ref(b.v ?? b.var), q: s(b.q ?? b.text), out: Object.fromEntries(Object.entries(out).filter(([k]) => k && k.length < 80 && !/^(__proto__|constructor|prototype)$/.test(k)).map(([k, l]) => [k, sets(l)])) }; }
   }
   return null;
 }
@@ -5367,16 +5479,17 @@ function normAdv(d, { raw = false } = {}) {
   const blocks = x => arr(x).map(b => normAdvBlock(b, raw)).filter(Boolean);
   a.places = arr(a.places).map(p => ({ id: iid(p.id, 'p'), ...oid(p), code: asStr(p.code), title: asStr(p.title ?? p.name) || 'Место', parent: ref(p.parent) || null,
     region: !!p.region, lvl: asStr(p.lvl), tag: oneOf(p.tag, Object.keys(SM_TAGS), ''), color: safeColor(p.color),
-    routes: arr(p.routes).map(r => ({ to: ref(r.to), label: asStr(r.label), mins: Math.max(0, int(r.mins)), road: !!r.road, terrain: oneOf(r.terrain, EXP_TERRAINS.map(x => x.id), '') })).filter(r => r.to),
+    routes: arr(p.routes).map(r => ({ to: ref(r.to), label: asStr(r.label), mins: Math.max(0, int(r.mins)), road: !!r.road, terrain: oneOf(r.terrain, EXP_TERRAINS.map(x => x.id), ''), if: advCond(r.if, ref) })).filter(r => r.to),
     tables: refs(p.tables), blocks: blocks(p.blocks), x: int(p.x), y: int(p.y) }));
   a.people = arr(a.people).map(w => ({ id: iid(w.id, 'w'), ...oid(w), name: asStr(w.name ?? w.title) || 'Персонаж', aka: asStr(w.aka), role: asStr(w.role), group: !!w.group,
     home: ref(w.home) || null, npc: (raw ? asStr(w.npc).trim() : cleanId(w.npc)) || null, stat: asStr(w.stat), how: asStr(w.how), wants: asStr(w.wants), joins: asStr(w.joins),
-    rel: arr(w.rel).map(r => ({ to: ref(r.to), k: oneOf(r.k, Object.keys(ADV_REL), 'other'), note: asStr(r.note) })).filter(r => r.to), blocks: blocks(w.blocks) }));
+    rel: arr(w.rel).map(r => ({ to: ref(r.to), k: oneOf(r.k, Object.keys(ADV_REL), 'other'), note: asStr(r.note) })).filter(r => r.to),
+    posts: arr(w.posts).map(x => ({ at: ref(x.at), if: advCond(x.if, ref) })).filter(x => x.at), blocks: blocks(w.blocks) })); // posts — где по веткам
   a.events = arr(a.events).map(e => { const w = e.when && typeof e.when === 'object' ? e.when : { t: e.when };
     return { id: iid(e.id, 'e'), ...oid(e), title: asStr(e.title) || 'Событие',
       when: { t: oneOf(w.t, Object.keys(ADV_WHEN), 'manual'), at: /^\d{1,2}:\d{2}$/.test(asStr(w.at)) ? asStr(w.at) : '', days: Math.max(0, int(w.days)), from: asStr(w.from), cond: asStr(w.cond),
         v: ref(w.v ?? w.var), op: oneOf(w.op, Object.keys(ADV_OPS), '>='), val: clamp(int(w.val), -9999, 9999) },
-      place: ref(e.place) || null, who: refs(e.who), stop: asStr(e.stop), blocks: blocks(e.blocks),
+      place: ref(e.place) || null, who: refs(e.who), stop: asStr(e.stop), if: advCond(e.if ?? w.if, ref), blocks: blocks(e.blocks),
       out: arr(e.out).map(o => ({ text: asStr(o.text), set: arr(o.set).map(x => advSet(x, ref)) })) }; });
   a.goals = arr(a.goals).map(g => ({ id: iid(g.id, 'g'), ...oid(g), title: asStr(g.title) || 'Цель', owner: ref(g.owner), giver: ref(g.giver),
     steps: (Array.isArray(g.steps) ? g.steps : []).map(asStr).filter(Boolean), reward: asStr(g.reward), blocks: blocks(g.blocks) }));
@@ -5386,9 +5499,16 @@ function normAdv(d, { raw = false } = {}) {
     rows: arr(t.rows).map(r => ({ r: asStr(r.r), text: asStr(r.text), once: !!r.once })) }));
   // счётчики и флаги модуля: известность фракции, безумие, дни осады, «Староста знает правду»
   const lim = v => v == null || v === '' ? null : clamp(int(v), -9999, 9999);
-  a.vars = arr(a.vars).map(v => ({ id: iid(v.id, 'v'), ...oid(v), title: asStr(v.title ?? v.name) || 'Счётчик', kind: oneOf(v.kind, ['num', 'flag'], 'num'),
-    start: clamp(int(v.start), -9999, 9999), min: lim(v.min), max: lim(v.max), note: asStr(v.note) }));
-  a.vars.forEach(v => { if (v.kind === 'flag') { v.start = v.start ? 1 : 0; v.min = 0; v.max = 1; } });
+  // развилка (v11.12): варианты opts, def — вариант в начале игры (пусто — ещё не решено)
+  a.vars = arr(a.vars).map(v => {
+    const kind = oneOf(v.kind, ['num', 'flag', 'pick'], Array.isArray(v.opts) && v.opts.length ? 'pick' : 'num'), ou = new Set();
+    const opts = kind !== 'pick' || !Array.isArray(v.opts) ? [] : v.opts.map(o => typeof o === 'string' ? { title: o } : o).filter(o => o && typeof o === 'object')
+      .map(o => { let id = advKey(o.id ?? o.title); if (!id || ou.has(id)) id = uid('o'); ou.add(id); return { id, title: asStr(o.title ?? o.id) || 'Вариант' }; });
+    const d = kind === 'pick' ? advPickOpt({ opts }, v.def ?? (typeof v.start === 'string' ? v.start : '')) : null;
+    return { id: iid(v.id, 'v'), ...oid(v), title: asStr(v.title ?? v.name) || (kind === 'pick' ? 'Развилка' : 'Счётчик'), kind,
+      start: kind === 'pick' ? 0 : clamp(int(v.start), -9999, 9999), min: lim(v.min), max: lim(v.max), note: asStr(v.note), opts, def: d ? d.id : '' };
+  });
+  a.vars.forEach(v => { if (v.kind === 'flag') { v.start = v.start ? 1 : 0; v.min = 0; v.max = 1; } if (v.kind === 'pick') { v.min = null; v.max = null; } });
   // схема: где мастер поставил узел руками ({id карточки: {x, y}}); при импорте раскладка своя — позиции не переносятся
   const pos = a.pos && typeof a.pos === 'object' && !Array.isArray(a.pos) ? a.pos : {}; a.pos = {};
   if (raw) return a;
@@ -5396,6 +5516,7 @@ function normAdv(d, { raw = false } = {}) {
   const kind = new Map(); ADV_KINDS.forEach(k => a[k].forEach(c => kind.set(c.id, ADV_KIND1[k])));
   advWalk(a, (v, w, k) => { const kk = kind.get(v); return kk && (k === 'any' || kk === k) ? v : null; }, (k, v) => cleanId(v) || null);
   Object.entries(pos).forEach(([k, v]) => { if (kind.has(k) && v && typeof v === 'object') a.pos[k] = { x: Math.round(clamp(num(v.x), -1e5, 1e5)), y: Math.round(clamp(num(v.y), -1e5, 1e5)) }; });
+  advBranchFix(a);
   const pid = new Map(a.places.map(p => [p.id, p]));
   a.places.forEach(p => { const seen = new Set([p.id]); let q = p.parent; while (q) { if (seen.has(q)) { p.parent = null; break; } seen.add(q); q = pid.get(q)?.parent; } });
   return a;
@@ -5406,7 +5527,11 @@ function advWalk(a, fi, fl) {
   const one = (v, w, k) => v ? fi(v, w, k) || null : null, many = (l, w, k) => [...new Set((l || []).map(v => fi(v, w, k)).filter(Boolean))];
   const lone = (k, v, w) => v ? fl(k, v, w) || null : null, lmany = (k, l, w, dup) => { const r = (l || []).map(v => fl(k, v, w)).filter(Boolean); return dup ? r : [...new Set(r)]; };
   const set = (s, w) => { s.who = one(s.who, w, 'person') || ''; s.at = one(s.at, w, 'place') || ''; s.ev = one(s.ev, w, 'event') || ''; s.goal = one(s.goal, w, 'goal') || ''; s.v = one(s.v, w, 'var') || ''; };
+  const KK = { v: 'var', who: 'person', ev: 'event', seen: 'place', goal: 'goal' };
+  const cond = (c, w) => { if (!c) return null; c.l = c.l.filter(t => { t[t.k] = one(t[t.k], w + ' · условие ветки', KK[t.k]) || ''; return !!t[t.k]; }); return c.l.length ? c : null; };
   const blk = (b, w) => {
+    b.if = cond(b.if, w);
+    if (b.t === 'pick') { b.v = one(b.v, w, 'var') || ''; Object.values(b.out || {}).forEach(l => l.forEach(s => set(s, w))); }
     if (b.t === 'line') { b.who = one(b.who, w, 'person') || ''; b.to = many(b.to, w, 'any'); }
     if (b.t === 'clue') b.to = many(b.to, w, 'any');
     if (b.t === 'fate') b.slot = one(b.slot, w, 'fate') || '';
@@ -5417,11 +5542,12 @@ function advWalk(a, fi, fl) {
     if (b.t === 'wiki') b.ids = lmany('wiki', b.ids, w);
   };
   a.places.forEach(p => { const w = `место «${p.title}»`; p.parent = one(p.parent, w, 'place'); if (p.parent === p.id) p.parent = null;
-    p.routes = p.routes.map(r => ({ ...r, to: one(r.to, w, 'place') })).filter(r => r.to && r.to !== p.id); p.tables = many(p.tables, w, 'table'); p.blocks.forEach(b => blk(b, w)); });
+    p.routes = p.routes.map(r => ({ ...r, to: one(r.to, w, 'place'), if: cond(r.if, w) })).filter(r => r.to && r.to !== p.id); p.tables = many(p.tables, w, 'table'); p.blocks.forEach(b => blk(b, w)); });
   a.people.forEach(x => { const w = `персонаж «${x.name}»`; x.home = one(x.home, w, 'place'); x.npc = lone('npc', x.npc, w);
-    x.rel = x.rel.map(r => ({ ...r, to: one(r.to, w, 'person') })).filter(r => r.to && r.to !== x.id); x.blocks.forEach(b => blk(b, w)); });
+    x.rel = x.rel.map(r => ({ ...r, to: one(r.to, w, 'person') })).filter(r => r.to && r.to !== x.id);
+    x.posts = (x.posts || []).map(q => ({ at: one(q.at, w, 'place'), if: cond(q.if, w) })).filter(q => q.at); x.blocks.forEach(b => blk(b, w)); });
   a.events.forEach(e => { const w = `событие «${e.title}»`; e.place = one(e.place, w, 'place'); e.who = many(e.who, w, 'person'); e.when.from = one(e.when.from, w, 'any') || '';
-    e.when.v = one(e.when.v, w, 'var') || '';
+    e.when.v = one(e.when.v, w, 'var') || ''; e.if = cond(e.if, w);
     e.out.forEach(o => o.set.forEach(s => set(s, w)));
     e.blocks.forEach(b => blk(b, w)); });
   a.goals.forEach(g => { const w = `цель «${g.title}»`; g.owner = one(g.owner, w, 'person') || ''; g.giver = one(g.giver, w, 'person') || ''; g.blocks.forEach(b => blk(b, w)); });
@@ -5609,25 +5735,27 @@ const ADVIO = {
 };
 
 /** Пример для нейросети и для «Шаблона JSON»: свой маленький модуль, не пересказ чужой книги */
-const TEMPLATE_ADV = { title: 'Мельничный Брод (пример)', about: 'Короткий пример формата: место с вложенными, персонажи с репликами, проверка, зацепка, событие, цель, тайна, счётчик.',
+const TEMPLATE_ADV = { title: 'Мельничный Брод (пример)', about: 'Короткий пример формата: место с вложенными, персонажи с репликами, проверка, зацепка, событие, цель, тайна, счётчик, развилка с веткой.',
   places: [
     { id: 'vale', title: 'Тихая долина', region: true },
     { id: 'M', code: 'M', title: 'Мельничный Брод', parent: 'vale', lvl: '1–3', routes: [{ to: 'X', label: 'Старый тракт на север', mins: 90, road: true }],
       blocks: [{ t: 'read', k: 'first', text: 'Скрипит мельничное колесо — единственный звук над рекой. Ставни закрыты, хотя ещё светло.\n\n[Что вы делаете?]' }, { t: 'read', k: 'night', text: 'Ни огонька. Над болотом за рекой мерцают бледные огни.' }] },
     { id: 'M2', code: 'M2', title: 'Мельница', parent: 'M',
       blocks: [{ t: 'read', k: 'near', text: 'Дверь мельницы сорвана с петель и лежит в траве.' },
-        { t: 'check', skill: 'Внимательность', dc: 11, dcSuper: 16, fail: 'Трава вытоптана, чьи следы — не разобрать.', success: 'Следы ведут к реке: мельника тащили.', super: 'Следы босые и перепончатые — с болота.' }] },
+        { t: 'check', skill: 'Внимательность', dc: 11, dcSuper: 16, fail: 'Трава вытоптана, чьи следы — не разобрать.', success: 'Следы ведут к реке: мельника тащили.', super: 'Следы босые и перепончатые — с болота.' },
+        { t: 'read', k: 'again', text: 'Над рекой торчит чёрный остов: мельница сгорела дотла.', if: 'mill=сожгли' },
+        { t: 'pick', v: 'mill', q: 'Что сделали с мельницей?', out: { 'сожгли': [{ var: 'alarm', n: 2 }] } }] },
     { id: 'X', code: 'X', title: 'Развилка у камня', parent: 'vale' }],
   people: [{ id: 'mira', name: 'Мира', role: 'дочь мельника', home: 'M', how: 'Говорит быстро, сбивается, держит в руках отцовский платок.', wants: 'найти отца', joins: 'если пообещают взять её к болоту',
     rel: [{ to: 'taren', k: 'kin', note: 'брат' }],
     blocks: [{ t: 'line', k: 'first', text: '«Отец пропал третьего дня. Дверь была открыта — изнутри.»' }, { t: 'line', k: 'topic', w: 'об отце', text: '«Он ходил к болоту за травами. Помогите его найти.»', to: ['find'] }] },
-    { id: 'taren', name: 'Тарен', role: 'брат Миры, стражник', home: 'M', stat: 'стражник',
+    { id: 'taren', name: 'Тарен', role: 'брат Миры, стражник', home: 'M', stat: 'стражник', posts: [{ at: 'X', if: 'mill=сожгли' }],
       blocks: [{ t: 'clue', text: 'Огни на болоте зажигаются ровно в полночь', to: ['lights'], how: 'если угостить элем' }] }],
   events: [{ id: 'lights', title: 'Огни на болоте', when: { t: 'every', at: '00:00' }, place: 'M', blocks: [{ t: 'read', k: 'always', text: 'Над болотом загораются бледные огни и медленно плывут к реке…' }],
     out: [{ text: 'В деревне тревожнее', set: [{ var: 'alarm', n: 1 }] }] }],
   goals: [{ id: 'find', title: 'Найти мельника', giver: 'mira', steps: ['Осмотреть мельницу', 'Пройти к болоту'], reward: 'Мира отдаёт отцовскую карту долины' }],
   fates: [{ id: 'key', title: 'Где ключ от склепа', say: 'Ключ мог спрятать только тот, кто знал о склепе.', opts: [{ card: 'У мельника', hint: 'Ищите там, где мелют зерно.', to: 'M2' }, { card: 'У камня', hint: 'Под камнем у развилки.', to: 'X' }] }],
-  vars: [{ id: 'alarm', title: 'Тревога в деревне', start: 0, min: 0, max: 5 }] };
+  vars: [{ id: 'alarm', title: 'Тревога в деревне', start: 0, min: 0, max: 5 }, { id: 'mill', title: 'Мельница', kind: 'pick', opts: ['не тронули', 'сожгли'] }] };
 
 // ── share.js ──
 /* ═══════════════════════════════════════════════════════
@@ -9294,7 +9422,7 @@ ACT.aeDrTake = el => {
   const a = curAdv(), st = rnSt(), d = st.drafts.find(x => x.id === el.dataset.id); if (!d) return;
   const at = a.places.some(p => p.id === d.at) ? d.at : null, note = txt => normAdvBlock({ t: 'note', text: txt });
   let id = null;
-  if (d.k === 'person') { const w = { id: uid('w'), name: d.title.trim() || 'Новый персонаж', aka: '', role: '', group: false, home: at, npc: null, stat: '', how: '', wants: '', joins: '', rel: [], blocks: d.text.trim() ? [note(d.text)] : [] }; a.people.push(w); id = w.id; AE.tab = 'people'; }
+  if (d.k === 'person') { const w = { id: uid('w'), name: d.title.trim() || 'Новый персонаж', aka: '', role: '', group: false, home: at, npc: null, stat: '', how: '', wants: '', joins: '', rel: [], posts: [], blocks: d.text.trim() ? [note(d.text)] : [] }; a.people.push(w); id = w.id; AE.tab = 'people'; }
   else if (d.k === 'place') { const p = { id: uid('p'), code: '', title: d.title.trim() || 'Новое место', parent: at, region: false, lvl: '', tag: '', color: '', routes: [], tables: [], blocks: d.text.trim() ? [note(d.text)] : [], x: 0, y: 0 }; a.places.push(p); id = p.id; AE.tab = 'places'; if (at) AE.fold.delete(at); }
   else { const txt = [d.title.trim(), d.text.trim()].filter(Boolean).join(': ') || `Пометка из игры · день ${dayOf(d.t)}, ${expClock(d.t)}`; const p = a.places.find(x => x.id === at);
     if (p) { p.blocks.push(note(txt)); id = p.id; AE.tab = 'places'; } else a.about = [a.about, txt].filter(Boolean).join('\n\n'); }
@@ -9330,7 +9458,7 @@ function aeMoreHTML(a) {
     ${head('🎯 Цели и замыслы', a.goals.length, 'aeNewGoal')}${gs.map(g => row(g, g.owner ? '🕸' : '🎯', g.title, [g.owner ? 'замысел: ' + aeLabel(a, g.owner) : g.giver ? 'даёт ' + aeLabel(a, g.giver) : 'задание отряда', `${g.steps.length} ${plural(g.steps.length, 'шаг', 'шага', 'шагов')}`].join(' · '))).join('') || `<div class="muted small">${q ? 'Не нашлось' : '— нет —'}</div>`}
     ${head('🔮 Тайны', a.fates.length, 'aeNewFate')}${fs.map(f => row(f, '🔮', f.title, `${f.opts.length} ${plural(f.opts.length, 'вариант', 'варианта', 'вариантов')}`)).join('') || none}
     ${head('📋 Таблицы', a.tables.length, 'aeNewTable')}${ts.map(t => row(t, '📋', t.title, `${t.dice} · ${t.rows.length} ${plural(t.rows.length, 'строка', 'строки', 'строк')}${t.use ? ' · ' + ADV_TABLE_USE[t.use] : ''}`)).join('') || none}
-    ${head('📊 Счётчики и флаги', a.vars.length, 'aeNewVar')}${a.vars.filter(v => hit(v.title)).map(v => row(v, v.kind === 'flag' ? '⚑' : '📊', v.title, aeVarLbl(v))).join('') || none}`;
+    ${head('⑂ Развилки, флаги, счётчики', a.vars.length, 'aeNewVar')}${a.vars.filter(v => hit(v.title)).map(v => row(v, v.kind === 'pick' ? '⑂' : v.kind === 'flag' ? '⚑' : '📊', v.title, aeVarLbl(v))).join('') || none}`;
 }
 
 /* ── Центр: обзор приключения, карточка места, карточка персонажа ── */
@@ -9366,7 +9494,8 @@ function aePlaceHTML(a, p) {
         <label class="ae-mins"><input type="number" min="0" data-bind="routes.${i}.mins" value="${r.mins || ''}" placeholder="0" aria-label="Минут в пути"> мин</label>
         <label class="chk"><input type="checkbox" data-bind="routes.${i}.road" ${r.road ? 'checked' : ''}> дорога</label>
         <select data-bind="routes.${i}.terrain" aria-label="Местность для броска экспедиции" title="Местность — для броска столкновений экспедиции, если у модуля нет своих таблиц"><option value="">местность: ${r.road ? 'тракт' : 'лес'}</option>${EXP_TERRAINS.map(t => `<option value="${t.id}" ${r.terrain === t.id ? 'selected' : ''}>${esc(t.label)}</option>`).join('')}</select>
-        <button class="btn xs danger" data-act="aeArrDel" data-arr="routes" data-i="${i}" aria-label="Убрать дорогу">✕</button></div>`).join('')
+        ${r.if ? '' : `<button class="btn xs ghost ae-ifb" data-act="aeCondAdd" data-p="routes.${i}" title="Дорога есть только в ветке…" aria-label="Условие ветки">⑂</button>`}
+        <button class="btn xs danger" data-act="aeArrDel" data-arr="routes" data-i="${i}" aria-label="Убрать дорогу">✕</button></div>${aeCondHTML(a, r.if, `routes.${i}`, { lead: 'дорога есть, если' })}`).join('')
         || '<div class="muted small mb">Нет дорог. Дорога — путь в другое место со временем в пути: на ширме по ней пойдёт проверка столкновений.</div>'}
       <button class="btn sm" data-act="aeRouteAdd">＋ Дорога</button></div></section>
     <section class="sec ae-sec"><div class="sec-h">📋 Таблицы места</div><div class="sec-b">
@@ -9396,6 +9525,11 @@ function aePersonHTML(a, w) {
         <button class="btn xs danger" data-act="aeArrDel" data-arr="rel" data-i="${i}" aria-label="Убрать связь">✕</button></div>`).join('')
         || '<div class="muted small mb">Родня, хозяин, враги — те, без кого его не сыграть.</div>'}
       <button class="btn sm" data-act="aeRelAdd">＋ Связь</button></div></section>
+    <section class="sec ae-sec"><div class="sec-h">⑂ Где по веткам</div><div class="sec-b">
+      ${w.posts.map((q, i) => `<div class="ae-out"><div class="ae-route"><span class="lbl">Здесь</span><select class="grow" data-bind="posts.${i}.at" data-ch="aeLinks" aria-label="Где">${aePlaceOpts(a, q.at)}</select>
+          <button class="btn xs danger" data-act="aeArrDel" data-arr="posts" data-i="${i}" aria-label="Убрать">✕</button></div>${aeCondHTML(a, q.if, `posts.${i}`, { empty: 'без условия — всегда здесь, «где обычно» не действует' })}</div>`).join('')
+        || '<div class="muted small mb">Если от выбора игроков зависит, где персонаж: «помогли страже — Тарен в казарме». Первое подходящее правило сильнее «где обычно»; ручное перемещение на ширме — сильнее всего.</div>'}
+      <button class="btn sm" data-act="aePostAdd">＋ Где в ветке</button></div></section>
     ${aeBlocksHTML(a, w, 'person')}
   </div>`;
 }
@@ -9423,7 +9557,8 @@ function aeEventHTML(a, e) {
     <section class="sec ae-sec"><div class="sec-h">⏱ Когда наступает</div><div class="sec-b">
       <div class="g2"><div class="fld"><label>Как</label><select data-bind="when.t" data-ch="aeRe">${aeOpts(ADV_WHEN, t)}</select></div>
         <div class="fld"><label>Где</label><select data-bind="place" data-ch="aeRe"><option value="">— где угодно: по часам мира —</option>${aePlaceOpts(a, e.place)}</select></div></div>
-      ${when}<p class="small muted mt">${AE_WHEN_HINT[t](e)}</p></div></section>
+      ${when}<p class="small muted mt">${AE_WHEN_HINT[t](e)}</p>
+      ${aeCondHTML(a, e.if, '', { lead: t === 'if' ? 'сработает само, когда' : 'случается, только если', empty: t === 'if' ? 'Условие ветки — событие сработает само, когда оно выполнится' : 'Случается во всех ветках. ＋ — только в некоторых' })}</div></section>
     <div class="fld mt"><label>Кто участвует</label><div class="ae-refs">${e.who.map(id => `<span class="chip">${esc(aeLabel(a, id))}<span class="x" data-act="aeWhoDel" data-v="${esc(id)}" role="button" aria-label="Убрать">✕</span></span>`).join('')}<button class="chip btnlike" data-act="aeWhoAdd">＋ персонаж</button></div></div>
     <div class="fld mt"><label>Как предотвратить</label><textarea class="auto" data-bind="stop" placeholder="Если до полуночи увести детей из деревни…">${esc(e.stop)}</textarea></div>
     ${aeBlocksHTML(a, e, 'event')}
@@ -9438,14 +9573,16 @@ function aeEventHTML(a, e) {
 /** Действие последствия: вид по заполненным полям */
 /** Действие на ширме (последствие события, исход проверки). p — путь к списку действий в карточке: «out.0.set», «blocks.3.out.fail» */
 const aeSetKind = s => s.v ? 'var' : s.ev ? 'ev' : s.goal ? 'goal' : s.at ? 'at' : 'status';
-const AE_SET = { status: '👤 Состояние', at: '📍 Место персонажа', ev: '⚡ Включить событие', goal: '🎯 Шаг цели', var: '📊 Счётчик' };
+const AE_SET = { status: '👤 Состояние', at: '📍 Место персонажа', ev: '⚡ Включить событие', goal: '🎯 Шаг цели', var: '⑂ Ветка или счётчик' };
 function aeSetHTML(a, c, s, p, j) {
   const P = `${p}.${j}`, k = aeSetKind(s), who = `<select data-bind="${P}.who" aria-label="Кто"><option value="">— кто —</option>${aePersonOpts(a, s.who)}</select>`;
   const vr = a.vars.find(x => x.id === s.v);
   const body = k === 'status' ? who + `<select data-bind="${P}.status" aria-label="Состояние">${aeOpts(ADV_STATUS, s.status || 'dead')}</select>`
     : k === 'at' ? who + `<select data-bind="${P}.at" aria-label="Куда">${aePlaceOpts(a, s.at)}</select>`
     : k === 'ev' ? `<select data-bind="${P}.ev" aria-label="Событие">${aeEventOpts(a, s.ev, c.id)}</select>` : k === 'goal' ? `<select data-bind="${P}.goal" aria-label="Цель">${aeGoalOpts(a, s.goal)}</select>`
-    : `<select data-bind="${P}.v" data-ch="aeRe" aria-label="Счётчик">${aeVarOpts(a, s.v)}</select>` + (vr?.kind === 'flag'
+    : `<select data-bind="${P}.v" data-ch="aeSetVar" aria-label="Счётчик">${aeVarOpts(a, s.v)}</select>` + (vr?.kind === 'pick'
+      ? `<select data-bind="${P}.is" aria-label="Вариант">${vr.opts.map(o => `<option value="${esc(o.id)}" ${o.id === s.is ? 'selected' : ''}>${esc(o.title)}</option>`).join('')}</select>`
+      : vr?.kind === 'flag'
       ? `<select data-bind="${P}.n" data-num aria-label="Флаг"><option value="1" ${s.n ? 'selected' : ''}>поднять</option><option value="0" ${s.n ? '' : 'selected'}>снять</option></select>`
       : `<select data-bind="${P}.op" aria-label="Как">${aeOpts({ add: 'прибавить', set: 'сделать равным' }, s.op)}</select><input type="number" data-bind="${P}.n" value="${s.n}" style="width:80px" aria-label="Число">`);
   return `<div class="ae-route ae-set"><select data-ch="aeSetType" data-p="${p}" data-j="${j}" aria-label="Что сделать">${aeOpts(AE_SET, k)}</select>${body}
@@ -9453,20 +9590,47 @@ function aeSetHTML(a, c, s, p, j) {
 }
 /* ── Счётчики и флаги модуля: известность фракции, безумие, дни осады, «Староста знает правду» ── */
 const aeVarOpts = (a, cur) => a.vars.map(v => `<option value="${esc(v.id)}" ${v.id === cur ? 'selected' : ''}>${esc(v.title)}</option>`).join('');
-const aeVarLbl = v => v.kind === 'flag' ? `флаг · ${v.start ? 'поднят' : 'опущен'} в начале` : `с ${v.start}${v.min != null ? ` · от ${v.min}` : ''}${v.max != null ? ` · до ${v.max}` : ''}`;
+const aeVarLbl = v => v.kind === 'pick' ? `развилка · ${v.opts.map(o => o.title).join(' / ') || 'нет вариантов'}` : v.kind === 'flag' ? `флаг · ${v.start ? 'поднят' : 'опущен'} в начале` : `с ${v.start}${v.min != null ? ` · от ${v.min}` : ''}${v.max != null ? ` · до ${v.max}` : ''}`;
 function aeVarHTML(a, v) {
+  if (v.kind === 'pick') return aePickVarHTML(a, v);
   return `<div class="ae-card" data-model="advCard">${aeBack()}
     <div class="ae-ch"><span class="ae-ini big">${v.kind === 'flag' ? '⚑' : '📊'}</span><input class="ae-title-in grow" data-bind="title" value="${esc(v.title)}" placeholder="Известность у гильдии" aria-label="Название"><button class="btn icon" data-act="aeCardMenu" title="Ещё" aria-label="Ещё">⋯</button></div>
     <p class="small muted mt">Счётчик — число, которое модуль копит по ходу игры: известность фракции, безумие, дни осады. Флаг — да или нет: «Староста знает правду».
       На ширме — кнопками сбоку; меняют его и последствия событий, и исходы проверок. Событие «по условию» может сработать само, когда счётчик дойдёт до числа.</p>
-    <div class="g2 mt"><div class="fld"><label>Что это</label><select data-bind="kind" data-ch="aeRe">${aeOpts({ num: '📊 Счётчик — число', flag: '⚑ Флаг — да или нет' }, v.kind)}</select></div>
+    <div class="g2 mt"><div class="fld"><label>Что это</label><select data-bind="kind" data-ch="aeVarKind">${aeOpts(AE_VAR_K, v.kind)}</select></div>
       ${v.kind === 'flag' ? `<div class="fld"><label>В начале игры</label><select data-bind="start" data-num>${aeOpts({ 0: 'опущен', 1: 'поднят' }, String(v.start))}</select></div>`
         : `<div class="fld"><label>В начале игры</label><input type="number" data-bind="start" value="${v.start}"></div>`}</div>
     ${v.kind === 'flag' ? '' : `<div class="g2 mt"><div class="fld"><label>Не меньше (по желанию)</label><input type="number" data-bind="min" data-null value="${v.min ?? ''}"></div>
       <div class="fld"><label>Не больше (по желанию)</label><input type="number" data-bind="max" data-null value="${v.max ?? ''}"></div></div>`}
     <div class="fld mt"><label>Заметка мастера</label><textarea class="auto" data-bind="note" placeholder="10 — гильдия зовёт на собрание; 25 — доверяет тайну">${esc(v.note)}</textarea></div></div>`;
 }
-ACT.aeNewVar = () => { const a = curAdv(), v = { id: uid('v'), title: 'Новый счётчик', kind: 'num', start: 0, min: null, max: null, note: '' }; a.vars.push(v); advSave(); AE.sel = v.id; AE.tab = 'more'; AE.q = ''; AE.view = 'card'; aeRender(); setTimeout(() => $('.ae-card [data-bind="title"]')?.select(), 60); };
+const AE_VAR_K = { pick: '⑂ Развилка — один из вариантов', flag: '⚑ Флаг — да или нет', num: '📊 Счётчик — число' };
+/** Развилка: выбор игроков с вариантами. Где она используется — сбоку, в связях */
+function aePickVarHTML(a, v) {
+  return `<div class="ae-card" data-model="advCard">${aeBack()}
+    <div class="ae-ch"><span class="ae-ini big">⑂</span><input class="ae-title-in grow" data-bind="title" value="${esc(v.title)}" placeholder="Судьба мельницы" aria-label="Название"><button class="btn icon" data-act="aeCardMenu" title="Ещё" aria-label="Ещё">⋯</button></div>
+    <p class="small muted mt">Развилка — выбор игроков, который меняет сюжет: «Мельница: цела / сожжена», «Кому помогли: страже / контрабандистам». Любой блок, дорога, событие и место персонажа могут
+      зависеть от неё (кнопка ⑂). На ширме её ставит блок «🔀 Развилка», исход проверки или последствие события — или мастер сбоку, в «Ветках».</p>
+    <div class="g2 mt"><div class="fld"><label>Что это</label><select data-bind="kind" data-ch="aeVarKind">${aeOpts(AE_VAR_K, v.kind)}</select></div>
+      <div class="fld"><label>В начале игры</label><select data-bind="def" data-ch="aeRe"><option value="">— ещё не решено —</option>${v.opts.map(o => `<option value="${esc(o.id)}" ${o.id === v.def ? 'selected' : ''}>${esc(o.title)}</option>`).join('')}</select></div></div>
+    <section class="sec ae-sec"><div class="sec-h">⑂ Варианты · ${v.opts.length}</div><div class="sec-b">
+      ${v.opts.map((o, i) => `<div class="ae-route"><span class="muted">${i + 1}.</span><input class="grow" data-bind="opts.${i}.title" data-ch="aeRe" value="${esc(o.title)}" placeholder="сожжена" aria-label="Вариант ${i + 1}">
+        <button class="btn xs danger" data-act="aeVarOptDel" data-i="${i}" aria-label="Убрать вариант">✕</button></div>`).join('') || '<div class="muted small mb">Вариантов нет.</div>'}
+      <button class="btn sm" data-act="aeVarOptAdd">＋ Вариант</button></div></section>
+    <div class="fld mt"><label>Заметка мастера</label><textarea class="auto" data-bind="note" placeholder="Что меняется в каждой ветке">${esc(v.note)}</textarea></div></div>`;
+}
+ACT.aeVarOptAdd = () => { const v = aeCard(); if (v?.kind !== 'pick') return; v.opts.push({ id: uid('o'), title: 'Вариант ' + (v.opts.length + 1) }); advSave(); aeCardRefresh(); setTimeout(() => $$('.ae-card [data-bind$=".title"]').pop()?.select(), 60); };
+ACT.aeVarOptDel = async el => {
+  const v = aeCard(), o = v?.opts?.[int(el.dataset.i)]; if (!o) return;
+  if (!await confirmBox(`Убрать вариант «${o.title}»? Условия, которые на него ссылаются, исчезнут.`, { ok: 'Убрать', danger: true })) return;
+  v.opts.splice(int(el.dataset.i), 1); if (v.def === o.id) v.def = ''; aeSanitize(); aeRender();
+};
+/** Сменили вид счётчика: у развилки — два варианта для начала */
+CH.aeVarKind = () => { const v = aeCard(); if (!v) return; if (v.kind === 'pick' && !(v.opts || []).length) v.opts = [{ id: uid('o'), title: 'Вариант 1' }, { id: uid('o'), title: 'Вариант 2' }];
+  if (v.kind !== 'pick') { v.opts = []; v.def = ''; } if (v.kind === 'flag') { v.start = v.start ? 1 : 0; v.min = 0; v.max = 1; } aeSanitize(); aeRender(); };
+ACT.aeNewVar = el => el ? openMenu(el, [{ hd: 'Добавить' }, { icon: '⑂', label: 'Развилку — выбор игроков', fn: async () => { const v = await aeNewVarAsk(); if (v) aeSelect(v.id); } },
+  { icon: '📊', label: 'Счётчик или флаг', fn: () => aeNewNum() }]) : aeNewNum();
+const aeNewNum = () => { const a = curAdv(), v = { id: uid('v'), title: 'Новый счётчик', kind: 'num', start: 0, min: null, max: null, note: '' }; a.vars.push(v); advSave(); AE.sel = v.id; AE.tab = 'more'; AE.q = ''; AE.view = 'card'; aeRender(); setTimeout(() => $('.ae-card [data-bind="title"]')?.select(), 60); };
 /* ── Цель (задание отряда) или замысел (план злодея, фракции) ── */
 function aeGoalHTML(a, g) {
   return `<div class="ae-card" data-model="advCard">${aeBack()}
@@ -9561,7 +9725,7 @@ function aeLint(a) {
     if (t === 'every' && !e.when.at) add('err', e, 'повторяется, но не указано время');
     if (t === 'after' && !e.place && !e.when.from) add('err', e, '«через N дней» без места и без «после чего» — отсчёту не от чего начаться');
     if (t === 'place' && !e.place) add('err', e, '«когда отряд там» без места');
-    if (t === 'if' && !e.when.cond.trim()) add('warn', e, 'условие не написано');
+    if (t === 'if' && !e.when.cond.trim() && !e.when.v && !e.if) add('warn', e, 'условие не написано');
     if (!e.blocks.length && !e.out.length) add('info', e, 'нет текста и последствий');
     e.out.forEach(o => o.set.forEach(s => { if (!s.ev && !s.goal && !s.v && !(s.who && (s.status || s.at))) add('warn', e, 'пустое действие в последствии'); }));
   });
@@ -9569,10 +9733,39 @@ function aeLint(a) {
   a.goals.forEach(g => { if (!g.owner && !g.giver && !into.has(g.id) && !goalBy.has(g.id)) add('warn', g, 'цель некому дать: ни дающего, ни реплики, зацепки или последствия, ведущих к ней'); });
   a.fates.forEach(f => { if (!f.opts.length) add('err', f, 'нет вариантов'); f.opts.forEach((o, i) => { if (!o.card) add('warn', f, `вариант ${i + 1} без названия`); if (!o.to && !o.hint) add('info', f, `вариант «${o.card || i + 1}» никуда не указывает`); }); });
   a.vars.forEach(v => { if (v.min != null && v.max != null && v.min > v.max) add('err', v, 'наименьшее больше наибольшего'); });
+  // ⑂ ветки
+  a.vars.filter(v => v.kind === 'pick').forEach(v => {
+    if (v.opts.length < 2) add('err', v, 'у развилки меньше двух вариантов — выбирать не из чего');
+    const u = aeVarUse(a, v.id);
+    if (!u.set.length) add('warn', v, 'развилку ничто не ставит: нет блока «🔀 Развилка», исхода проверки или последствия — на ширме её поставит только мастер сбоку');
+    if (!u.read.length) add('info', v, 'от развилки пока ничего не зависит — кнопка ⑂ у блоков, дорог, событий');
+    // место, где описания зависят от развилки, а в какой-то ветке не остаётся ни одного
+    a.places.forEach(p => {
+      const reads = p.blocks.filter(b => b.t === 'read' && b.text.trim()); if (!reads.some(b => (b.if?.l || []).some(t => t.k === 'v' && t.v === v.id))) return;
+      const keep = AE.as;
+      v.opts.forEach(o => { AE.as = { [v.id]: o.id }; if (!reads.some(b => aeAsOk(b.if))) add('warn', p, `в ветке «${v.title}: ${o.title}» нет ни одного описания «Зачитать»`); });
+      AE.as = keep;
+    });
+  });
   a.events.forEach(e => { if (e.when.t !== 'if' && e.when.v) add('info', e, 'условие по счётчику работает только у события «по условию»'); });
   a.tables.forEach(t => { const c = aeTableCover(t); if (!t.rows.length) add('err', t, 'строк нет'); else if (!c.ok) add('warn', t, c.text);
     if (t.use && !a.places.some(p => p.tables.includes(t.id))) add('warn', t, 'таблица столкновений ни к какому месту не привязана — на дорогах её не бросят'); });
   return out;
+}
+/** Где используется счётчик или развилка: read — условия (блоки, дороги, «где по веткам», события), set — кто ставит (развилки, действия) */
+function aeVarUse(a, id) {
+  const read = [], set = [], has = c => (c?.l || []).some(t => t.k === 'v' && t.v === id), push = (l, x, how) => { if (!l.some(y => y.x === x && y.how === how)) l.push({ x, how }); };
+  const sets = (l, x, how) => (l || []).forEach(s => { if (s.v === id) push(set, x, how); });
+  ADV_KINDS.forEach(k => a[k].forEach(x => {
+    (x.blocks || []).forEach(b => { if (has(b.if)) push(read, x, `${ADV_BLOCKS[b.t].icon} ${ADV_BLOCKS[b.t].label.toLowerCase()}`);
+      if (b.t === 'pick' && b.v === id) push(set, x, '🔀 развилка'); if (b.t === 'pick') Object.values(b.out || {}).forEach(l => sets(l, x, '🔀 вариант развилки'));
+      if (b.t === 'check') ['fail', 'ok', 'sup'].forEach(o => sets(b.out[o], x, '🎲 исход проверки')); });
+    (x.routes || []).forEach(r => { if (has(r.if)) push(read, x, '🧭 дорога'); });
+    (x.posts || []).forEach(q => { if (has(q.if)) push(read, x, '📍 где по веткам'); });
+    if (has(x.if)) push(read, x, '⚡ условие события'); if (x.when?.v === id) push(read, x, '⚡ условие события');
+    (x.out || []).forEach(o => sets(o.set, x, '⚖ последствие'));
+  }));
+  return { read, set };
 }
 const aeLintBadge = a => { const l = aeLint(a), e = l.filter(x => x.lvl === 'err').length, w = l.filter(x => x.lvl === 'warn').length; return e || w ? ` <small class="${e ? 'c-red' : 'c-orange'}">${e ? '❌ ' + e : ''}${e && w ? ' · ' : ''}${w ? '⚠ ' + w : ''}</small>` : ' <small class="c-green">✓</small>'; };
 ACT.aeLint = () => {
@@ -9608,10 +9801,81 @@ ACT.aeTblAdd = async () => {
 ACT.aeTblDel = el => { const p = aeCard(); if (!p?.tables) return; p.tables = p.tables.filter(x => x !== el.dataset.v); advSave(); aeCardRefresh(); };
 ACT.aeSchema = () => { AE.view = AE.view === 'schema' ? 'card' : 'schema'; aeRender(); };
 
+/* ── ⑂ Сюжетные ветки (v11.12): условие у блока, дороги, «где по веткам», события. Собирается касаниями, без синтаксиса ── */
+/** Объект карточки по пути «blocks.3», «routes.1», «posts.0»; пустой путь — сама карточка */
+const aeAt = p => !p ? aeCard() : String(p).split('.').reduce((o, k) => o?.[k], aeCard());
+const aePickVars = a => a.vars.filter(v => v.kind === 'pick');
+/** Строка условия: «⑂ если [условие] и [условие] ＋» — каждое условие правится прямо в строке */
+function aeCondHTML(a, c, p, { lead = 'если', empty = '' } = {}) {
+  const P = p ? p + '.' : '';
+  if (!c?.l?.length) return empty ? `<div class="ae-if empty"><span class="ae-if-k">⑂</span><span class="muted small grow">${empty}</span><button class="chip btnlike" data-act="aeCondAdd" data-p="${esc(p)}">＋ условие</button></div>` : '';
+  const term = (t, j) => {
+    const T = `${P}if.l.${j}`, sel = (f, opts, ch = '') => `<select data-bind="${T}.${f}" ${ch ? `data-ch="${ch}"` : ''}>${opts}</select>`;
+    let body = '';
+    if (t.k === 'v') { const v = a.vars.find(x => x.id === t.v);
+      body = sel('v', aeVarOpts(a, t.v), 'aeCondVar') + (!v ? '' : v.kind === 'pick' ? sel('is', v.opts.map(o => `<option value="${esc(o.id)}" ${o.id === t.is ? 'selected' : ''}>${esc(o.title)}</option>`).join(''))
+        : v.kind === 'flag' ? `<select data-bind="${T}.val" data-num>${aeOpts({ 1: 'поднят', 0: 'опущен' }, String(t.val ? 1 : 0))}</select>`
+        : `<select data-bind="${T}.op">${aeOpts(ADV_OPS, t.op)}</select><input type="number" data-bind="${T}.val" value="${t.val}" style="width:76px" aria-label="Число">`); }
+    else if (t.k === 'who') body = sel('who', aePersonOpts(a, t.who)) + sel('status', aeOpts(ADV_STATUS, t.status));
+    else if (t.k === 'ev') body = sel('ev', aeEventOpts(a, t.ev)) + '<span class="muted small">сыграно</span>';
+    else if (t.k === 'seen') body = '<span class="muted small">были в</span>' + sel('seen', aePlaceOpts(a, t.seen));
+    else if (t.k === 'goal') body = sel('goal', aeGoalOpts(a, t.goal)) + '<span class="muted small">выполнена</span>';
+    return `<span class="ae-ct ${t.not ? 'not' : ''}"><button class="ae-ct-not" data-act="aeCondNot" data-p="${esc(p)}" data-j="${j}" title="Наоборот">${t.not ? 'НЕ' : '='}</button>${body}
+      <button class="ae-ct-x" data-act="aeCondDel" data-p="${esc(p)}" data-j="${j}" aria-label="Убрать условие">✕</button></span>`;
+  };
+  const glue = c.l.length > 1 ? `<button class="ae-ct-and" data-act="aeCondAny" data-p="${esc(p)}" title="Все условия или хотя бы одно">${c.any ? 'или' : 'и'}</button>` : '';
+  return `<div class="ae-if"><span class="ae-if-k">⑂ ${lead}</span>${c.l.map(term).join(glue)}<button class="chip btnlike" data-act="aeCondAdd" data-p="${esc(p)}" aria-label="Ещё условие">＋</button></div>`;
+}
+ACT.aeCondAdd = el => {
+  const a = curAdv(), o = aeAt(el.dataset.p); if (!o) return;
+  const add = t => { o.if = o.if?.l ? o.if : { any: false, l: [] }; o.if.l.push(t); advSave(); aeCardRefresh(); };
+  const v0 = aePickVars(a)[0] || a.vars[0];
+  const mk = { v: () => v0 && { k: 'v', v: v0.id, op: v0.kind === 'num' ? '>=' : '=', val: 1, is: v0.kind === 'pick' ? v0.opts[0]?.id || '' : '', not: false },
+    who: () => a.people[0] && { k: 'who', who: a.people[0].id, status: 'dead', not: false }, ev: () => a.events[0] && { k: 'ev', ev: a.events[0].id, not: false },
+    seen: () => a.places[0] && { k: 'seen', seen: a.places[0].id, not: false }, goal: () => a.goals[0] && { k: 'goal', goal: a.goals[0].id, not: false } };
+  openMenu(el, [{ hd: '⑂ Условие ветки' }, ...Object.entries(ADV_COND_K).map(([k, l]) => ({ icon: l.split(' ')[0], label: l.slice(l.indexOf(' ') + 1),
+    fn: () => { const t = mk[k](); if (t) return add(t); if (k === 'v') return aeNewVarAsk(); toast({ who: 'Персонажей пока нет', ev: 'Событий пока нет', seen: 'Мест пока нет', goal: 'Целей пока нет' }[k]); } })),
+    { sep: 1 }, { icon: '⑂', label: 'Новая развилка…', fn: () => aeNewVarAsk(o) }]);
+};
+/** Новая развилка прямо из условия: название и варианты одним окном; o — куда сразу поставить условие */
+async function aeNewVarAsk(o = null) {
+  const t = await promptBox('Развилка — что решают игроки? Варианты — через запятую после двоеточия', 'Мельница: цела, сожжена'); if (t == null) return;
+  const [ti, ...rest] = t.split(':'), names = rest.join(':').split(',').map(s => s.trim()).filter(Boolean);
+  const a = curAdv(), v = normAdv({ vars: [{ id: uid('v'), title: ti.trim() || 'Развилка', kind: 'pick', opts: names.length ? names : ['Вариант 1', 'Вариант 2'] }] }).vars[0];
+  a.vars.push(v); if (o) { o.if = o.if?.l ? o.if : { any: false, l: [] }; o.if.l.push({ k: 'v', v: v.id, op: '=', val: 0, is: v.opts[0].id, not: false }); }
+  advSave(); aeCardRefresh(); aeListRefresh(); toast(`⑂ Развилка «${v.title}»: ${v.opts.map(x => x.title).join(' / ')}`, 'ok');
+  return v;
+}
+ACT.aePickNew = async el => { const c = aeCard(), b = c?.blocks[int(el.dataset.i)]; if (!b) return; const v = await aeNewVarAsk(); if (v) { b.v = v.id; advSave(); aeCardRefresh(); } };
+const aeCondOf = el => aeAt(el.dataset.p)?.if;
+ACT.aeCondDel = el => { const o = aeAt(el.dataset.p); if (!o?.if) return; o.if.l.splice(int(el.dataset.j), 1); if (!o.if.l.length) o.if = null; advSave(); aeCardRefresh(); };
+ACT.aeCondNot = el => { const t = aeCondOf(el)?.l[int(el.dataset.j)]; if (!t) return; t.not = !t.not; advSave(); aeCardRefresh(); };
+ACT.aeCondAny = el => { const c = aeCondOf(el); if (!c) return; c.any = !c.any; advSave(); aeCardRefresh(); };
+/** Сменили счётчик в условии — значение под его вид */
+CH.aeCondVar = el => {
+  const m = el.dataset.bind.match(/^(.*)\.v$/), t = m && m[1].split('.').reduce((o, k) => o?.[k], aeCard()), v = t && curAdv().vars.find(x => x.id === t.v); if (!v) return;
+  t.is = v.kind === 'pick' ? v.opts[0]?.id || '' : ''; t.op = v.kind === 'num' ? '>=' : '='; t.val = 1; advSave(); aeCardRefresh();
+};
+/** «Как в ветке»: выбранные варианты развилок — блоки других веток в редакторе бледнеют. Остальные условия не угадываем */
+function aeAsOk(c) {
+  if (!c?.l?.length) return true;
+  const r = c.l.map(t => { if (t.k !== 'v' || !AE.as?.[t.v]) return null; const ok = AE.as[t.v] === t.is; return t.not ? !ok : ok; });
+  if (r.every(x => x === null)) return true;
+  return c.any ? r.some(x => x !== false) : r.every(x => x !== false);
+}
+function aeAsHTML(a, c) {
+  const used = new Set(); const scan = cond => (cond?.l || []).forEach(t => { if (t.k === 'v') used.add(t.v); });
+  c.blocks.forEach(b => scan(b.if)); (c.routes || []).forEach(r => scan(r.if));
+  const vs = aePickVars(a).filter(v => used.has(v.id)); if (!vs.length) return '';
+  return `<div class="ae-as"><span class="ae-if-k">⑂ Смотреть как в ветке</span>${vs.map(v => `<select data-ch="aeAs" data-id="${esc(v.id)}" aria-label="${esc(v.title)}"><option value="">${esc(v.title)}: любая</option>
+    ${v.opts.map(o => `<option value="${esc(o.id)}" ${AE.as?.[v.id] === o.id ? 'selected' : ''}>${esc(v.title)}: ${esc(o.title)}</option>`).join('')}</select>`).join('')}</div>`;
+}
+CH.aeAs = el => { AE.as = AE.as || {}; if (el.value) AE.as[el.dataset.id] = el.value; else delete AE.as[el.dataset.id]; aeCardRefresh(); };
+
 /* ── Блоки ── */
 function aeBlocksHTML(a, c, kind) {
   const main = AE_MAIN[kind] || AE_MAIN.place;
-  return `<div class="ae-blocks" id="ae-blocks">${c.blocks.map((b, i) => aeBlockHTML(a, c, b, i, kind)).join('')
+  return `${aeAsHTML(a, c)}<div class="ae-blocks" id="ae-blocks">${c.blocks.map((b, i) => aeBlockHTML(a, c, b, i, kind)).join('')
       || `<div class="ae-empty muted small">Блоков пока нет. ${{ person: 'Реплики по поводам, проверки общения, заметки.', event: 'Что зачитать, кто что говорит, проверки.', goal: 'Заметки мастера, зацепки, как продвинуться.' }[kind] || 'Что зачитать, реплики, проверки.'}</div>`}</div>
     <datalist id="ae-skills">${SKILLS.map(s => `<option>${esc(s.label)}</option>`).join('')}${STATS.map(s => `<option>${esc(STAT_NAMES[s])}</option>`).join('')}</datalist>
     <div class="ae-add">${main.map(t => `<button class="btn" data-act="aeBlkAdd" data-t="${t}">${ADV_BLOCKS[t].icon} ${ADV_BLOCKS[t].label}</button>`).join('')}<button class="btn" data-act="aeBlkMore">＋ Ещё блок…</button></div>`;
@@ -9664,9 +9928,19 @@ function aeBlockHTML(a, c, b, i, kind) {
         + ta('text', 'Что здесь, если тайна решилась сюда'); break;
     case 'table':
       body = `<select data-bind="${P}.table" aria-label="Таблица"><option value="">— таблица —</option>${a.tables.map(t => `<option value="${esc(t.id)}" ${t.id === b.table ? 'selected' : ''}>${esc(t.title)}</option>`).join('')}</select>`; break;
+    case 'pick': { const v = a.vars.find(x => x.id === b.v && x.kind === 'pick'), pv = aePickVars(a);
+      body = `<div class="row"><select class="grow" data-bind="${P}.v" data-ch="aeRe" aria-label="Развилка"><option value="">— какая развилка —</option>${pv.map(x => `<option value="${esc(x.id)}" ${x.id === b.v ? 'selected' : ''}>${esc(x.title)}</option>`).join('')}</select>
+          <button class="btn sm" data-act="aePickNew" data-i="${i}">＋ Новая развилка</button></div>
+        ${inp('q', 'Вопрос на ширме: что сделали с мельницей?')}
+        ${v ? `<div class="ae-pk">${v.opts.map(o => `<div class="ae-ckout"><span class="lbl">⑂ ${esc(o.title)}</span>${(b.out[o.id] || []).map((s, j) => aeSetHTML(a, c, s, `${P}.out.${o.id}`, j)).join('')}
+            <button class="chip btnlike" data-act="aeSetAdd" data-p="${P}.out.${esc(o.id)}">＋ действие</button></div>`).join('')}</div>
+          <div class="muted small">Варианты правятся в карточке развилки «${esc(v.title)}» (вкладка «⋯ Ещё»). На ширме — большие кнопки: касание ставит ветку и выполняет действия варианта.</div>`
+          : '<div class="muted small">Развилка — выбор игроков, от которого зависят места, люди и события: «Мельница: цела / сожжена». Выбери её или заведи новую.</div>'}`; break; }
   }
-  return `<div class="ae-blk b-${b.t}" data-drag-src data-i="${i}"><div class="ae-bh"><span class="grip" data-grip="advBlock" title="Перетащить">⠿</span><span class="ae-bi">${D.icon}</span><b>${D.label}</b>${head}<span class="sp"></span>
-    <button class="btn xs ghost" data-act="aeBlkMenu" data-i="${i}" aria-label="Действия с блоком">⋯</button></div><div class="ae-bb">${body}</div></div>`;
+  const off = !aeAsOk(b.if);
+  return `<div class="ae-blk b-${b.t} ${b.if ? 'has-if' : ''} ${off ? 'ae-off' : ''}" data-drag-src data-i="${i}"><div class="ae-bh"><span class="grip" data-grip="advBlock" title="Перетащить">⠿</span><span class="ae-bi">${D.icon}</span><b>${D.label}</b>${head}<span class="sp"></span>
+    ${b.if ? '' : `<button class="btn xs ghost ae-ifb" data-act="aeCondAdd" data-p="${P}" title="Показывать только в ветке…" aria-label="Условие ветки">⑂</button>`}
+    <button class="btn xs ghost" data-act="aeBlkMenu" data-i="${i}" aria-label="Действия с блоком">⋯</button></div>${aeCondHTML(a, b.if, P)}<div class="ae-bb">${body}</div></div>`;
 }
 
 /* ── Правая колонка: связи карточки (кто сюда ведёт, кто здесь живёт…) ── */
@@ -9688,6 +9962,11 @@ function aeLinksHTML(a, c) {
       sec('⚡ События здесь', evs.map(e => go(e.id, e.title, ADV_WHEN[e.when.t])))].join('');
   }
   const kind = aeKind(a, c), onEv = k => a.events.filter(e => e.out.some(o => o.set.some(s => s[k] === c.id)));
+  if (kind === 'var') { // где развилка / счётчик читается (условия) и где ставится (развилки, действия)
+    const u = aeVarUse(a, c.id), lbl = x => x.title || x.name;
+    return [sec('⑂ Ставят', u.set.map(({ x, how }) => go(x.id, lbl(x), how))), sec('👁 Зависит от неё', u.read.map(({ x, how }) => go(x.id, lbl(x), how)))].join('')
+      || '<div class="muted small">Пока нигде не используется. Кнопка ⑂ у блока, дороги или события — показывать их только в нужной ветке.</div>';
+  }
   if (kind === 'event') {
     const pl = a.places.find(p => p.id === c.place), fr = c.when.from && aeFind(a, c.when.from), after = a.events.filter(e => e.when.t === 'after' && e.when.from === c.id);
     return [sec('📍 Где', [pl ? go(pl.id, pl.title, pl.code) : '<div class="muted small">где угодно — по часам мира</div>']),
@@ -9772,7 +10051,7 @@ function aeAddPlace(parent = null) {
   setTimeout(() => $('.ae-card [data-bind="title"]')?.select(), 60);
 }
 function aeAddPerson(home = null) {
-  const a = curAdv(), w = { id: uid('w'), name: 'Новый персонаж', aka: '', role: '', group: false, home, npc: null, stat: '', how: '', wants: '', joins: '', rel: [], blocks: [] };
+  const a = curAdv(), w = { id: uid('w'), name: 'Новый персонаж', aka: '', role: '', group: false, home, npc: null, stat: '', how: '', wants: '', joins: '', rel: [], posts: [], blocks: [] };
   a.people.push(w); advSave(); AE.sel = w.id; AE.tab = 'people'; AE.q = ''; aeRender();
   setTimeout(() => $('.ae-card [data-bind="name"]')?.select(), 60);
 }
@@ -9798,7 +10077,8 @@ ACT.aeNew = el => {
   const c = aeCard(), place = aeIsPlace(a, c) ? c : null;
   if (AE.tab === 'people') return aeAddPerson(place ? place.id : null);
   if (AE.tab === 'more') return openMenu(el, [{ hd: 'Добавить' }, { icon: '⚡', label: 'Событие', fn: () => aeAddEvent(null) }, { icon: '🎯', label: 'Цель или замысел', fn: () => aeAddGoal(null) },
-    { icon: '🔮', label: 'Тайну', fn: () => ACT.aeNewFate() }, { icon: '📋', label: 'Таблицу', fn: () => ACT.aeNewTable() }]);
+    { icon: '🔮', label: 'Тайну', fn: () => ACT.aeNewFate() }, { icon: '📋', label: 'Таблицу', fn: () => ACT.aeNewTable() },
+    { icon: '⑂', label: 'Развилку — выбор игроков', fn: async () => { const v = await aeNewVarAsk(); if (v) aeSelect(v.id); } }, { icon: '📊', label: 'Счётчик или флаг', fn: () => aeNewNum() }]);
   if (!place) return aeAddPlace(null);
   openMenu(el, [{ hd: 'Новое место' }, { icon: '↳', label: `Внутри «${place.title}»`, fn: () => aeAddPlace(place.id) },
     { icon: '＝', label: place.parent ? `Рядом, в «${aeLabel(a, place.parent)}»` : 'Рядом, на верхнем уровне', fn: () => aeAddPlace(place.parent || null) },
@@ -9837,6 +10117,12 @@ ACT.aeRouteAdd = () => {
   if (!to) return toast('Сначала нужно другое место, куда вести дорогу');
   p.routes.push({ to: to.id, label: '', mins: 0, road: true, terrain: '' }); advSave(); aeCardRefresh();
 };
+ACT.aePostAdd = async () => {
+  const a = curAdv(), w = aeCard(); if (aeKind(a, w) !== 'person') return;
+  const at = await pickBox('⑂ Где персонаж в ветке', a.places.map(p => ({ id: p.id, label: p.title, sub: p.code || aeChain(a, p.parent).map(x => x.title).join(' › '), icon: '🏰' })), { empty: 'Мест пока нет' }); if (!at) return;
+  const v = aePickVars(a)[0];
+  w.posts.push({ at, if: v ? { any: false, l: [{ k: 'v', v: v.id, op: '=', val: 0, is: v.opts[0]?.id || '', not: false }] } : null }); advSave(); aeCardRefresh();
+};
 ACT.aeRelAdd = () => {
   const a = curAdv(), w = aeCard(), to = a.people.find(x => x.id !== w.id && !w.rel.some(r => r.to === x.id)) || a.people.find(x => x.id !== w.id);
   if (!to) return toast('Сначала нужен другой персонаж');
@@ -9850,11 +10136,16 @@ ACT.aeWhoAdd = async () => {
 ACT.aeWhoDel = el => { const e = aeCard(); if (!e?.who) return; e.who = e.who.filter(x => x !== el.dataset.v); advSave(); aeCardRefresh(); };
 ACT.aeOutAdd = () => { const e = aeCard(); if (!e?.out) return; e.out.push({ text: '', set: [] }); advSave(); aeCardRefresh(); setTimeout(() => $$('.ae-out textarea').pop()?.focus(), 60); };
 /** Список действий по пути «out.0.set» / «blocks.3.out.fail» в выбранной карточке */
-const aeSetList = el => { const l = String(el.dataset.p || '').split('.').reduce((o, k) => o?.[k], aeCard()); return Array.isArray(l) ? l : null; };
+const aeSetList = el => {
+  const ks = String(el.dataset.p || '').split('.'), last = ks.pop(), par = ks.reduce((o, k) => o?.[k], aeCard());
+  if (par && typeof par === 'object' && !Array.isArray(par) && par[last] == null && /^[\w-]+$/.test(last)) par[last] = []; // действия варианта развилки — список заводится по первому
+  const l = par?.[last]; return Array.isArray(l) ? l : null;
+};
 ACT.aeSetAdd = el => {
   const a = curAdv(), l = aeSetList(el); if (!l) return;
-  if (a.people.length) l.push({ who: a.people[0].id, status: 'dead', at: '', ev: '', goal: '', v: '', n: 0, op: 'add' });
-  else if (a.vars.length) l.push({ who: '', status: '', at: '', ev: '', goal: '', v: a.vars[0].id, n: 1, op: 'add' });
+  const pv = /\.out\.[^.]+$/.test(el.dataset.p) && aeAt(el.dataset.p.replace(/\.out\.[^.]+$/, ''))?.t === 'pick' ? null : aePickVars(a)[0]; // у развилки сама ветка уже ставится
+  if (a.people.length) l.push({ who: a.people[0].id, status: 'dead', at: '', ev: '', goal: '', v: '', n: 0, op: 'add', is: '' });
+  else if (a.vars.length) { const v = pv || a.vars[0]; l.push({ who: '', status: '', at: '', ev: '', goal: '', v: v.id, n: 1, op: 'add', is: v.kind === 'pick' ? v.opts[0]?.id || '' : '' }); }
   else return toast('Сначала нужен персонаж или счётчик');
   advSave(); aeCardRefresh();
 };
@@ -9865,9 +10156,14 @@ CH.aeSetType = el => {
   const ev = a.events.find(x => x.id !== c.id)?.id || '', goal = a.goals[0]?.id || '', at = a.places[0]?.id || '', v = a.vars[0]?.id || '';
   const miss = { ev: !ev && 'Других событий пока нет', goal: !goal && 'Целей пока нет', var: !v && 'Счётчиков пока нет — заведи на вкладке «⋯ Ещё»', status: !who && 'Персонажей пока нет', at: !who && 'Персонажей пока нет' }[k];
   if (miss) { toast(miss); return aeCardRefresh(); }
-  l[j] = { who: ['status', 'at'].includes(k) ? who : '', status: k === 'status' ? 'dead' : '', at: k === 'at' ? at : '', ev: k === 'ev' ? ev : '', goal: k === 'goal' ? goal : '', v: k === 'var' ? v : '', n: k === 'var' ? 1 : 0, op: 'add' };
+  const pv = k === 'var' && a.vars.find(x => x.id === v);
+  l[j] = { who: ['status', 'at'].includes(k) ? who : '', status: k === 'status' ? 'dead' : '', at: k === 'at' ? at : '', ev: k === 'ev' ? ev : '', goal: k === 'goal' ? goal : '', v: k === 'var' ? v : '', n: k === 'var' ? 1 : 0, op: 'add',
+    is: pv?.kind === 'pick' ? pv.opts[0]?.id || '' : '' };
   advSave(); aeCardRefresh();
 };
+/** Сменили счётчик в действии: у развилки — её первый вариант */
+CH.aeSetVar = el => { const m = el.dataset.bind.match(/^(.*)\.v$/), s = m && m[1].split('.').reduce((o, k) => o?.[k], aeCard()), v = s && curAdv().vars.find(x => x.id === s.v);
+  if (s) { s.is = v?.kind === 'pick' ? v.opts[0]?.id || '' : ''; advSave(); } aeCardRefresh(); };
 ACT.aeStepAdd = () => { const g = aeCard(); if (!g?.steps) return; g.steps.push(''); advSave(); aeCardRefresh(); setTimeout(() => $$('.ae-card [data-bind^="steps."]').pop()?.focus(), 60); };
 ACT.aeRefAdd = async el => {
   const a = curAdv(), c = aeCard(), b = c?.blocks[int(el.dataset.i)]; if (!b) return;
@@ -10156,7 +10452,7 @@ const RUN = { drawer: null, open: {}, peek: {}, alt: false, tres: {}, got: false
 const rnOkKey = k => !!k && k.length < 200 && !/^(__proto__|constructor|prototype)$/.test(k);
 function newAdvSt(id) {
   return { id, place: null, sit: 'place', back: 'place', who: null, first: false, near: false, wt: null, carry: 0, lc: {}, la: {}, seen: {}, ppl: {}, picks: {}, said: {}, clues: {}, read: {}, once: {},
-    trip: null, evs: {}, q: [], ev: null, evBack: 'place', outs: {}, goals: {}, fates: {}, vars: {}, rest: null, journal: [], drafts: [] };
+    trip: null, evs: {}, q: [], ev: null, evBack: 'place', outs: {}, goals: {}, fates: {}, vars: {}, br: {}, rest: null, journal: [], drafts: [] };
 }
 const rnPplOne = v => { const p = {}; if ('at' in v) p.at = advKey(v.at) || null; if (v.status) p.status = oneOf(v.status, Object.keys(RN_STATUS), 'alive');
   if (v.att) p.att = oneOf(v.att, Object.keys(RN_ATT), 'neutral'); if (v.party) p.party = true; return p; };
@@ -10169,7 +10465,7 @@ function normAdvSt(d, id) {
   const hours = v => { const n = num(v, -1); return n >= 0 ? n : undefined; }, whole = v => { const n = num(v, NaN); return Number.isFinite(n) ? clamp(Math.round(n), -9999, 9999) : undefined; };
   const picks = {}; Object.entries(obj(s.picks)).forEach(([k, v]) => { if (rnOkKey(k) && RN_OUT[v]) picks[k] = v; });
   const outs = {}; Object.entries(obj(s.outs)).forEach(([k, v]) => { if (!rnOkKey(k) || !v || typeof v !== 'object') return;
-    outs[k] = { ppl: byId(v.ppl, x => x && typeof x === 'object' ? rnPplOne(x) : null), goals: byId(v.goals, x => x && typeof x === 'object' ? rnGoalOne(x) : null), vars: byId(v.vars, x => x == null ? null : whole(x)),
+    outs[k] = { ppl: byId(v.ppl, x => x && typeof x === 'object' ? rnPplOne(x) : null), goals: byId(v.goals, x => x && typeof x === 'object' ? rnGoalOne(x) : null), vars: byId(v.vars, x => x == null ? null : whole(x)), br: byId(v.br, x => x == null ? null : advKey(x)),
       q: (Array.isArray(v.q) ? v.q : []).map(asStr).filter(rnOkKey).slice(0, 20) }; });
   const t = s.trip && typeof s.trip === 'object' && advKey(s.trip.to) ? s.trip : null;
   return {
@@ -10185,7 +10481,7 @@ function normAdvSt(d, id) {
       .map(x => ({ id: advKey(x.id), key: asStr(x.key), why: asStr(x.why), t: Math.max(0, num(x.t)), snooze: !!x.snooze })),
     ev: s.ev && typeof s.ev === 'object' && advKey(s.ev.id) ? { id: advKey(s.ev.id), key: rnOkKey(asStr(s.ev.key)) ? asStr(s.ev.key) : advKey(s.ev.id) } : null,
     evBack: oneOf(s.evBack, ['place', 'talk', 'travel', 'wild', 'fight', 'rest'], 'place'), outs,
-    goals: byId(s.goals, v => v && typeof v === 'object' ? rnGoalOne(v) : undefined), fates: byId(s.fates, v => cleanId(v) || undefined), vars: byId(s.vars, whole),
+    goals: byId(s.goals, v => v && typeof v === 'object' ? rnGoalOne(v) : undefined), fates: byId(s.fates, v => cleanId(v) || undefined), vars: byId(s.vars, whole), br: byId(s.br, v => advKey(v) || undefined),
     rest: s.rest && typeof s.rest === 'object' ? { left: clamp(num(s.rest.left), 0, 24), done: clamp(num(s.rest.done), 0, 24) } : null,
     journal: (Array.isArray(s.journal) ? s.journal : []).filter(j => j && typeof j === 'object').slice(0, 400).map(j => ({ t: Math.max(0, num(j.t)), w: asStr(j.w), x: asStr(j.x), c: oneOf(j.c, ['', 'b', 'g'], '') })),
     drafts: (Array.isArray(s.drafts) ? s.drafts : []).filter(x => x && typeof x === 'object').slice(0, 200)
@@ -10239,7 +10535,8 @@ const rnTxt = s => wikiParse(asStr(s), 'rnWiki').replace(/\[(Что (?:вы )?д
 
 /* ── Люди: книга даёт «где обычно», игра — где сейчас, отношение, состояние, с отрядом ли ── */
 const rnPS = (st, id) => st.ppl[id] || (st.ppl[id] = {});
-const rnAt = (st, w) => { const s = st.ppl[w.id]; return s?.party ? null : s && 'at' in s ? s.at : w.home; };
+/** Где персонаж: ручное перемещение на ширме → первое подходящее «где по веткам» → «где обычно» */
+const rnAt = (st, w) => { const s = st.ppl[w.id]; return s?.party ? null : s && 'at' in s ? s.at : (w.posts || []).find(q => rnCondOk(st, q.if))?.at || w.home; };
 const rnAtt = (st, id) => st.ppl[id]?.att || 'neutral';
 const rnStat = (st, id) => st.ppl[id]?.status || 'alive';
 const rnParty = st => curAdv().people.filter(w => st.ppl[w.id]?.party);
@@ -10322,6 +10619,7 @@ function rnEvState(st, ev) {
 function rnEvFire(st, ev, key, why) {
   if (st.once['evd:' + key] || st.q.some(x => x.key === key)) return false;
   if (ev.when.t !== 'every' && st.evs[ev.id]) return false;
+  if (!rnCondOk(st, ev.if)) return false; // ветка не та — событие не случается
   if (ev.when.t === 'every') st.q = st.q.filter(x => x.id !== ev.id); // несыгранный вчерашний повтор устарел — его сменяет сегодняшний
   st.q.push({ id: ev.id, key, why, t: exp().time, snooze: false }); if (st.q.length > 30) st.q.shift();
   rnLog(`⚡ ${ev.title}${why ? ' · ' + why : ''}`, 'b');
@@ -10368,7 +10666,7 @@ function rnEvClose(st, how) {
 /** Действие последствия — подписью */
 function rnSetLbl(s) {
   const w = rnW(s.who)?.name || '…', v = rnVarById(s.v);
-  return v ? (v.kind === 'flag' ? `⚑ ${v.title}: ${s.n ? 'поднять' : 'снять'}` : `📊 ${v.title} ${s.op === 'set' ? '= ' + s.n : (s.n >= 0 ? '+' : '−') + Math.abs(s.n)}`)
+  return v ? (v.kind === 'pick' ? `⑂ ${v.title}: ${rnOptTitle(v, s.is) || '?'}` : v.kind === 'flag' ? `⚑ ${v.title}: ${s.n ? 'поднять' : 'снять'}` : `📊 ${v.title} ${s.op === 'set' ? '= ' + s.n : (s.n >= 0 ? '+' : '−') + Math.abs(s.n)}`)
     : s.ev ? `⚡ включить «${rnLabel(s.ev)}»` : s.goal ? `🎯 шаг цели «${rnLabel(s.goal)}»` : s.at ? `📍 ${w} → ${rnLabel(s.at)}` : s.status ? `👤 ${w} — ${RN_STATUS[s.status]}` : '';
 }
 /* ── Счётчики и флаги модуля (v11.8): значение — в состоянии игры, условие «по условию» с счётчиком срабатывает само ── */
@@ -10381,12 +10679,52 @@ function rnVarSet(st, v, val) {
   rnLog(v.kind === 'flag' ? `⚑ ${v.title}: ${x ? 'да' : 'нет'}` : `📊 ${v.title}: ${a0} → ${x}`, 'g');
   rnVarsCheck(st);
 }
+/** События «по условию» срабатывают сами: по счётчику (when.v) и/или по условию ветки (ev.if). Зовётся после любой смены веток, счётчиков, состояний */
 function rnVarsCheck(st) {
-  rnEvs().forEach(ev => { const w = ev.when, v = w.t === 'if' && rnVarById(w.v); if (v && !st.evs[ev.id] && advCmp(rnVarVal(st, v), w.op, w.val)) rnEvFire(st, ev, ev.id, `${v.title} ${ADV_OPS[w.op]} ${w.val}`); });
+  rnEvs().forEach(ev => {
+    const w = ev.when, v = rnVarById(w.v); if (w.t !== 'if' || st.evs[ev.id] || (!v && !ev.if)) return;
+    if (v && !advCmp(rnVarVal(st, v), w.op, w.val)) return;
+    if (ev.if && !rnCondOk(st, ev.if)) return;
+    rnEvFire(st, ev, ev.id, v ? `${v.title} ${ADV_OPS[w.op]} ${w.val}` : rnCondLbl(ev.if));
+  });
+}
+/* ── Сюжетные ветки (v11.12): развилка — вариант в st.br; условие проверяется по состоянию игры ── */
+const rnBrVal = (st, v) => st.br[v.id] ?? v.def ?? '';
+const rnOptTitle = (v, id) => v?.opts?.find(o => o.id === id)?.title || '';
+function rnTermOk(st, t) {
+  let ok = false;
+  if (t.k === 'v') { const v = rnVarById(t.v); if (!v) return true; ok = v.kind === 'pick' ? rnBrVal(st, v) === t.is : advCmp(rnVarVal(st, v), t.op, t.val); }
+  else if (t.k === 'who') ok = rnStat(st, t.who) === t.status;
+  else if (t.k === 'ev') ok = st.evs[t.ev]?.s === 'done' || Object.keys(st.once).some(k => k.startsWith('evd:' + t.ev + ':'));
+  else if (t.k === 'seen') ok = !!st.seen[t.seen];
+  else if (t.k === 'goal') ok = !!st.goals[t.goal]?.done;
+  return t.not ? !ok : ok;
+}
+/** Условие верно? Пустое — всегда */
+const rnCondOk = (st, c) => !c || !c.l?.length ? true : c.any ? c.l.some(t => rnTermOk(st, t)) : c.l.every(t => rnTermOk(st, t));
+/** Условие словами — для плашки «⑂ …» */
+function rnTermLbl(t) {
+  const no = t.not ? 'не ' : '';
+  if (t.k === 'v') { const v = rnVarById(t.v); if (!v) return '?';
+    return v.kind === 'pick' ? `${v.title}: ${t.not ? 'не ' : ''}${rnOptTitle(v, t.is) || '?'}` : v.kind === 'flag' ? `${(t.val ? !t.not : t.not) ? '' : 'не '}${v.title}` : `${t.not ? 'не ' : ''}${v.title} ${ADV_OPS[t.op]} ${t.val}`; }
+  if (t.k === 'who') return `${rnW(t.who)?.name || '?'} — ${no}${RN_STATUS[t.status]}`;
+  if (t.k === 'ev') return `«${rnLabel(t.ev)}» ${no}сыграно`;
+  if (t.k === 'seen') return `${t.not ? 'не были' : 'были'} в «${rnLabel(t.seen)}»`;
+  if (t.k === 'goal') return `цель «${rnLabel(t.goal)}» ${no}выполнена`;
+  return '?';
+}
+const rnCondLbl = c => c ? c.l.map(rnTermLbl).join(c.any ? ' или ' : ' и ') : '';
+/** Плашка ветки над блоком, который сейчас действует только благодаря условию */
+const rnBrTag = (b, dim = false) => b.if ? `<span class="rn-brt ${dim ? 'off' : ''}">⑂ ${esc(rnCondLbl(b.if))}</span>` : '';
+/** Блок виден в этой ветке */
+const rnVis = (st, b) => rnCondOk(st, b.if);
+function rnBrSet(st, v, id) {
+  const a0 = rnBrVal(st, v); if (a0 === id || !v.opts.some(o => o.id === id)) return;
+  st.br[v.id] = id; rnLog(`⑂ ${v.title}: ${rnOptTitle(v, id)}`, 'g'); rnVarsCheck(st);
 }
 /** Действия на ширме (последствие события, исход проверки): люди, события, цели, счётчики. Снимок «как было» под ключом k — чтобы отменить */
 function rnActApply(st, sets, k) {
-  const snap = { ppl: {}, goals: {}, vars: {}, q: [] }, q0 = new Set(st.q.map(x => x.key));
+  const snap = { ppl: {}, goals: {}, vars: {}, br: {}, q: [] }, q0 = new Set(st.q.map(x => x.key));
   sets.forEach(s => {
     const w = rnW(s.who), v = rnVarById(s.v);
     if (w && (s.status || s.at)) {
@@ -10397,8 +10735,10 @@ function rnActApply(st, sets, k) {
     }
     const e2 = rnEv(s.ev); if (e2) rnEvFire(st, e2, rnEvKeyNow(st, e2), 'последствие');
     const g = rnGoal(s.goal); if (g) { if (!(g.id in snap.goals)) snap.goals[g.id] = st.goals[g.id] ? clone(st.goals[g.id]) : null; rnGoalStep(st, g); }
-    if (v) { if (!(v.id in snap.vars)) snap.vars[v.id] = st.vars[v.id] ?? null; rnVarSet(st, v, s.op === 'set' || v.kind === 'flag' ? s.n : rnVarVal(st, v) + s.n); }
+    if (v && v.kind === 'pick') { if (!(v.id in snap.br)) snap.br[v.id] = st.br[v.id] ?? null; rnBrSet(st, v, s.is); }
+    else if (v) { if (!(v.id in snap.vars)) snap.vars[v.id] = st.vars[v.id] ?? null; rnVarSet(st, v, s.op === 'set' || v.kind === 'flag' ? s.n : rnVarVal(st, v) + s.n); }
   });
+  rnVarsCheck(st); // состояние персонажа или шаг цели тоже могут открыть событие по условию
   snap.q = st.q.filter(x => !q0.has(x.key)).map(x => x.key); // включённые действием и сработавшие от счётчиков — отменятся вместе с ним
   st.outs[k] = snap;
 }
@@ -10407,6 +10747,7 @@ function rnActUndo(st, k) {
   Object.entries(s.ppl).forEach(([id, v]) => { if (v) st.ppl[id] = v; else delete st.ppl[id]; });
   Object.entries(s.goals).forEach(([id, v]) => { if (v) st.goals[id] = v; else delete st.goals[id]; });
   Object.entries(s.vars || {}).forEach(([id, v]) => { if (v == null) delete st.vars[id]; else st.vars[id] = v; });
+  Object.entries(s.br || {}).forEach(([id, v]) => { if (v == null) delete st.br[id]; else st.br[id] = v; });
   st.q = st.q.filter(x => !s.q.includes(x.key)); delete st.outs[k];
   return true;
 }
@@ -10462,8 +10803,8 @@ function rnArrive(id, { mins = 0 } = {}) {
 /** Дороги: own — у самого места (ровно те, что в редакторе), outer — у мест, в которые оно вложено, back — чужие, ведущие сюда, в обратную сторону */
 function rnRoutes(st) {
   const chain = rnChain(st.place), ids = new Set(chain.map(p => p.id)), seen = new Set(), out = [];
-  chain.slice().reverse().forEach(p => p.routes.forEach(r => { if (!ids.has(r.to) && rnP(r.to) && !seen.has(r.to)) { seen.add(r.to); out.push({ ...r, from: p.id, kind: p.id === st.place ? 'own' : 'outer' }); } }));
-  curAdv().places.forEach(p => p.routes.forEach(r => { if (ids.has(r.to) && !ids.has(p.id) && !seen.has(p.id)) { seen.add(p.id); out.push({ ...r, to: p.id, from: r.to, kind: 'back' }); } }));
+  chain.slice().reverse().forEach(p => p.routes.forEach(r => { if (rnCondOk(st, r.if) && !ids.has(r.to) && rnP(r.to) && !seen.has(r.to)) { seen.add(r.to); out.push({ ...r, from: p.id, kind: p.id === st.place ? 'own' : 'outer' }); } }));
+  curAdv().places.forEach(p => p.routes.forEach(r => { if (rnCondOk(st, r.if) && ids.has(r.to) && !ids.has(p.id) && !seen.has(p.id)) { seen.add(p.id); out.push({ ...r, to: p.id, from: r.to, kind: 'back' }); } }));
   return out;
 }
 const rnTer = t => EXP_TERRAINS.find(x => x.id === (t.terrain || (t.road ? 'road' : 'forest'))) || EXP_TERRAINS[0];
@@ -10548,7 +10889,7 @@ function rnHeadHTML(st) {
   const tail = st.sit === 'event' ? `⚡ ${rnEv(st.ev?.id)?.title || ''}` : st.sit === 'talk' ? `💬 ${rnW(st.who)?.name || ''}` : st.sit === 'fight' ? '⚔ бой' : st.sit === 'rest' ? '🛌 отдых' : '';
   if (tail) crumbs += `<span class="rn-sep">›</span><span class="rn-cr cur">${esc(tail)}</span>`;
   return `<header class="rn-hd" id="rn-hd"><button class="rn-ib rn-menu" data-act="rnDrawer" data-d="places" aria-label="Все места">☰</button>
-    <div class="rn-crumbs">${crumbs}</div><span class="rn-sit">${RN_SIT[st.sit].icon} ${RN_SIT[st.sit].label}</span>
+    <div class="rn-crumbs">${crumbs}</div><button class="rn-ib" data-act="rnDrawer" data-d="people" aria-label="Персонажи приключения" title="Персонажи приключения">👥</button><span class="rn-sit">${RN_SIT[st.sit].icon} ${RN_SIT[st.sit].label}</span>
     <button class="rn-tbtn" data-act="rnDrawer" data-d="time" title="Время"><span class="rn-tday"><span>${L ? `${esc(rnP(L).title)} · день ${rnLD(st, L)}` : 'вне локаций'}</span><small>мир · день ${dayOf(e.time)}</small></span>
       <b class="${ph.cls}">${ph.icon} ${expClock(e.time)}</b></button></header>`;
 }
@@ -10566,7 +10907,7 @@ function rnTreeHTML(st, act = 'rnGo') {
 /* ── Описание: ширма выбирает вариант сама (подход → первый раз → ночь/день → снова → всегда) ── */
 const rnReadLbl = b => b.k === 'custom' ? b.w || 'своя пометка' : ADV_READ[b.k] + (b.w ? ' · ' + b.w : '');
 function rnReads(p, st) {
-  const e = exp(), night = expPhase(e.time, e.season) === 'night', v = p.blocks.filter(b => b.t === 'read' && b.text.trim()), f = k => v.find(b => b.k === k);
+  const e = exp(), night = expPhase(e.time, e.season) === 'night', v = p.blocks.filter(b => b.t === 'read' && b.text.trim() && rnVis(st, b)), f = k => v.find(b => b.k === k);
   const pick = (st.near && f('near')) || (st.first && f('first')) || (night && f('night')) || (!night && f('day')) || (!st.first && f('again')) || f('always') || f('first')
     || v.find(b => b.k !== 'near' && b.k !== 'custom') || v[0] || null;
   return { pick, alts: v.filter(b => b !== pick) };
@@ -10574,7 +10915,7 @@ function rnReads(p, st) {
 function rnReadHTML(p, st) {
   const { pick, alts } = rnReads(p, st); if (!pick) return '';
   const k = p.id + '.' + pick.id, done = st.read[k];
-  return `<div class="panel rn-rdp"><div class="rn-rl"><span>📢 ${esc(rnReadLbl(pick))}</span><span class="sp"></span>
+  return `<div class="panel rn-rdp"><div class="rn-rl"><span>📢 ${esc(rnReadLbl(pick))}</span>${rnBrTag(pick)}<span class="sp"></span>
       <button class="rn-mini" data-act="rnFull" data-id="${esc(p.id)}" data-b="${esc(pick.id)}" title="Читать на весь экран">⤢</button>
       <button class="rn-mini ${done ? 'on' : ''}" data-act="rnReadMark" data-k="${esc(k)}">${done ? '✓ прочитано' : 'прочитано?'}</button></div>
     <div class="rn-rd">${rnTxt(pick.text)}</div>
@@ -10609,15 +10950,15 @@ const rnToHTML = to => to.length ? `<span class="rn-to-l">→ ${to.map(id => `<s
 function rnLineHTML(k, b, st, { name = '', here = false } = {}) {
   const said = !!st.said[k];
   return `<div class="rn-ln ${said ? 'said' : ''}" role="button" data-act="rnSay" data-k="${esc(k)}" data-w="${esc(b.who || '')}">
-    <span class="rn-ln-w">${name ? esc(name) + ' · ' : ''}${esc(rnLineLbl(b))}${here ? ' <i>· здесь</i>' : ''}</span>
+    <span class="rn-ln-w">${name ? esc(name) + ' · ' : ''}${esc(rnLineLbl(b))}${here ? ' <i>· здесь</i>' : ''}${rnBrTag(b)}</span>
     <span class="rn-ln-t">${rnTxt(b.text)}</span>${rnToHTML(b.to)}
     <span class="rn-ln-s">${said ? '✓ сказано' : 'касание — когда скажешь'}</span></div>`;
 }
 /** Реплики персонажа: здешние (в карточках этого места и того, во что оно вложено) → общие; «первая встреча», пока не сказана, — наверх */
 function rnLinesOf(st, w) {
   const out = [], fight = st.sit === 'fight';
-  rnChain(st.place).reverse().forEach(p => p.blocks.forEach(b => { if (b.t === 'line' && b.who === w.id) out.push({ k: p.id + '.' + b.id, b, here: true }); }));
-  w.blocks.forEach(b => { if (b.t === 'line') out.push({ k: w.id + '.' + b.id, b, here: false }); });
+  rnChain(st.place).reverse().forEach(p => p.blocks.forEach(b => { if (b.t === 'line' && b.who === w.id && rnVis(st, b)) out.push({ k: p.id + '.' + b.id, b, here: true }); }));
+  w.blocks.forEach(b => { if (b.t === 'line' && rnVis(st, b)) out.push({ k: w.id + '.' + b.id, b, here: false }); });
   const l = out.filter(x => fight ? x.b.k === 'combat' : x.b.k !== 'combat'), first = l.filter(x => x.b.k === 'first' && !st.said[x.k]);
   return [...first, ...l.filter(x => !first.includes(x))];
 }
@@ -10642,6 +10983,11 @@ function rnBlockHTML(card, b, st, pre = card.id) {
     case 'fate': { const o = rnFateOpt(st, b.slot); // «тайна здесь» — только если выпавший вариант указал сюда
       return b.text && o && o.to === card.id ? `<div class="rn-note fate">🔮 ${esc(rnLabel(b.slot))} · ${esc(o.card)}: ${rnTxt(b.text)}</div>` : ''; }
     case 'table': { const t = rix().T.get(b.table); return t ? rnTableRowHTML(t) : ''; }
+    case 'pick': { const v = rnVarById(b.v); if (!v || !v.opts.length) return ''; const cur = rnBrVal(st, v);
+      return `<div class="rn-blk rn-pick"><div class="rn-blk-h">🔀 ${esc(b.q || v.title)}${cur ? ` · <span class="c-green">${esc(rnOptTitle(v, cur))}</span>` : ''}</div>
+        <div class="rn-pk">${v.opts.map(o => `<button class="rn-pk-b ${cur === o.id ? 'on' : cur ? 'dim' : ''}" data-act="rnPick" data-k="${esc(k)}" data-v="${esc(v.id)}" data-o="${esc(o.id)}">
+          <b>${esc(o.title)}</b>${(b.out[o.id] || []).map(s => `<small>→ ${esc(rnSetLbl(s))}</small>`).join('')}</button>`).join('')}</div>
+        <div class="rn-pk-n">${cur ? 'Касание другого варианта — передумали: прежние действия отменятся.' : 'Касание — что выбрали игроки. Ветка запомнится, места подстроятся.'}</div></div>`; }
   }
   return '';
 }
@@ -10651,10 +10997,14 @@ function rnTableRowHTML(t) {
 const rnSec = (t, h, first) => h ? `<div class="rn-sh ${first ? 'first' : ''}">${t}</div>${h}` : '';
 /** Блоки карточки группами: заметки → проверки → что спрятано (если, зацепки) → остальное. Описания и реплики — отдельно */
 function rnCardBlocksHTML(card, st, { checks = 'Проверки', hidden = 'Что спрятано', pre = card.id } = {}) {
-  const by = t => card.blocks.filter(b => t.includes(b.t)).map(b => rnBlockHTML(card, b, st, pre)).join('');
+  const by = t => card.blocks.filter(b => t.includes(b.t) && rnVis(st, b)).map(b => { const h = rnBlockHTML(card, b, st, pre); return h && b.if ? `<div class="rn-brw">${rnBrTag(b)}${h}</div>` : h; }).join('');
   const got = card.blocks.filter(b => b.t === 'clue' && st.clues[pre + '.' + b.id]).length;
-  return by(['note']) + rnSec(checks, by(['check'])) + rnSec(hidden, by(['if', 'clue']) + (got ? `<button class="rn-lnk" data-act="rnGot">${RUN.got ? 'Скрыть узнанные' : `✓ Узнано здесь: ${got} — показать`}</button>` : ''))
-    + rnSec('Ещё', by(['fight', 'loot', 'table', 'handout', 'wiki', 'fate']));
+  // блоки других веток: строкой «⑂ ещё N», касание — показать бледными (для импровизации)
+  const off = card.blocks.filter(b => b.if && !rnVis(st, b) && !(b.t === 'read' && !b.text.trim()));
+  const offH = off.length ? `<button class="rn-lnk rn-brl" data-act="rnBrAll">⑂ ${RUN.brAll ? 'Скрыть другие ветки' : `Ещё ${off.length} ${plural(off.length, 'блок', 'блока', 'блоков')} в других ветках`}</button>
+    ${RUN.brAll ? off.map(b => `<div class="rn-broff">${rnBrTag(b, true)}<div class="rn-broff-h">${ADV_BLOCKS[b.t].icon} ${ADV_BLOCKS[b.t].label}</div>${rnStaticBlocks({ blocks: [{ ...b, if: null }] })}</div>`).join('') : ''}` : '';
+  return by(['note']) + rnSec('🔀 Развилка', by(['pick'])) + rnSec(checks, by(['check'])) + rnSec(hidden, by(['if', 'clue']) + (got ? `<button class="rn-lnk" data-act="rnGot">${RUN.got ? 'Скрыть узнанные' : `✓ Узнано здесь: ${got} — показать`}</button>` : ''))
+    + rnSec('Ещё', by(['fight', 'loot', 'table', 'handout', 'wiki', 'fate'])) + offH;
 }
 
 /* ── Ситуация «В месте» ── */
@@ -10668,7 +11018,7 @@ function rnPersonRow(st, w, compact = false) {
 function rnPlaceHTML(st) {
   const p = rnP(st.place), all = rnHere(st, p.id), here = all.filter(w => !['dead', 'gone'].includes(rnStat(st, w.id))), dead = all.filter(w => rnStat(st, w.id) === 'dead');
   const present = new Set([...here, ...rnParty(st)].map(w => w.id));
-  const away = p.blocks.filter(b => b.t === 'line' && !present.has(b.who) && !(b.k === 'combat'));
+  const away = p.blocks.filter(b => b.t === 'line' && !present.has(b.who) && !(b.k === 'combat') && rnVis(st, b));
   const tabs = [...new Set(rnChain(p.id).reverse().flatMap(q => q.tables))].map(id => rix().T.get(id)).filter(t => t && !t.use);
   const drafts = st.drafts.filter(d => d.at === p.id && d.k !== 'note');
   return `<div class="rn-ttl"><span class="rn-dv big">${esc(p.code || '✦')}</span><div class="grow"><h1>${esc(p.title)}</h1><div class="rn-ttl-s">${p.lvl ? 'уровень ' + esc(p.lvl) + ' · ' : ''}${st.first ? 'здесь впервые' : 'уже были'}</div></div></div>
@@ -10708,10 +11058,10 @@ function rnTalkSideHTML(st, w) {
 function rnEventHTML(st) {
   const ev = rnEv(st.ev.id), q = st.q.find(x => x.key === st.ev.key), stt = st.evs[ev.id];
   const pre = ev.when.t === 'every' ? `${ev.id}~${st.ev.key.split(':').pop()}` : ev.id; // у повторяющегося отметки проверок и реплик — свои на каждый день
-  const who = ev.who.map(rnW).filter(Boolean), reads = ev.blocks.filter(b => b.t === 'read' && b.text.trim()), lines = ev.blocks.filter(b => b.t === 'line');
+  const who = ev.who.map(rnW).filter(Boolean), reads = ev.blocks.filter(b => b.t === 'read' && b.text.trim() && rnVis(st, b)), lines = ev.blocks.filter(b => b.t === 'line' && rnVis(st, b));
   return `<div class="rn-ttl"><span class="rn-dv big gold">⚡</span><div class="grow"><h1>${esc(ev.title)}</h1>
       <div class="rn-ttl-s">${esc([...(q?.why ? [q.why] : [rnWhenLbl(ev), ev.place && rnLabel(ev.place)]), stt && (stt.s === 'done' ? 'уже сыграно' : 'уже отменено')].filter(Boolean).join(' · '))}</div></div></div>
-    ${reads.map(b => `<div class="panel rn-rdp"><div class="rn-rl"><span>📢 ${esc(rnReadLbl(b))}</span><span class="sp"></span><button class="rn-mini" data-act="rnFull" data-id="${esc(ev.id)}" data-b="${esc(b.id)}" title="Читать на весь экран">⤢</button></div><div class="rn-rd">${rnTxt(b.text)}</div></div>`).join('')}
+    ${reads.map(b => `<div class="panel rn-rdp"><div class="rn-rl"><span>📢 ${esc(rnReadLbl(b))}</span>${rnBrTag(b)}<span class="sp"></span><button class="rn-mini" data-act="rnFull" data-id="${esc(ev.id)}" data-b="${esc(b.id)}" title="Читать на весь экран">⤢</button></div><div class="rn-rd">${rnTxt(b.text)}</div></div>`).join('')}
     ${rnSec('Кто участвует', who.map(w => rnPersonRow(st, w)).join(''), true)}
     ${rnSec('💬 Реплики', lines.map(b => rnLineHTML(pre + '.' + b.id, b, st, { name: rnW(b.who)?.name || 'Голос' })).join(''))}
     ${rnCardBlocksHTML(ev, st, { pre })}
@@ -10762,7 +11112,7 @@ function rnSoon(st) {
   if (ph === 'day') out.push({ ic: '🌇', t: 'Закат', sub: `${expClock(s)} · дальше сумерки и ночь`, h: expUntil(e, s) });
   else out.push({ ic: '🌅', t: 'Рассвет', sub: expClock(r), h: expUntil(e, r) });
   rnEvs().forEach(ev => {
-    const w = ev.when; if (st.q.some(x => x.id === ev.id)) return;
+    const w = ev.when; if (st.q.some(x => x.id === ev.id) || !rnCondOk(st, ev.if)) return; // не в этой ветке — не скоро
     if (w.t === 'every') { const h = rnAtH(w.at); if (h != null && here(ev)) out.push({ ic: '⚡', t: ev.title, sub: rnWhenLbl(ev) + (ev.place ? ' · ' + rnLabel(ev.place) : ''), h: expUntil(e, h), ev: ev.id }); }
     else if (w.t === 'after') { if (st.evs[ev.id]) return; const an = rnAnchor(st, ev); if (!an || (an.L && an.L !== L)) return; out.push({ ic: '⏳', t: ev.title, sub: rnWhenLbl(ev), h: Math.max(0, rnAfterDue(ev, an) - rnClock(st, an.L)), ev: ev.id }); }
     else if ((w.t === 'if' || w.t === 'place') && ev.place && here(ev) && !st.evs[ev.id]) out.push({ ic: w.t === 'if' ? '❓' : '📍', t: ev.title, sub: rnWhenLbl(ev), h: Infinity, ev: ev.id });
@@ -10793,7 +11143,8 @@ function rnSideHTML(st) {
     <button class="rn-lnk" data-act="rnDrawer" data-d="events">${soon.length > 6 ? `Ещё ${soon.length - 6} · ` : ''}все события</button></div>`;
   const goalsH = !curAdv().goals.length ? '' : `<div class="panel rn-sbox"><div class="rn-sh first">🎯 Цели</div>${goals.slice(0, 4).map(g => rnGoalHTML(st, g)).join('') || '<div class="rn-hint">Целей пока нет — их дают персонажи.</div>'}
     <button class="rn-lnk" data-act="rnDrawer" data-d="goals">${goals.length > 4 ? `Ещё ${goals.length - 4} · ` : ''}все цели и замыслы</button></div>`;
-  const vars = curAdv().vars, varsH = vars.length ? `<div class="panel rn-sbox"><div class="rn-sh first">📊 Счётчики</div>${vars.map(v => { const x = rnVarVal(st, v);
+  const vars = curAdv().vars, varsH = vars.length ? `<div class="panel rn-sbox"><div class="rn-sh first">${vars.some(v => v.kind === 'pick') ? '⑂ Ветки и счётчики' : '📊 Счётчики'}</div>${vars.map(v => { const x = rnVarVal(st, v);
+    if (v.kind === 'pick') { const cur = rnBrVal(st, v); return `<div class="rn-var pick" title="${esc(v.note)}"><span class="grow">⑂ ${esc(v.title)}</span><button class="rn-vpk ${cur ? 'on' : ''}" data-act="rnBrMenu" data-id="${esc(v.id)}">${esc(rnOptTitle(v, cur) || 'не решено')} ▾</button></div>`; }
     return v.kind === 'flag' ? `<button class="rn-var flag ${x ? 'on' : ''}" data-act="rnVarFlag" data-id="${esc(v.id)}" title="${esc(v.note)}"><span class="rn-box">${x ? '✓' : ''}</span><span class="grow">${esc(v.title)}</span></button>`
       : `<div class="rn-var" title="${esc(v.note)}"><span class="grow">${esc(v.title)}</span><button class="rn-vb" data-act="rnVarAdd" data-id="${esc(v.id)}" data-d="-1" aria-label="Меньше">−</button><b>${x}</b><button class="rn-vb" data-act="rnVarAdd" data-id="${esc(v.id)}" data-d="1" aria-label="Больше">+</button></div>`; }).join('')}</div>` : '';
   const partyH = party.length ? `<div class="panel rn-sbox"><div class="rn-sh first">👥 С отрядом</div>${party.map(x => rnPersonRow(st, x, true)).join('')}</div>` : '';
@@ -10844,7 +11195,39 @@ function rnSheetHTML(st, d) {
   if (d === 'events') return rnEventsHTML(st);
   if (d === 'goals') return rnGoalsHTML(st);
   if (d === 'fates') return rnFatesSheetHTML(st);
+  if (d === 'people') return rnPeopleHTML(st);
   return '';
+}
+/** 👥 Персонажи приключения: все персонажи книги по местам (порядок дерева), внутри места — по алфавиту.
+    Персонаж попадает в каждое место, где он есть: где живёт, где он сейчас, где у него здешние реплики, где его событие */
+function rnPeopleHTML(st) {
+  const a = curAdv(), cats = new Map(), add = (pid, w, why) => {
+    if (!cats.has(pid)) cats.set(pid, new Map());
+    const m = cats.get(pid); if (!m.has(w.id)) m.set(w.id, { w, why: new Set() }); if (why) m.get(w.id).why.add(why);
+  };
+  a.people.forEach(w => {
+    const party = !!st.ppl[w.id]?.party, at = rnAt(st, w);
+    if (party) add('@party', w, w.home ? 'обычно — ' + rnLabel(w.home) : '');
+    if (w.home && rnP(w.home)) add(w.home, w, party ? 'сейчас с отрядом' : at !== w.home ? (at ? 'сейчас — ' + rnLabel(at) : 'сейчас неизвестно где') : '');
+    if (!party && at && at !== w.home && rnP(at)) add(at, w, 'сейчас здесь');
+  });
+  a.places.forEach(p => p.blocks.forEach(b => { const w = b.t === 'line' && rnW(b.who); if (w) add(p.id, w, 'реплики здесь'); }));
+  a.events.forEach(ev => ev.place && rnP(ev.place) && ev.who.forEach(id => { const w = rnW(id); if (w) add(ev.place, w, `⚡ ${ev.title}`); }));
+  a.people.forEach(w => { if (![...cats.values()].some(m => m.has(w.id))) add('@none', w, ''); });
+  const order = ['@party'], walk = id => rnKids(id).forEach(p => { order.push(p.id); walk(p.id); }); walk(''); order.push('@none');
+  const cmp = (x, y) => x.w.name.localeCompare(y.w.name, 'ru', { sensitivity: 'base' });
+  const row = ({ w, why }) => { const stt = rnStat(st, w.id), att = rnAtt(st, w.id);
+    const sub = [w.role, ...why, stt !== 'alive' && RN_STATUS[stt]].filter(Boolean).join(' · ');
+    return `<button class="rn-row sm ${['dead', 'gone'].includes(stt) ? 'off' : ''}" data-act="rnTalk" data-id="${esc(w.id)}"><span class="rn-dv sm">${esc(w.group ? '👥' : aeIni(w.name))}</span>
+      <span class="rn-rt"><b>${stt === 'dead' ? '✝ ' : ''}${esc(w.name)}${w.aka ? ` <i class="muted">«${esc(w.aka)}»</i>` : ''}</b>${sub ? `<small>${esc(sub)}</small>` : ''}</span>${att !== 'neutral' ? `<span class="rn-att a-${att}">${RN_ATT[att]}</span>` : ''}<span class="rn-chev">›</span></button>`; };
+  const here = st.place, sec = order.filter(id => cats.has(id)).map(id => {
+    const p = rnP(id), ttl = id === '@party' ? '👥 С отрядом' : id === '@none' ? 'Без места' : `${p.code ? esc(p.code) + ' · ' : ''}${esc(p.title)}`;
+    const path = p ? rnChain(id).slice(0, -1).map(x => x.title).join(' › ') : '';
+    return `<div class="rn-pc ${id === here ? 'cur' : ''}"><div class="rn-sh">${ttl}${id === here ? ' <span class="rn-pc-m">📍 отряд здесь</span>' : ''}</div>${path ? `<div class="rn-pc-p">${esc(path)}</div>` : ''}
+      <div class="rn-g2">${[...cats.get(id).values()].sort(cmp).map(row).join('')}</div></div>`;
+  }).join('');
+  return `<div class="rn-sheet-h">👥 Персонажи приключения · ${a.people.length}</div>
+    ${sec || '<div class="rn-hint">В книге пока нет персонажей — их добавляют в редакторе (вкладка «Персонажи»).</div>'}`;
 }
 function rnGoHTML(st) {
   const p = rnP(st.place), row = (q, sub) => `<button class="rn-row" data-act="rnGo" data-id="${esc(q.id)}"><span class="rn-dv sm">${esc(q.code || '✦')}</span><span class="rn-rt"><b>${esc(q.title)}</b><small>${sub}</small></span><span class="rn-chev">›</span></button>`;
@@ -10896,7 +11279,7 @@ function rnEventsHTML(st) {
   const L = rnHereLoc(st), evs = rnEvs(), now = evs.filter(ev => st.q.some(x => x.id === ev.id));
   const here = evs.filter(ev => !now.includes(ev) && ev.place && L && rnEvLoc(ev) === L), world = evs.filter(ev => !now.includes(ev) && !ev.place);
   const other = evs.filter(ev => !now.includes(ev) && !here.includes(ev) && !world.includes(ev));
-  const row = ev => { const s = rnEvState(st, ev);
+  const row = ev => { const s = [rnEvState(st, ev), ev.if && (rnCondOk(st, ev.if) ? '⑂ ' : '⑂ не в этой ветке: ') + rnCondLbl(ev.if)].filter(Boolean).join(' · ');
     return `<div class="rn-evr"><button class="rn-row sm" data-act="rnEvGo" data-id="${esc(ev.id)}"><span class="rn-ic">⚡</span><span class="rn-rt"><b>${esc(ev.title)}</b>
       <small>${esc([rnWhenLbl(ev), ev.place && rnLabel(ev.place), s].filter(Boolean).join(' · '))}</small></span><span class="rn-chev">▶</span></button>
       ${st.evs[ev.id] ? `<button class="btn xs ghost" data-act="rnEvReset" data-id="${esc(ev.id)}" title="Снова ждёт">↩</button>` : ''}</div>`; };
@@ -10914,7 +11297,7 @@ function rnGoalsHTML(st) {
 }
 
 /* ═══ Действия ═══ */
-const rnDo = (fn, keep = true) => { const st = rnSt(); if (!st) return; rnSync(); fn(st); rnSave(); rnRender(keep); };
+const rnDo = (fn, keep = true) => { const st = rnSt(); if (!st) return; rnSync(); fn(st); rnVarsCheck(st); rnSave(); rnRender(keep); }; // после любого касания — условия веток могли выполниться
 ACT.rnBegin = el => rnDo(st => { rnArrive(el.dataset.id); rnLog(`🎭 Игра началась: ${rnP(el.dataset.id)?.title}`, 'g'); }, false);
 ACT.rnGo = el => {
   const st = rnSt(), id = el.dataset.id, p = rnP(id); if (!p || p.region) return;
@@ -11010,7 +11393,9 @@ ACT.rnCard = el => {
 function rnStaticBlocks(c) {
   return (c.blocks || []).map(b => b.t === 'read' ? `<div class="rn-rd sm mb">${rnTxt(b.text)}</div>` : b.t === 'line' ? `<div class="rn-tx mb"><b>${esc(rnW(b.who)?.name || '…')}:</b> ${rnTxt(b.text)}</div>`
     : b.t === 'check' ? `<div class="rn-tx mb"><b>🎲 ${esc(b.skill)} ${rnDcLbl(b)}</b> — ✗ ${esc(b.fail || '—')} · ✓ ${esc(b.success || '—')}${b.super ? ' · ★ ' + esc(b.super) : ''}</div>`
-    : ['note', 'if', 'clue', 'handout'].includes(b.t) ? `<div class="rn-tx mb">${b.cond ? `<b>${esc(b.cond)}:</b> ` : ''}${rnTxt(b.text)}</div>` : '').join('');
+    : ['note', 'if', 'clue', 'handout'].includes(b.t) ? `<div class="rn-tx mb">${b.cond ? `<b>${esc(b.cond)}:</b> ` : ''}${rnTxt(b.text)}</div>`
+    : b.t === 'pick' ? `<div class="rn-tx mb">🔀 ${esc(b.q || rnVarById(b.v)?.title || 'Развилка')}: ${esc((rnVarById(b.v)?.opts || []).map(o => o.title).join(' / '))}</div>` : '')
+    .map((h, i) => h && c.blocks[i].if ? rnBrTag(c.blocks[i]) + h : h).join('');
 }
 ACT.rnWiki = el => { const a = wikiFind(el.dataset.id); if (a) openModal({ title: `📚 ${esc(a.title)}`, size: 'wide', body: wikiArticleHTML(a, 'rnWiki') }); };
 ACT.rnJournal = () => { const st = rnSt(); openModal({ title: '📜 Журнал игры', size: 'wide', body: `<div class="rn-jall">${st.journal.map(rnJRow).join('') || '<div class="muted">Пусто</div>'}</div>` }); };
@@ -11030,6 +11415,16 @@ ACT.rnOut = async el => {
 
 /* Счётчики */
 ACT.rnVarAdd = el => rnDo(st => { const v = rnVarById(el.dataset.id); if (v) rnVarSet(st, v, rnVarVal(st, v) + int(el.dataset.d)); });
+ACT.rnBrAll = () => { RUN.brAll = !RUN.brAll; rnRender(); };
+/** Развилка на ширме: касание варианта ставит ветку и выполняет его действия; другой вариант — прежние действия отменяются */
+ACT.rnPick = el => rnDo(st => {
+  const v = rnVarById(el.dataset.v), o = el.dataset.o, k = 'br:' + el.dataset.k; if (!v || !v.opts.some(x => x.id === o)) return;
+  const [cid, bid] = el.dataset.k.split('.'), card = rnCardAny(cid) || rnCardAny(cid.split('~')[0]), b = card?.blocks.find(x => x.id === bid);
+  if (st.outs[k]) rnActUndo(st, k);
+  rnActApply(st, [{ v: v.id, is: o }, ...(b?.out?.[o] || [])], k);
+});
+ACT.rnBrMenu = el => { const st = rnSt(), v = rnVarById(el.dataset.id); if (!st || !v) return;
+  openMenu(el, [{ hd: '⑂ ' + v.title }, ...v.opts.map(o => ({ icon: rnBrVal(st, v) === o.id ? '✓' : '·', label: o.title, fn: () => rnDo(s => rnBrSet(s, v, o.id)) }))]); };
 ACT.rnVarFlag = el => rnDo(st => { const v = rnVarById(el.dataset.id); if (v) rnVarSet(st, v, rnVarVal(st, v) ? 0 : 1); });
 
 /* Цели */
